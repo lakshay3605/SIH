@@ -1,0 +1,34 @@
+{
+  "hardware": {
+    "platform": "win32",
+    "cpu_physical_cores": 6,
+    "cpu_logical_threads": 12,
+    "total_ram_gb": 15.4,
+    "available_ram_gb": 0.4,
+    "cuda_available": false,
+    "gpu_name": "None (No NVIDIA CUDA GPU detected)",
+    "gpu_device_count": 0
+  },
+  "model_sizes_on_disk_mb": {
+    "indictrans2_1B": 4621.39,
+    "indic_parler_tts": 767.69,
+    "total_pipeline_mb": 5389.08
+  },
+  "execution_benchmarks": {
+    "translation": {
+      "cpu_latency_avg_sec": 30.16,
+      "cpu_latency_min_sec": 12.13,
+      "cpu_ram_peak_mb": 4300.0,
+      "gpu_latency_sec": null,
+      "gpu_vram_peak_mb": null,
+      "gpu_supported_on_system": false
+    },
+    "tts": {
+      "cpu_latency_avg_sec": 14.5,
+      "cpu_ram_peak_mb": 3600.0,
+      "gpu_latency_sec": null,
+      "gpu_vram_peak_mb": null,
+      "gpu_supported_on_system": false
+    }
+  }
+}

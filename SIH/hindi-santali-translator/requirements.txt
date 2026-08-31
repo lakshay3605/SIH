@@ -1,0 +1,9 @@
+torch>=2.2.0
+torchaudio>=2.2.0
+transformers>=4.41.0
+sentencepiece
+soundfile
+scipy
+pyyaml
+IndicTransToolkit
+git+https://github.com/huggingface/parler-tts.git

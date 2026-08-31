@@ -1,0 +1,53 @@
+[
+  {
+    "hindi_input": "नमस्ते, आप कैसे हैं और आपका दिन कैसा बीत रहा है?",
+    "santali_output": "ᱦᱚᱞᱮ, ᱟᱢ ᱪᱮᱫ ᱞᱮᱠᱟ ᱠᱟᱱᱟ ᱟᱨ ᱟᱢᱟᱜ ᱫᱤᱱ ᱫᱚ ᱪᱮᱫ ᱞᱮᱠᱟ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ?",
+    "script_validation": {
+      "valid": true,
+      "invalid_characters": [],
+      "invalid_spans": [],
+      "ol_chiki_ratio": 1.0,
+      "raw_text": "ᱦᱚᱞᱮ, ᱟᱢ ᱪᱮᱫ ᱞᱮᱠᱟ ᱠᱟᱱᱟ ᱟᱨ ᱟᱢᱟᱜ ᱫᱤᱱ ᱫᱚ ᱪᱮᱫ ᱞᱮᱠᱟ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ?",
+      "cleaned_candidate": "ᱦᱚᱞᱮ, ᱟᱢ ᱪᱮᱫ ᱞᱮᱠᱟ ᱠᱟᱱᱟ ᱟᱨ ᱟᱢᱟᱜ ᱫᱤᱱ ᱫᱚ ᱪᱮᱫ ᱞᱮᱠᱟ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ?",
+      "disclaimer": "Unicode validation confirms script conformance only; not linguistic correctness."
+    },
+    "translation_latency_seconds": 13.99,
+    "tts_latency_seconds": 56.64,
+    "audio_path": "D:\\Desktop\\SIH\\hindi-santali-translator\\outputs\\e2e_output_01_casual.wav",
+    "audio_duration_seconds": 3.89
+  },
+  {
+    "hindi_input": "क्या आप मुझे नजदीकी प्राथमिक स्वास्थ्य केंद्र का रास्ता बता सकते हैं?",
+    "santali_output": "ᱟᱢ ᱠᱤ ᱤᱧ ᱥᱳᱨᱥᱳᱯᱳᱨ ᱮᱛᱚᱦᱚᱵ ᱥᱟᱣᱟᱨ ᱛᱟᱞᱢᱟ ᱨᱮᱭᱟᱜ ᱰᱟᱦᱟᱨ ᱮᱢ ᱞᱟᱹᱭ ᱫᱟᱲᱮᱭᱟᱜᱼᱟᱢ?",
+    "script_validation": {
+      "valid": true,
+      "invalid_characters": [],
+      "invalid_spans": [],
+      "ol_chiki_ratio": 1.0,
+      "raw_text": "ᱟᱢ ᱠᱤ ᱤᱧ ᱥᱳᱨᱥᱳᱯᱳᱨ ᱮᱛᱚᱦᱚᱵ ᱥᱟᱣᱟᱨ ᱛᱟᱞᱢᱟ ᱨᱮᱭᱟᱜ ᱰᱟᱦᱟᱨ ᱮᱢ ᱞᱟᱹᱭ ᱫᱟᱲᱮᱭᱟᱜᱼᱟᱢ?",
+      "cleaned_candidate": "ᱟᱢ ᱠᱤ ᱤᱧ ᱥᱳᱨᱥᱳᱯᱳᱨ ᱮᱛᱚᱦᱚᱵ ᱥᱟᱣᱟᱨ ᱛᱟᱞᱢᱟ ᱨᱮᱭᱟᱜ ᱰᱟᱦᱟᱨ ᱮᱢ ᱞᱟᱹᱭ ᱫᱟᱲᱮᱭᱟᱜᱼᱟᱢ?",
+      "disclaimer": "Unicode validation confirms script conformance only; not linguistic correctness."
+    },
+    "translation_latency_seconds": 5.26,
+    "tts_latency_seconds": 66.58,
+    "audio_path": "D:\\Desktop\\SIH\\hindi-santali-translator\\outputs\\e2e_output_02_question.wav",
+    "audio_duration_seconds": 5.14
+  },
+  {
+    "hindi_input": "इस साल मानसूनी बारिश अच्छी होने से धान और मक्के की फसल बहुत अच्छी हुई है।",
+    "santali_output": "ᱱᱚᱶᱟ ᱥᱮᱨᱢᱟ ᱨᱮ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱦᱚᱭᱩᱜ ᱟ, ᱡᱟᱦᱟᱸᱛᱮ ᱚᱛᱢᱚᱱ ᱟᱨ ᱢᱮᱠᱦᱟ ᱨᱮᱭᱟᱜ ᱪᱟᱥ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱦᱩᱭ ᱟᱠᱟᱱᱟ ᱾",
+    "script_validation": {
+      "valid": true,
+      "invalid_characters": [],
+      "invalid_spans": [],
+      "ol_chiki_ratio": 1.0,
+      "raw_text": "ᱱᱚᱶᱟ ᱥᱮᱨᱢᱟ ᱨᱮ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱦᱚᱭᱩᱜ ᱟ, ᱡᱟᱦᱟᱸᱛᱮ ᱚᱛᱢᱚᱱ ᱟᱨ ᱢᱮᱠᱦᱟ ᱨᱮᱭᱟᱜ ᱪᱟᱥ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱦᱩᱭ ᱟᱠᱟᱱᱟ ᱾",
+      "cleaned_candidate": "ᱱᱚᱶᱟ ᱥᱮᱨᱢᱟ ᱨᱮ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱦᱚᱭᱩᱜ ᱟ, ᱡᱟᱦᱟᱸᱛᱮ ᱚᱛᱢᱚᱱ ᱟᱨ ᱢᱮᱠᱦᱟ ᱨᱮᱭᱟᱜ ᱪᱟᱥ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱦᱩᱭ ᱟᱠᱟᱱᱟ ᱾",
+      "disclaimer": "Unicode validation confirms script conformance only; not linguistic correctness."
+    },
+    "translation_latency_seconds": 4.67,
+    "tts_latency_seconds": 103.72,
+    "audio_path": "D:\\Desktop\\SIH\\hindi-santali-translator\\outputs\\e2e_output_03_agriculture.wav",
+    "audio_duration_seconds": 7.78
+  }
+]

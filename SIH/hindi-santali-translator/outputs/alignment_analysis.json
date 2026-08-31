@@ -1,0 +1,15 @@
+{
+  "total_canonical_records": 2007,
+  "source_char_len_mean": 127.73,
+  "source_char_len_std": 44.93,
+  "source_char_len_min": 31,
+  "source_char_len_max": 381,
+  "target_char_len_mean": 135.74,
+  "target_char_len_std": 45.94,
+  "target_char_len_min": 37,
+  "target_char_len_max": 366,
+  "length_ratio_mean": 1.08,
+  "length_ratio_median": 1.07,
+  "suspicious_alignment_count": 0,
+  "suspicious_alignments": []
+}

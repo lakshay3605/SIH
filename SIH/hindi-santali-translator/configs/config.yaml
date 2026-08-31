@@ -1,0 +1,22 @@
+# Configuration for Offline Hindi -> Santali Translation & TTS Pipeline
+
+device: "auto"  # "auto", "cuda", or "cpu"
+
+translation:
+  model_id: "ai4bharat/indictrans2-indic-indic-1B"
+  src_lang: "hin_Deva"  # Hindi (Devanagari)
+  tgt_lang: "sat_Olck"  # Santali (Ol Chiki)
+  max_length: 256
+  num_beams: 5
+  torch_dtype: "auto"    # "float32", "float16", "bfloat16", or "auto"
+
+tts:
+  model_id: "ai4bharat/indic-parler-tts"
+  speaker: "Sumitra"     # Supported Santali speakers: "Sumitra" (female), "Raju" (male)
+  prompt_description: "Sumitra delivers a clear and natural Santali speech with moderate pace and high audio quality."
+  sample_rate: 22050     # Parler-TTS default sample rate
+  torch_dtype: "auto"
+
+paths:
+  outputs_dir: "outputs"
+  models_cache_dir: "models"
