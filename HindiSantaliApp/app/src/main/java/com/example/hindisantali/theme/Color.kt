@@ -2,10 +2,17 @@ package com.example.hindisantali.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Sohrai palette — warm earth & forest, inspired by Santali Sohrai mural art
+val BgDeep        = Color(0xFF141210)
+val BgCard        = Color(0xFF1E1916)
+val BgCardBorder  = Color(0xFF2E2720)
+val BgHighlight   = Color(0xFF252019)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val Sage          = Color(0xFF7FA87A)   // forest green — Santali / success
+val Copper        = Color(0xFFC47255)   // clay copper — Hindi / mic idle
+val Amber         = Color(0xFFD4A96A)   // warm amber — processing
+val Brick         = Color(0xFFC4523A)   // warm brick — recording / error
+
+val TextPrimary   = Color(0xFFEDE7E0)
+val TextSecondary = Color(0xFF9B9189)
+val TextHint      = Color(0xFF544E49)
