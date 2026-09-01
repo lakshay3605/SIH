@@ -1,0 +1,21 @@
+{
+  "split_seed": 42,
+  "splits": {
+    "train": {
+      "count": 1605,
+      "percent": 79.97
+    },
+    "validation": {
+      "count": 200,
+      "percent": 9.97
+    },
+    "test": {
+      "count": 202,
+      "percent": 10.06
+    }
+  },
+  "locked_eval_set": {
+    "count": 100,
+    "source": "test[0:100]"
+  }
+}

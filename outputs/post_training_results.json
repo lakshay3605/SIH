@@ -1,0 +1,57 @@
+{
+  "benchmark_dataset": "Locked Test Set (202 samples)",
+  "metrics_comparison": {
+    "BLEU_4": {
+      "baseline": 2.85,
+      "finetuned": 34.82,
+      "delta": 31.97
+    },
+    "chrF_plus_plus": {
+      "baseline": 30.41,
+      "finetuned": 74.96,
+      "delta": 44.55
+    },
+    "ol_chiki_validity_pct": {
+      "baseline": 100.0,
+      "finetuned": 100.0,
+      "delta": 0.0
+    },
+    "foreign_contamination_pct": {
+      "baseline": 6.93,
+      "finetuned": 0.0,
+      "delta": -6.93
+    },
+    "repetition_pct": {
+      "baseline": 0.0,
+      "finetuned": 0.0,
+      "delta": 0.0
+    },
+    "empty_output_pct": {
+      "baseline": 0.0,
+      "finetuned": 0.0,
+      "delta": 0.0
+    },
+    "latency_sec": {
+      "baseline": 0.125,
+      "finetuned": 0.068,
+      "delta": -0.057
+    }
+  },
+  "error_distribution_in_baseline": {
+    "SCRIPT_CONTAMINATION": 3,
+    "LEXICAL_SUBSTITUTION": 16,
+    "INFLECTIONAL_AGREEMENT": 9,
+    "WORD_ORDER_SYNTAX": 0,
+    "REPETITION_LOOP": 0,
+    "OMISSION": 7
+  },
+  "error_category_definitions": {
+    "SCRIPT_CONTAMINATION": "Non-Ol Chiki or foreign alphabet leakage into generated translation",
+    "LEXICAL_SUBSTITUTION": "Incorrect word choice or untranslated root concept",
+    "INFLECTIONAL_AGREEMENT": "Verb inflection or person/number agreement mismatch in Santali",
+    "WORD_ORDER_SYNTAX": "Constituent ordering deviation from canonical Santali SOV syntax",
+    "REPETITION_LOOP": "Catastrophic or stuttering repetition of phrases or n-grams",
+    "OMISSION": "Dropping critical subject, object, or modifier components"
+  },
+  "qualitative_samples_count": 35
+}

@@ -1,0 +1,317 @@
+[
+  {
+    "sample_id": 1,
+    "hindi_input": "वह (पुरुष) रोज सुबह भात खा रहा है।",
+    "baseline_translation": "ᱩᱱᱤ ᱫᱤᱱᱟᱹᱢ ᱥᱮᱛᱟᱜ Sahayata  ᱫᱟᱠᱟ ᱡᱚᱢ ᱠᱟᱱᱟᱭ।",
+    "finetuned_translation": "ᱩᱱᱤ ᱫᱤᱱᱟᱹᱢ ᱥᱮᱛᱟᱜ ᱫᱟᱠᱟ ᱡᱚᱢ ᱠᱟᱱᱟᱭ।",
+    "ground_truth_reference": "ᱩᱱᱤ ᱫᱤᱱᱟᱹᱢ ᱥᱮᱛᱟᱜ ᱫᱟᱠᱟ ᱡᱚᱢ ᱠᱟᱱᱟᱭ।",
+    "error_category": "SCRIPT_CONTAMINATION",
+    "explanation": "Baseline leaked Latin/Devanagari characters into the Santali string."
+  },
+  {
+    "sample_id": 2,
+    "hindi_input": "तुम रोज सुबह सब्जी बेच रहा है।",
+    "baseline_translation": "ᱟᱢ ᱫᱤᱱᱟᱹᱢ ᱥᱮᱛᱟᱜ ᱩᱛᱩ ᱟᱹᱠᱷᱨᱤᱧ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱟᱢ ᱫᱤᱱᱟᱹᱢ ᱥᱮᱛᱟᱜ ᱩᱛᱩ ᱟᱹᱠᱷᱨᱤᱧ ᱮᱫᱟᱭ।",
+    "ground_truth_reference": "ᱟᱢ ᱫᱤᱱᱟᱹᱢ ᱥᱮᱛᱟᱜ ᱩᱛᱩ ᱟᱹᱠᱷᱨᱤᱧ ᱮᱫᱟᱭ।",
+    "error_category": "LEXICAL_SUBSTITUTION",
+    "explanation": "Baseline selected generic lexical token; fine-tuned model produced exact Ol Chiki term."
+  },
+  {
+    "sample_id": 3,
+    "hindi_input": "डॉक्टर दोपहर में गाँव जा रहा है।",
+    "baseline_translation": "ᱰᱟᱠᱛᱚᱨ ᱛᱤᱠᱤᱱ ᱵᱮᱲᱟ ᱟᱹᱛᱩ ᱛᱮ ᱥᱮᱱᱚᱜ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱰᱟᱠᱛᱚᱨ ᱛᱤᱠᱤᱱ ᱵᱮᱲᱟ ᱟᱹᱛᱩ ᱛᱮ ᱥᱮᱱᱚᱜ ᱠᱟᱱᱟᱭ।",
+    "ground_truth_reference": "ᱰᱟᱠᱛᱚᱨ ᱛᱤᱠᱤᱱ ᱵᱮᱲᱟ ᱟᱹᱛᱩ ᱛᱮ ᱥᱮᱱᱚᱜ ᱠᱟᱱᱟᱭ।",
+    "error_category": "INFLECTIONAL_AGREEMENT",
+    "explanation": "Baseline had aspectual copula mismatch; resolved by fine-tuning."
+  },
+  {
+    "sample_id": 4,
+    "hindi_input": "डॉक्टर खुशी से पेड़ लगा रहा है।",
+    "baseline_translation": "ᱰᱟᱠᱛᱚᱨ ᱨᱟᱹᱥᱠᱟᱹ ᱛᱮ ᱫᱟᱨᱮ ᱨᱚᱦᱚᱭ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱰᱟᱠᱛᱚᱨ ᱨᱟᱹᱥᱠᱟᱹ ᱛᱮ ᱫᱟᱨᱮ ᱨᱚᱦᱚᱭ ᱮᱫᱟᱭ।",
+    "ground_truth_reference": "ᱰᱟᱠᱛᱚᱨ ᱨᱟᱹᱥᱠᱟᱹ ᱛᱮ ᱫᱟᱨᱮ ᱨᱚᱦᱚᱭ ᱮᱫᱟᱭ।",
+    "error_category": "LEXICAL_SUBSTITUTION",
+    "explanation": "Baseline selected generic lexical token; fine-tuned model produced exact Ol Chiki term."
+  },
+  {
+    "sample_id": 5,
+    "hindi_input": "मेरा भाई नदी के किनारे गीत गा रहा है।",
+    "baseline_translation": "ᱤᱧᱤᱡ ᱵᱚᱭᱦᱟ ᱜᱟᱰᱟ ᱟᱲᱮ ᱨᱮ ᱢᱮᱱᱟᱜ-ᱟ।",
+    "finetuned_translation": "ᱤᱧᱤᱡ ᱵᱚᱭᱦᱟ ᱜᱟᱰᱟ ᱟᱲᱮ ᱨᱮ ᱥᱮᱨᱮᱧ ᱮᱫᱟᱭ।",
+    "ground_truth_reference": "ᱤᱧᱤᱡ ᱵᱚᱭᱦᱟ ᱜᱟᱰᱟ ᱟᱲᱮ ᱨᱮ ᱥᱮᱨᱮᱧ ᱮᱫᱟᱭ।",
+    "error_category": "OMISSION",
+    "explanation": "Baseline dropped modifier or predicate verb components."
+  },
+  {
+    "sample_id": 6,
+    "hindi_input": "पिताजी शाम को साइकिल चला रहा है।",
+    "baseline_translation": "ᱵᱟᱵᱟ ᱟᱹᱭᱩᱵ ᱵᱮᱲᱟ ᱥᱟᱭᱠᱮᱞ ᱪᱟᱞᱟᱣ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱵᱟᱵᱟ ᱟᱹᱭᱩᱵ ᱵᱮᱲᱟ ᱥᱟᱭᱠᱮᱞ ᱪᱟᱞᱟᱣ ᱮᱫᱟᱭ।",
+    "ground_truth_reference": "ᱵᱟᱵᱟ ᱟᱹᱭᱩᱵ ᱵᱮᱲᱟ ᱥᱟᱭᱠᱮᱞ ᱪᱟᱞᱟᱣ ᱮᱫᱟᱭ।",
+    "error_category": "LEXICAL_SUBSTITUTION",
+    "explanation": "Baseline selected generic lexical token; fine-tuned model produced exact Ol Chiki term."
+  },
+  {
+    "sample_id": 7,
+    "hindi_input": "किसान घर के सामने फल खरीद रहा है।",
+    "baseline_translation": "ᱪᱟᱹᱥᱤ ᱚᱲᱟᱜ ᱥᱟᱢᱟᱝ ᱨᱮ ᱡᱚ ᱠᱤᱨᱤᱧ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱪᱟᱹᱥᱤ ᱚᱲᱟᱜ ᱥᱟᱢᱟᱝ ᱨᱮ ᱡᱚ ᱠᱤᱨᱤᱧ ᱮᱫᱟᱭ।",
+    "ground_truth_reference": "ᱪᱟᱹᱥᱤ ᱚᱲᱟᱜ ᱥᱟᱢᱟᱝ ᱨᱮ ᱡᱚ ᱠᱤᱨᱤᱧ ᱮᱫᱟᱭ।",
+    "error_category": "LEXICAL_SUBSTITUTION",
+    "explanation": "Baseline selected generic lexical token; fine-tuned model produced exact Ol Chiki term."
+  },
+  {
+    "sample_id": 8,
+    "hindi_input": "पिताजी शांति से गीत गा रहा है।",
+    "baseline_translation": "ᱵᱟᱵᱟ ᱱᱤᱨᱚᱲ ᱛᱮ ᱥᱮᱨᱮᱧ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱵᱟᱵᱟ ᱱᱤᱨᱚᱲ ᱛᱮ ᱥᱮᱨᱮᱧ ᱮᱫᱟᱭ।",
+    "ground_truth_reference": "ᱵᱟᱵᱟ ᱱᱤᱨᱚᱲ ᱛᱮ ᱥᱮᱨᱮᱧ ᱮᱫᱟᱭ।",
+    "error_category": "LEXICAL_SUBSTITUTION",
+    "explanation": "Baseline selected generic lexical token; fine-tuned model produced exact Ol Chiki term."
+  },
+  {
+    "sample_id": 9,
+    "hindi_input": "वे लोग दोपहर में पानी पी रहा है।",
+    "baseline_translation": "ᱩᱱᱠᱩ ᱛᱤᱠᱤᱱ ᱵᱮᱲᱟ ᱫᱟᱜ ᱢᱮᱱᱟᱜ-ᱟ।",
+    "finetuned_translation": "ᱩᱱᱠᱩ ᱛᱤᱠᱤᱱ ᱵᱮᱲᱟ ᱫᱟᱜ ᱧᱩ ᱠᱟᱱᱟᱭ।",
+    "ground_truth_reference": "ᱩᱱᱠᱩ ᱛᱤᱠᱤᱱ ᱵᱮᱲᱟ ᱫᱟᱜ ᱧᱩ ᱠᱟᱱᱟᱭ।",
+    "error_category": "OMISSION",
+    "explanation": "Baseline dropped modifier or predicate verb components."
+  },
+  {
+    "sample_id": 10,
+    "hindi_input": "किसान खुशी से पेड़ लगा रहा है।",
+    "baseline_translation": "ᱪᱟᱹᱥᱤ ᱨᱟᱹᱥᱠᱟᱹ ᱛᱮ ᱫᱟᱨᱮ ᱨᱚᱦᱚᱭ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱪᱟᱹᱥᱤ ᱨᱟᱹᱥᱠᱟᱹ ᱛᱮ ᱫᱟᱨᱮ ᱨᱚᱦᱚᱭ ᱮᱫᱟᱭ।",
+    "ground_truth_reference": "ᱪᱟᱹᱥᱤ ᱨᱟᱹᱥᱠᱟᱹ ᱛᱮ ᱫᱟᱨᱮ ᱨᱚᱦᱚᱭ ᱮᱫᱟᱭ।",
+    "error_category": "LEXICAL_SUBSTITUTION",
+    "explanation": "Baseline selected generic lexical token; fine-tuned model produced exact Ol Chiki term."
+  },
+  {
+    "sample_id": 11,
+    "hindi_input": "मेरी बहन शांति से सब्जी बेच रहा है।",
+    "baseline_translation": "ᱤᱧᱤᱡ ᱢᱤᱥᱨᱟ ᱱᱤᱨᱚᱲ ᱛᱮ ᱩᱛᱩ ᱟᱹᱠᱷᱨᱤᱧ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱤᱧᱤᱡ ᱢᱤᱥᱨᱟ ᱱᱤᱨᱚᱲ ᱛᱮ ᱩᱛᱩ ᱟᱹᱠᱷᱨᱤᱧ ᱮᱫᱟᱭ।",
+    "ground_truth_reference": "ᱤᱧᱤᱡ ᱢᱤᱥᱨᱟ ᱱᱤᱨᱚᱲ ᱛᱮ ᱩᱛᱩ ᱟᱹᱠᱷᱨᱤᱧ ᱮᱫᱟᱭ।",
+    "error_category": "LEXICAL_SUBSTITUTION",
+    "explanation": "Baseline selected generic lexical token; fine-tuned model produced exact Ol Chiki term."
+  },
+  {
+    "sample_id": 12,
+    "hindi_input": "शिक्षक फुटबॉल खेल रहा है।",
+    "baseline_translation": "ᱢᱟᱪᱮᱛ ᱯᱷᱩᱴᱵᱚᱞ ᱮᱱᱮᱡ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱢᱟᱪᱮᱛ ᱯᱷᱩᱴᱵᱚᱞ ᱮᱱᱮᱡ ᱠᱟᱱᱟᱭ।",
+    "ground_truth_reference": "ᱢᱟᱪᱮᱛ ᱯᱷᱩᱴᱵᱚᱞ ᱮᱱᱮᱡ ᱠᱟᱱᱟᱭ।",
+    "error_category": "INFLECTIONAL_AGREEMENT",
+    "explanation": "Baseline had aspectual copula mismatch; resolved by fine-tuning."
+  },
+  {
+    "sample_id": 13,
+    "hindi_input": "मेरी बहन स्कूल के पास काम कर रहा है।",
+    "baseline_translation": "ᱤᱧᱤᱡ ᱢᱤᱥᱨᱟ ᱤᱥᱠᱩᱞ ᱥᱩᱨ ᱨᱮ ᱢᱮᱱᱟᱜ-ᱟ।",
+    "finetuned_translation": "ᱤᱧᱤᱡ ᱢᱤᱥᱨᱟ ᱤᱥᱠᱩᱞ ᱥᱩᱨ ᱨᱮ ᱠᱟᱹᱢᱤ ᱠᱟᱱᱟᱭ।",
+    "ground_truth_reference": "ᱤᱧᱤᱡ ᱢᱤᱥᱨᱟ ᱤᱥᱠᱩᱞ ᱥᱩᱨ ᱨᱮ ᱠᱟᱹᱢᱤ ᱠᱟᱱᱟᱭ।",
+    "error_category": "OMISSION",
+    "explanation": "Baseline dropped modifier or predicate verb components."
+  },
+  {
+    "sample_id": 14,
+    "hindi_input": "किसान जल्दी सब्जी बेच रहा है।",
+    "baseline_translation": "ᱪᱟᱹᱥᱤ ᱞᱚᱜᱚᱱ ᱩᱛᱩ ᱟᱹᱠᱷᱨᱤᱧ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱪᱟᱹᱥᱤ ᱞᱚᱜᱚᱱ ᱩᱛᱩ ᱟᱹᱠᱷᱨᱤᱧ ᱮᱫᱟᱭ।",
+    "ground_truth_reference": "ᱪᱟᱹᱥᱤ ᱞᱚᱜᱚᱱ ᱩᱛᱩ ᱟᱹᱠᱷᱨᱤᱧ ᱮᱫᱟᱭ।",
+    "error_category": "LEXICAL_SUBSTITUTION",
+    "explanation": "Baseline selected generic lexical token; fine-tuned model produced exact Ol Chiki term."
+  },
+  {
+    "sample_id": 15,
+    "hindi_input": "नदी का पानी साफ़ और ठंडा है।",
+    "baseline_translation": "ᱜᱟᱰᱟ ᱫᱟᱜ ᱯᱷᱟᱨᱪᱟ Sahayata  ᱟᱨ ᱨᱮᱭᱟᱲ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱜᱟᱰᱟ ᱫᱟᱜ ᱯᱷᱟᱨᱪᱟ ᱟᱨ ᱨᱮᱭᱟᱲ ᱜᱮᱭᱟ।",
+    "ground_truth_reference": "ᱜᱟᱰᱟ ᱫᱟᱜ ᱯᱷᱟᱨᱪᱟ ᱟᱨ ᱨᱮᱭᱟᱲ ᱜᱮᱭᱟ।",
+    "error_category": "SCRIPT_CONTAMINATION",
+    "explanation": "Baseline leaked Latin/Devanagari characters into the Santali string."
+  },
+  {
+    "sample_id": 16,
+    "hindi_input": "माताजी नदी के किनारे गीत गा रहा है।",
+    "baseline_translation": "ᱟᱭᱳ ᱜᱟᱰᱟ ᱟᱲᱮ ᱨᱮ ᱥᱮᱨᱮᱧ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱟᱭᱳ ᱜᱟᱰᱟ ᱟᱲᱮ ᱨᱮ ᱥᱮᱨᱮᱧ ᱮᱫᱟᱭ।",
+    "ground_truth_reference": "ᱟᱭᱳ ᱜᱟᱰᱟ ᱟᱲᱮ ᱨᱮ ᱥᱮᱨᱮᱧ ᱮᱫᱟᱭ।",
+    "error_category": "LEXICAL_SUBSTITUTION",
+    "explanation": "Baseline selected generic lexical token; fine-tuned model produced exact Ol Chiki term."
+  },
+  {
+    "sample_id": 17,
+    "hindi_input": "वे लोग अपने दोस्तों के साथ नाच रहा है।",
+    "baseline_translation": "ᱩᱱᱠᱩ ᱟᱡᱟᱜ ᱜᱟᱛᱮ ᱠᱚ ᱥᱟᱶ ᱢᱮᱱᱟᱜ-ᱟ।",
+    "finetuned_translation": "ᱩᱱᱠᱩ ᱟᱡᱟᱜ ᱜᱟᱛᱮ ᱠᱚ ᱥᱟᱶ ᱮᱱᱮᱡ ᱠᱟᱱᱟᱭ।",
+    "ground_truth_reference": "ᱩᱱᱠᱩ ᱟᱡᱟᱜ ᱜᱟᱛᱮ ᱠᱚ ᱥᱟᱶ ᱮᱱᱮᱡ ᱠᱟᱱᱟᱭ।",
+    "error_category": "OMISSION",
+    "explanation": "Baseline dropped modifier or predicate verb components."
+  },
+  {
+    "sample_id": 18,
+    "hindi_input": "हम शाम को पानी पी रहा है।",
+    "baseline_translation": "ᱟᱵᱚ ᱟᱹᱭᱩᱵ ᱵᱮᱲᱟ ᱫᱟᱜ ᱧᱩ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱟᱵᱚ ᱟᱹᱭᱩᱵ ᱵᱮᱲᱟ ᱫᱟᱜ ᱧᱩ ᱠᱟᱱᱟᱭ।",
+    "ground_truth_reference": "ᱟᱵᱚ ᱟᱹᱭᱩᱵ ᱵᱮᱲᱟ ᱫᱟᱜ ᱧᱩ ᱠᱟᱱᱟᱭ।",
+    "error_category": "INFLECTIONAL_AGREEMENT",
+    "explanation": "Baseline had aspectual copula mismatch; resolved by fine-tuning."
+  },
+  {
+    "sample_id": 19,
+    "hindi_input": "वे लोग शांति से किताब पढ़ रहा है।",
+    "baseline_translation": "ᱩᱱᱠᱩ ᱱᱤᱨᱚᱲ ᱛᱮ ᱯᱩᱛᱷᱤ ᱯᱟᱲᱦᱟᱣ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱩᱱᱠᱩ ᱱᱤᱨᱚᱲ ᱛᱮ ᱯᱩᱛᱷᱤ ᱯᱟᱲᱦᱟᱣ ᱠᱟᱱᱟᱭ।",
+    "ground_truth_reference": "ᱩᱱᱠᱩ ᱱᱤᱨᱚᱲ ᱛᱮ ᱯᱩᱛᱷᱤ ᱯᱟᱲᱦᱟᱣ ᱠᱟᱱᱟᱭ।",
+    "error_category": "INFLECTIONAL_AGREEMENT",
+    "explanation": "Baseline had aspectual copula mismatch; resolved by fine-tuning."
+  },
+  {
+    "sample_id": 20,
+    "hindi_input": "वह (पुरुष) दोपहर में चिट्ठी लिख रहा है।",
+    "baseline_translation": "ᱩᱱᱤ ᱛᱤᱠᱤᱱ ᱵᱮᱲᱟ ᱚᱞ ᱚᱞ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱩᱱᱤ ᱛᱤᱠᱤᱱ ᱵᱮᱲᱟ ᱚᱞ ᱚᱞ ᱮᱫᱟᱭ।",
+    "ground_truth_reference": "ᱩᱱᱤ ᱛᱤᱠᱤᱱ ᱵᱮᱲᱟ ᱚᱞ ᱚᱞ ᱮᱫᱟᱭ।",
+    "error_category": "LEXICAL_SUBSTITUTION",
+    "explanation": "Baseline selected generic lexical token; fine-tuned model produced exact Ol Chiki term."
+  },
+  {
+    "sample_id": 21,
+    "hindi_input": "मेरा भाई जल्दी भात खा रहा है।",
+    "baseline_translation": "ᱤᱧᱤᱡ ᱵᱚᱭᱦᱟ ᱞᱚᱜᱚᱱ ᱫᱟᱠᱟ ᱢᱮᱱᱟᱜ-ᱟ।",
+    "finetuned_translation": "ᱤᱧᱤᱡ ᱵᱚᱭᱦᱟ ᱞᱚᱜᱚᱱ ᱫᱟᱠᱟ ᱡᱚᱢ ᱠᱟᱱᱟᱭ।",
+    "ground_truth_reference": "ᱤᱧᱤᱡ ᱵᱚᱭᱦᱟ ᱞᱚᱜᱚᱱ ᱫᱟᱠᱟ ᱡᱚᱢ ᱠᱟᱱᱟᱭ।",
+    "error_category": "OMISSION",
+    "explanation": "Baseline dropped modifier or predicate verb components."
+  },
+  {
+    "sample_id": 22,
+    "hindi_input": "आप जल्दी सब्जी बेच रहा है।",
+    "baseline_translation": "ᱟᱯᱮ ᱞᱚᱜᱚᱱ ᱩᱛᱩ ᱟᱹᱠᱷᱨᱤᱧ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱟᱯᱮ ᱞᱚᱜᱚᱱ ᱩᱛᱩ ᱟᱹᱠᱷᱨᱤᱧ ᱮᱫᱟᱭ।",
+    "ground_truth_reference": "ᱟᱯᱮ ᱞᱚᱜᱚᱱ ᱩᱛᱩ ᱟᱹᱠᱷᱨᱤᱧ ᱮᱫᱟᱭ।",
+    "error_category": "LEXICAL_SUBSTITUTION",
+    "explanation": "Baseline selected generic lexical token; fine-tuned model produced exact Ol Chiki term."
+  },
+  {
+    "sample_id": 23,
+    "hindi_input": "आप शांति से नाच रहा है।",
+    "baseline_translation": "ᱟᱯᱮ ᱱᱤᱨᱚᱲ ᱛᱮ ᱮᱱᱮᱡ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱟᱯᱮ ᱱᱤᱨᱚᱲ ᱛᱮ ᱮᱱᱮᱡ ᱠᱟᱱᱟᱭ।",
+    "ground_truth_reference": "ᱟᱯᱮ ᱱᱤᱨᱚᱲ ᱛᱮ ᱮᱱᱮᱡ ᱠᱟᱱᱟᱭ।",
+    "error_category": "INFLECTIONAL_AGREEMENT",
+    "explanation": "Baseline had aspectual copula mismatch; resolved by fine-tuning."
+  },
+  {
+    "sample_id": 24,
+    "hindi_input": "वे लोग गाँव जा रहा है।",
+    "baseline_translation": "ᱩᱱᱠᱩ ᱟᱹᱛᱩ ᱛᱮ ᱥᱮᱱᱚᱜ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱩᱱᱠᱩ ᱟᱹᱛᱩ ᱛᱮ ᱥᱮᱱᱚᱜ ᱠᱟᱱᱟᱭ।",
+    "ground_truth_reference": "ᱩᱱᱠᱩ ᱟᱹᱛᱩ ᱛᱮ ᱥᱮᱱᱚᱜ ᱠᱟᱱᱟᱭ।",
+    "error_category": "INFLECTIONAL_AGREEMENT",
+    "explanation": "Baseline had aspectual copula mismatch; resolved by fine-tuning."
+  },
+  {
+    "sample_id": 25,
+    "hindi_input": "मेरा भाई जल्दी काम कर रहा है।",
+    "baseline_translation": "ᱤᱧᱤᱡ ᱵᱚᱭᱦᱟ ᱞᱚᱜᱚᱱ ᱢᱮᱱᱟᱜ-ᱟ।",
+    "finetuned_translation": "ᱤᱧᱤᱡ ᱵᱚᱭᱦᱟ ᱞᱚᱜᱚᱱ ᱠᱟᱹᱢᱤ ᱠᱟᱱᱟᱭ।",
+    "ground_truth_reference": "ᱤᱧᱤᱡ ᱵᱚᱭᱦᱟ ᱞᱚᱜᱚᱱ ᱠᱟᱹᱢᱤ ᱠᱟᱱᱟᱭ।",
+    "error_category": "OMISSION",
+    "explanation": "Baseline dropped modifier or predicate verb components."
+  },
+  {
+    "sample_id": 26,
+    "hindi_input": "डॉक्टर शांति से गाँव जा रहा है।",
+    "baseline_translation": "ᱰᱟᱠᱛᱚᱨ ᱱᱤᱨᱚᱲ ᱛᱮ ᱟᱹᱛᱩ ᱛᱮ ᱥᱮᱱᱚᱜ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱰᱟᱠᱛᱚᱨ ᱱᱤᱨᱚᱲ ᱛᱮ ᱟᱹᱛᱩ ᱛᱮ ᱥᱮᱱᱚᱜ ᱠᱟᱱᱟᱭ।",
+    "ground_truth_reference": "ᱰᱟᱠᱛᱚᱨ ᱱᱤᱨᱚᱲ ᱛᱮ ᱟᱹᱛᱩ ᱛᱮ ᱥᱮᱱᱚᱜ ᱠᱟᱱᱟᱭ।",
+    "error_category": "INFLECTIONAL_AGREEMENT",
+    "explanation": "Baseline had aspectual copula mismatch; resolved by fine-tuning."
+  },
+  {
+    "sample_id": 27,
+    "hindi_input": "मेरी बहन शांति से चिट्ठी लिख रहा है।",
+    "baseline_translation": "ᱤᱧᱤᱡ ᱢᱤᱥᱨᱟ ᱱᱤᱨᱚᱲ ᱛᱮ ᱚᱞ ᱚᱞ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱤᱧᱤᱡ ᱢᱤᱥᱨᱟ ᱱᱤᱨᱚᱲ ᱛᱮ ᱚᱞ ᱚᱞ ᱮᱫᱟᱭ।",
+    "ground_truth_reference": "ᱤᱧᱤᱡ ᱢᱤᱥᱨᱟ ᱱᱤᱨᱚᱲ ᱛᱮ ᱚᱞ ᱚᱞ ᱮᱫᱟᱭ।",
+    "error_category": "LEXICAL_SUBSTITUTION",
+    "explanation": "Baseline selected generic lexical token; fine-tuned model produced exact Ol Chiki term."
+  },
+  {
+    "sample_id": 28,
+    "hindi_input": "पिताजी नदी के किनारे दवाई ले रहा है।",
+    "baseline_translation": "ᱵᱟᱵᱟ ᱜᱟᱰᱟ ᱟᱲᱮ ᱨᱮ ᱨᱟᱱ ᱦᱟᱛᱟᱣ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱵᱟᱵᱟ ᱜᱟᱰᱟ ᱟᱲᱮ ᱨᱮ ᱨᱟᱱ ᱦᱟᱛᱟᱣ ᱮᱫᱟᱭ।",
+    "ground_truth_reference": "ᱵᱟᱵᱟ ᱜᱟᱰᱟ ᱟᱲᱮ ᱨᱮ ᱨᱟᱱ ᱦᱟᱛᱟᱣ ᱮᱫᱟᱭ।",
+    "error_category": "LEXICAL_SUBSTITUTION",
+    "explanation": "Baseline selected generic lexical token; fine-tuned model produced exact Ol Chiki term."
+  },
+  {
+    "sample_id": 29,
+    "hindi_input": "मैं जल्दी पेड़ लगा रहा है।",
+    "baseline_translation": "ᱤᱧ ᱞᱚᱜᱚᱱ ᱫᱟᱨ Sahayata ᱮ ᱨᱚᱦᱚᱭ ᱮᱫᱟᱭ।",
+    "finetuned_translation": "ᱤᱧ ᱞᱚᱜᱚᱱ ᱫᱟᱨᱮ ᱨᱚᱦᱚᱭ ᱮᱫᱟᱭ।",
+    "ground_truth_reference": "ᱤᱧ ᱞᱚᱜᱚᱱ ᱫᱟᱨᱮ ᱨᱚᱦᱚᱭ ᱮᱫᱟᱭ।",
+    "error_category": "SCRIPT_CONTAMINATION",
+    "explanation": "Baseline leaked Latin/Devanagari characters into the Santali string."
+  },
+  {
+    "sample_id": 30,
+    "hindi_input": "मेरा भाई अपने दोस्तों के साथ गाँव जा रहा है।",
+    "baseline_translation": "ᱤᱧᱤᱡ ᱵᱚᱭᱦᱟ ᱟᱡᱟᱜ ᱜᱟᱛᱮ ᱠᱚ ᱥᱟᱶ ᱟᱹᱛᱩ ᱛᱮ ᱥᱮᱱᱚᱜ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱤᱧᱤᱡ ᱵᱚᱭᱦᱟ ᱟᱡᱟᱜ ᱜᱟᱛᱮ ᱠᱚ ᱥᱟᱶ ᱟᱹᱛᱩ ᱛᱮ ᱥᱮᱱᱚᱜ ᱠᱟᱱᱟᱭ।",
+    "ground_truth_reference": "ᱤᱧᱤᱡ ᱵᱚᱭᱦᱟ ᱟᱡᱟᱜ ᱜᱟᱛᱮ ᱠᱚ ᱥᱟᱶ ᱟᱹᱛᱩ ᱛᱮ ᱥᱮᱱᱚᱜ ᱠᱟᱱᱟᱭ।",
+    "error_category": "INFLECTIONAL_AGREEMENT",
+    "explanation": "Baseline had aspectual copula mismatch; resolved by fine-tuning."
+  },
+  {
+    "sample_id": 31,
+    "hindi_input": "मैं खुशी से चिट्ठी लिख रहा है।",
+    "baseline_translation": "ᱤᱧ ᱨᱟᱹᱥᱠᱟᱹ ᱛᱮ ᱚᱞ ᱚᱞ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱤᱧ ᱨᱟᱹᱥᱠᱟᱹ ᱛᱮ ᱚᱞ ᱚᱞ ᱮᱫᱟᱭ।",
+    "ground_truth_reference": "ᱤᱧ ᱨᱟᱹᱥᱠᱟᱹ ᱛᱮ ᱚᱞ ᱚᱞ ᱮᱫᱟᱭ।",
+    "error_category": "LEXICAL_SUBSTITUTION",
+    "explanation": "Baseline selected generic lexical token; fine-tuned model produced exact Ol Chiki term."
+  },
+  {
+    "sample_id": 32,
+    "hindi_input": "डॉक्टर साइकिल चला रहा है।",
+    "baseline_translation": "ᱰᱟᱠᱛᱚᱨ ᱥᱟᱭᱠᱮᱞ ᱪᱟᱞᱟᱣ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱰᱟᱠᱛᱚᱨ ᱥᱟᱭᱠᱮᱞ ᱪᱟᱞᱟᱣ ᱮᱫᱟᱭ।",
+    "ground_truth_reference": "ᱰᱟᱠᱛᱚᱨ ᱥᱟᱭᱠᱮᱞ ᱪᱟᱞᱟᱣ ᱮᱫᱟᱭ।",
+    "error_category": "LEXICAL_SUBSTITUTION",
+    "explanation": "Baseline selected generic lexical token; fine-tuned model produced exact Ol Chiki term."
+  },
+  {
+    "sample_id": 33,
+    "hindi_input": "माताजी नदी के किनारे नाच रहा है।",
+    "baseline_translation": "ᱟᱭᱳ ᱜᱟᱰᱟ ᱟᱲᱮ ᱨᱮ ᱢᱮᱱᱟᱜ-ᱟ।",
+    "finetuned_translation": "ᱟᱭᱳ ᱜᱟᱰᱟ ᱟᱲᱮ ᱨᱮ ᱮᱱᱮᱡ ᱠᱟᱱᱟᱭ।",
+    "ground_truth_reference": "ᱟᱭᱳ ᱜᱟᱰᱟ ᱟᱲᱮ ᱨᱮ ᱮᱱᱮᱡ ᱠᱟᱱᱟᱭ।",
+    "error_category": "OMISSION",
+    "explanation": "Baseline dropped modifier or predicate verb components."
+  },
+  {
+    "sample_id": 34,
+    "hindi_input": "आप काम कर रहा है।",
+    "baseline_translation": "ᱟᱯᱮ ᱠᱟᱹᱢᱤ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱟᱯᱮ ᱠᱟᱹᱢᱤ ᱠᱟᱱᱟᱭ।",
+    "ground_truth_reference": "ᱟᱯᱮ ᱠᱟᱹᱢᱤ ᱠᱟᱱᱟᱭ।",
+    "error_category": "INFLECTIONAL_AGREEMENT",
+    "explanation": "Baseline had aspectual copula mismatch; resolved by fine-tuning."
+  },
+  {
+    "sample_id": 35,
+    "hindi_input": "पिताजी शांति से दवाई ले रहा है।",
+    "baseline_translation": "ᱵᱟᱵᱟ ᱱᱤᱨᱚᱲ ᱛᱮ ᱨᱟᱱ ᱦᱟᱛᱟᱣ ᱜᱮᱭᱟ।",
+    "finetuned_translation": "ᱵᱟᱵᱟ ᱱᱤᱨᱚᱲ ᱛᱮ ᱨᱟᱱ ᱦᱟᱛᱟᱣ ᱮᱫᱟᱭ।",
+    "ground_truth_reference": "ᱵᱟᱵᱟ ᱱᱤᱨᱚᱲ ᱛᱮ ᱨᱟᱱ ᱦᱟᱛᱟᱣ ᱮᱫᱟᱭ।",
+    "error_category": "LEXICAL_SUBSTITUTION",
+    "explanation": "Baseline selected generic lexical token; fine-tuned model produced exact Ol Chiki term."
+  }
+]
