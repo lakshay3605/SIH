@@ -1,0 +1,16 @@
+{
+  "peft_type": "LORA",
+  "r": 16,
+  "lora_alpha": 32,
+  "lora_dropout": 0.05,
+  "target_modules": [
+    "q_proj",
+    "v_proj",
+    "k_proj",
+    "out_proj"
+  ],
+  "base_model_name_or_path": "ai4bharat/indictrans2-indic-indic-1B",
+  "epoch": 5,
+  "val_loss": 1.3513,
+  "val_chrf": 75.22
+}

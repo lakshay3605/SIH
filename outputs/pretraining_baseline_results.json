@@ -1,0 +1,11 @@
+{
+  "bleu_4": 2.85,
+  "chrf_plus_plus": 30.41,
+  "ol_chiki_validity_pct": 100.0,
+  "foreign_contamination_pct": 7.0,
+  "repetition_pct": 0.0,
+  "empty_output_pct": 0.0,
+  "average_latency_sec": 0.12,
+  "total_evaluated_samples": 100,
+  "model_name": "ai4bharat/indictrans2-indic-indic-1B (Base Pretrained)"
+}
