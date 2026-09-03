@@ -20,14 +20,13 @@ wheels/
 .installed.cfg
 *.egg
 
-# Virtual environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+# Archives & temp artifacts
+*.tar.gz
+*.tar
+merged_model/
+onnx_export/
+final_lora_model/
+
 
 # IDE
 .vscode/
