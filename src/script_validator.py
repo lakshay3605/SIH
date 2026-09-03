@@ -125,3 +125,53 @@ def validate_devanagari(text: str) -> dict:
         "foreign_chars": list(set(foreign_chars)),
         "has_foreign_contamination": len(foreign_chars) > 0
     }
+
+
+# Phonetic Devanagari to Ol Chiki mapping table
+DEV_TO_OL_CHIKI = {
+    # Independent Vowels
+    'अ': 'ᱚ', 'आ': 'ᱟ', 'इ': 'ᱤ', 'ई': 'ᱤ', 'उ': 'ᱩ', 'ऊ': 'ᱩ',
+    'ए': 'ᱮ', 'ऐ': 'ᱮ', 'ओ': 'ᱳ', 'औ': 'ᱳ', 'ऋ': 'ᱨᱤ',
+    # Dependent Vowel Signs (Matras)
+    'ा': 'ᱟ', 'ि': 'ᱤ', 'ी': 'ᱤ', 'ु': 'ᱩ', 'ू': 'ᱩ',
+    'े': 'ᱮ', 'ै': 'ᱮ', 'ो': 'ᱳ', 'ौ': 'ᱳ', 'ृ': 'ᱨᱤ',
+    # Consonants
+    'क': 'ᱠ', 'ख': 'ᱠᱷ', 'ग': 'ᱜ', 'घ': 'ᱜᱷ', 'ङ': 'ᱝ',
+    'च': 'ᱪ', 'छ': 'ᱪᱷ', 'ज': 'ᱡ', 'झ': 'ᱡᱷ', 'ञ': 'ᱧ',
+    'ट': 'ᱴ', 'ठ': 'ᱴᱷ', 'ड': 'ᱰ', 'ढ': 'ᱰᱷ', 'ण': 'ᱬ',
+    'त': 'ᱛ', 'थ': 'ᱛᱷ', 'द': 'ᱫ', 'ध': 'ᱫᱷ', 'न': 'ᱱ',
+    'प': 'ᱯ', 'फ': 'ᱯᱷ', 'ब': 'ᱵ', 'भ': 'ᱵᱷ', 'म': 'ᱢ',
+    'य': 'ᱭ', 'र': 'ᱨ', 'ल': 'ᱞ', 'व': 'ᱣ', 'श': 'ᱥ',
+    'ष': 'ᱥ', 'स': 'ᱥ', 'ह': 'ᱦ', 'ड़': 'ᱲ', 'ढ़': 'ᱲᱷ',
+    # Diacritics & Modifiers
+    'ं': 'ᱝ', 'ँ': 'ᱶ', 'ः': 'ᱷ', '्': '',
+    # Digits
+    '०': '᱐', '१': '᱑', '२': '᱒', '३': '᱓', '४': '᱔',
+    '५': '᱕', '६': '᱖', '७': '᱗', '८': '᱘', '९': '᱙',
+    '0': '᱐', '1': '᱑', '2': '᱒', '3': '᱓', '4': '᱔',
+    '5': '᱕', '6': '᱖', '7': '᱗', '8': '᱘', '9': '᱙',
+    '।': '।', '॥': '॥'
+}
+
+
+def transliterate_devanagari_to_ol_chiki(text: str) -> str:
+    """
+    Phonetically transliterates Devanagari text into canonical Ol Chiki script.
+    Ensures zero foreign character contamination for out-of-vocabulary terms.
+    """
+    if not text:
+        return ""
+    result = []
+    i = 0
+    while i < len(text):
+        char = text[i]
+        if char in DEV_TO_OL_CHIKI:
+            result.append(DEV_TO_OL_CHIKI[char])
+        elif is_ol_chiki_char(char) or char in COMMON_PUNCTUATION_AND_SPACE:
+            result.append(char)
+        else:
+            # Drop or preserve ASCII punctuation
+            result.append(char if char in " .,!?:;-()[]{}" else "")
+        i += 1
+    return "".join(result)
+

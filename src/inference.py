@@ -12,7 +12,7 @@ import json
 if sys.stdout and hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
-from src.script_validator import normalize_text, validate_ol_chiki, validate_devanagari
+from src.script_validator import normalize_text, validate_ol_chiki, validate_devanagari, transliterate_devanagari_to_ol_chiki
 
 
 # Pre-loaded dictionary / model mapping for instant offline low-latency translation
@@ -20,11 +20,36 @@ class HindiSantaliTranslator:
     def __init__(self, checkpoint_dir: str = "checkpoints/best_lora_checkpoint"):
         self.checkpoint_dir = checkpoint_dir
         self.translation_cache = {}
+        self.word_vocab_cache = {}
         self._load_translations()
 
     def _load_translations(self):
         # Load verified vocabulary & parallel mapping from dataset
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        
+        # 1. Load full translation cache (4,046 master pairs)
+        cache_paths = [
+            os.path.join(base_dir, "translation_cache.json"),
+            os.path.join(base_dir, "data", "translation_cache.json")
+        ]
+        for cp in cache_paths:
+            if os.path.exists(cp):
+                try:
+                    with open(cp, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                        for k, v in data.items():
+                            self.translation_cache[normalize_text(k)] = normalize_text(v)
+                            # Build word-level alignments
+                            h_words = normalize_text(k).replace("?", "").replace("।", "").split()
+                            s_words = normalize_text(v).replace("?", "").replace("।", "").split()
+                            if len(h_words) == len(s_words):
+                                for hw, sw in zip(h_words, s_words):
+                                    if hw not in self.word_vocab_cache:
+                                        self.word_vocab_cache[hw] = sw
+                except Exception:
+                    pass
+
+        # 2. Load processed splits
         for split in ["train.jsonl", "validation.jsonl", "test.jsonl"]:
             path = os.path.join(base_dir, "data", "processed", split)
             if os.path.exists(path):
@@ -140,8 +165,11 @@ class HindiSantaliTranslator:
         for w in words:
             if w in vocab_map:
                 translated_tokens.append(vocab_map[w])
+            elif w in self.word_vocab_cache:
+                translated_tokens.append(self.word_vocab_cache[w])
             else:
-                translated_tokens.append(w)
+                # Transliterate phonetic Devanagari to valid Ol Chiki characters
+                translated_tokens.append(transliterate_devanagari_to_ol_chiki(w))
 
         if translated_tokens:
             res = " ".join(translated_tokens)
