@@ -39,7 +39,7 @@ class HindiAsrEngine(private val context: Context) {
                     model = File(modelDir, "model.int8.onnx").absolutePath
                 ),
                 tokens = File(modelDir, "tokens.txt").absolutePath,
-                numThreads = 2,
+                numThreads = 4,
                 debug = false,
             )
         )

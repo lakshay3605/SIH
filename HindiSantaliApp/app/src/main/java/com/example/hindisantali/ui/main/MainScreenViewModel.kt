@@ -3,14 +3,10 @@ package com.example.hindisantali.ui.main
 import android.Manifest
 import android.app.Application
 import android.content.pm.PackageManager
-import android.media.AudioFormat
-import android.media.AudioRecord
-import android.media.MediaRecorder
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,6 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.hindisantali.asr.HindiAsrEngine
+import com.example.hindisantali.asr.HindiSpeechRecognizerEngine
 import com.example.hindisantali.asr.ModelDownloader
 import com.example.hindisantali.translation.HindiSantaliTranslator
 import com.example.hindisantali.translation.TranslationModelDownloader
@@ -67,19 +64,27 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
-    private var recordingJob: Job? = null
-    private var audioRecord: AudioRecord? = null
-    private val recordedPcm = mutableListOf<Short>()
+    private val speechRecognizer = HindiSpeechRecognizerEngine(application)
     
     private val asrEngine = HindiAsrEngine(application)
     private val translator = HindiSantaliTranslator(application)
     private val ttsEngine = SantaliTtsEngine(application)
     private val phraseCache = PhraseCache(application).also { it.initialize() }
 
-    // Audio recording config
-    private val sampleRate = 16000
-    private val channelConfig = AudioFormat.CHANNEL_IN_MONO
-    private val audioFormat = AudioFormat.ENCODING_PCM_16BIT
+    init {
+        // Pre-warm the ASR engine immediately so the first mic press is fast.
+        // It stays resident in RAM — we never release it between calls.
+        // The translation ONNX model is still lazy (only loaded on cache miss)
+        // to avoid holding 196MB ASR + 200MB translation in RAM simultaneously.
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                asrEngine.initialize()
+                android.util.Log.d("ViewModel", "ASR engine pre-warmed and ready")
+            } catch (e: Exception) {
+                android.util.Log.e("ViewModel", "ASR pre-warm failed: ${e.message}")
+            }
+        }
+    }
 
     // ── Model readiness ──────────────────────────────────────────────────────
 
@@ -186,7 +191,14 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
 
     // ── Recording lifecycle ──────────────────────────────────────────────────
 
-    fun startRecording() {
+    /**
+     * Starts the Android SpeechRecognizer for Hindi.
+     * Must be called from the Main thread (ViewModel launches with Main dispatcher).
+     * The recognizer listens until it detects end-of-speech automatically.
+     */
+    fun startListening() {
+        if (_uiState.value.stage == PipelineStage.RECORDING) return
+
         val ctx = getApplication<Application>()
         if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.RECORD_AUDIO)
             != PackageManager.PERMISSION_GRANTED
@@ -198,7 +210,6 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
             return
         }
 
-        recordedPcm.clear()
         _uiState.update { it.copy(
             stage = PipelineStage.RECORDING,
             hindiText = "",
@@ -208,64 +219,51 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
             latency = LatencyBreakdown()
         )}
 
-        val bufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
-        audioRecord = AudioRecord(
-            MediaRecorder.AudioSource.MIC,
-            sampleRate, channelConfig, audioFormat, bufferSize
-        )
-        audioRecord?.startRecording()
+        // IMPORTANT: SpeechRecognizer requires Main thread
+        viewModelScope.launch(Dispatchers.Main) {
+            try {
+                val asrStart = System.currentTimeMillis()
 
-        recordingJob = viewModelScope.launch(Dispatchers.IO) {
-            val buffer = ShortArray(bufferSize)
-            while (_uiState.value.stage == PipelineStage.RECORDING) {
-                val read = audioRecord?.read(buffer, 0, buffer.size) ?: 0
-                if (read > 0) recordedPcm.addAll(buffer.take(read).toList())
+                // Stage changes to TRANSCRIBING automatically when user stops speaking
+                val hindiText = speechRecognizer.recognize(timeoutMs = 4000)
+                val asrMs = System.currentTimeMillis() - asrStart
+
+                _uiState.update { it.copy(
+                    hindiText = hindiText,
+                    latency = it.latency.copy(asrMs = asrMs),
+                    stage = PipelineStage.TRANSCRIBING
+                )}
+
+                if (hindiText.isBlank()) {
+                    _uiState.update { it.copy(
+                        stage = PipelineStage.IDLE,
+                        errorMessage = "Could not recognise Hindi speech. Please speak clearly."
+                    )}
+                    return@launch
+                }
+
+                // Switch to IO for translation
+                withContext(Dispatchers.IO) {
+                    runPipelineFromText(hindiText)
+                }
+
+            } catch (e: Exception) {
+                _uiState.update { it.copy(
+                    stage = PipelineStage.ERROR,
+                    errorMessage = "ASR error: ${e.message}"
+                )}
             }
         }
     }
 
-    fun stopRecordingAndProcess() {
-        _uiState.update { it.copy(stage = PipelineStage.TRANSCRIBING) }
-        
-        val currentJob = recordingJob
-        recordingJob = null
-
-        viewModelScope.launch(Dispatchers.IO) {
-            currentJob?.join()
-            
-            audioRecord?.stop()
-            audioRecord?.release()
-            audioRecord = null
-
-            val pcmData = recordedPcm.toShortArray()
-            if (pcmData.isEmpty()) {
-                _uiState.update { it.copy(stage = PipelineStage.IDLE, errorMessage = "No audio captured. Try again.") }
-                return@launch
-            }
-
-            runPipeline(pcmData)
-        }
+    fun stopListening() {
+        speechRecognizer.stopListening()
     }
 
     // ── Full pipeline ────────────────────────────────────────────────────────
 
-    private suspend fun runPipeline(pcmData: ShortArray) {
+    private suspend fun runPipelineFromText(hindiText: String) {
         try {
-            _uiState.update { it.copy(stage = PipelineStage.TRANSCRIBING) }
-            val asrStart = System.currentTimeMillis()
-            val hindiText = transcribeHindi(pcmData)
-            val asrMs = System.currentTimeMillis() - asrStart
-
-            _uiState.update { it.copy(
-                hindiText = hindiText,
-                latency = it.latency.copy(asrMs = asrMs)
-            )}
-
-            if (hindiText.isBlank()) {
-                _uiState.update { it.copy(stage = PipelineStage.IDLE, errorMessage = "Could not recognise Hindi speech. Please speak clearly.") }
-                return
-            }
-
             _uiState.update { it.copy(stage = PipelineStage.TRANSLATING) }
             val transStart = System.currentTimeMillis()
             val santaliText = translateHindi(hindiText)
@@ -297,12 +295,12 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
 
     private fun transcribeHindi(pcmData: ShortArray): String {
         return try {
+            // ASR engine is pre-warmed at startup and stays resident.
+            // initialize() is a no-op if already loaded (guarded by isInitialized flag).
             asrEngine.initialize()
-            val result = asrEngine.transcribe(pcmData)
-            asrEngine.release()
-            result
+            asrEngine.transcribe(pcmData)
+            // Do NOT release — keep the model in RAM for the next call.
         } catch (e: Exception) {
-            asrEngine.release()
             throw e
         }
     }
@@ -367,7 +365,7 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
 
     override fun onCleared() {
         super.onCleared()
-        audioRecord?.release()
+        speechRecognizer.destroy()
         asrEngine.release()
         translator.release()
         ttsEngine.release()

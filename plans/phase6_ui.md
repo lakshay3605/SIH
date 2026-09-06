@@ -1,10 +1,192 @@
+# Phase 6 — UI/UX Redesign: Elegant Android Interface
+## Plan + Agent Prompt (Single File)
+
+---
+
+# SECTION A — CONTEXT (Read Before Touching Any Code)
+
+## What This Phase Is
+
+A **purely visual overhaul** of the Android app. Zero functional changes.
+The pipeline (ASR → Translation → TTS) must work identically after this phase as before.
+Every callback, ViewModel method, and data binding stays exactly as-is.
+
+## What the Current UI Looks Like (And Why It's Wrong)
+
+The current `MainScreen.kt` uses:
+- Background: `#0A0E1A` — cold deep navy
+- Accents: `#3B82F6` (electric blue) + `#8B5CF6` (purple)
+- Dynamic Material You color override enabled → overrides our app colors with phone wallpaper on Android 12+
+
+This is the textbook AI-generated dark app look. The user explicitly rejected it.
+
+## The New Design: "Sohrai" — Warm Earth & Forest
+
+Named after **Sohrai**, the traditional mural art of the Santali people of Jharkhand.
+Sohrai murals use earthy ochres, deep forest greens, terracotta, and warm cream.
+This palette honours the language and culture the app translates into.
+
+**Palette — use ONLY these, nothing else:**
+```
+BgDeep:         #141210   (deep warm charcoal — main background)
+BgCard:         #1E1916   (slightly lighter warm dark — for card surfaces)
+BgCardBorder:   #2E2720   (barely visible warm border)
+BgHighlight:    #252019   (Santali card — slightly warmer to distinguish)
+
+Sage:           #7FA87A   (muted forest green — Santali output, success, play)
+Copper:         #C47255   (warm copper-clay — Hindi output, mic idle state)
+Amber:          #D4A96A   (warm amber — processing/loading states)
+Brick:          #C4523A   (warm brick red — recording, error — NOT neon red)
+
+TextPrimary:    #EDE7E0   (warm cream — main text, not pure white)
+TextSecondary:  #9B9189   (warm stone gray)
+TextHint:       #544E49   (dark warm gray — placeholder text)
+```
+
+Do NOT use any blue, purple, electric green, gold, or neon in ANY element.
+
+---
+
+# SECTION B — FILES TO CHANGE
+
+| Action | File |
+|---|---|
+| **MODIFY** | `theme/Color.kt` — replace with Sohrai palette |
+| **MODIFY** | `theme/Theme.kt` — disable dynamic color, lock to dark mode |
+| **MODIFY** | `theme/Type.kt` — refine typography spacing |
+| **MODIFY** | `ui/main/MainScreen.kt` — complete visual redesign |
+
+**Do NOT touch ANY of these files:**
+- `ui/main/MainScreenViewModel.kt`
+- `asr/HindiAsrEngine.kt`
+- `asr/ModelDownloader.kt`
+- `translation/HindiSantaliTranslator.kt`
+- `translation/PhraseCache.kt`
+- `translation/IndicSpmTokenizer.kt`
+- `translation/TranslationModelDownloader.kt`
+- `tts/SantaliTtsEngine.kt`
+- `tts/TtsModelDownloader.kt`
+- `build.gradle.kts`
+- `AndroidManifest.xml`
+
+No new Gradle dependencies are needed.
+
+---
+
+# SECTION C — STEP-BY-STEP IMPLEMENTATION
+
+## Step 1 — Replace `theme/Color.kt`
+
+Replace the entire file with:
+
+```kotlin
+package com.example.hindisantali.theme
+
+import androidx.compose.ui.graphics.Color
+
+// Sohrai palette — warm earth & forest, inspired by Santali Sohrai mural art
+val BgDeep        = Color(0xFF141210)
+val BgCard        = Color(0xFF1E1916)
+val BgCardBorder  = Color(0xFF2E2720)
+val BgHighlight   = Color(0xFF252019)
+
+val Sage          = Color(0xFF7FA87A)   // forest green — Santali / success
+val Copper        = Color(0xFFC47255)   // clay copper — Hindi / mic idle
+val Amber         = Color(0xFFD4A96A)   // warm amber — processing
+val Brick         = Color(0xFFC4523A)   // warm brick — recording / error
+
+val TextPrimary   = Color(0xFFEDE7E0)
+val TextSecondary = Color(0xFF9B9189)
+val TextHint      = Color(0xFF544E49)
+```
+
+## Step 2 — Replace `theme/Theme.kt`
+
+Replace the entire file with:
+
+```kotlin
+package com.example.hindisantali.theme
+
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.runtime.Composable
+
+private val SohraiColorScheme = darkColorScheme(
+    primary       = Sage,
+    secondary     = Copper,
+    tertiary      = Amber,
+    background    = BgDeep,
+    surface       = BgCard,
+    onPrimary     = BgDeep,
+    onSecondary   = BgDeep,
+    onBackground  = TextPrimary,
+    onSurface     = TextPrimary,
+    error         = Brick,
+    onError       = TextPrimary,
+)
+
+@Composable
+fun HindiSantaliTheme(content: @Composable () -> Unit) {
+    // Dynamic color intentionally disabled — we own every pixel.
+    MaterialTheme(
+        colorScheme = SohraiColorScheme,
+        typography  = Typography,
+        content     = content,
+    )
+}
+```
+
+## Step 3 — Replace `theme/Type.kt`
+
+Replace the entire file with:
+
+```kotlin
+package com.example.hindisantali.theme
+
+import androidx.compose.material3.Typography
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+
+val Typography = Typography(
+    bodyLarge = TextStyle(
+        fontFamily    = FontFamily.Default,
+        fontWeight    = FontWeight.Normal,
+        fontSize      = 16.sp,
+        lineHeight    = 26.sp,
+        letterSpacing = 0.3.sp,
+    ),
+    labelSmall = TextStyle(
+        fontFamily    = FontFamily.Default,
+        fontWeight    = FontWeight.Medium,
+        fontSize      = 11.sp,
+        lineHeight    = 16.sp,
+        letterSpacing = 0.8.sp,
+    ),
+    titleMedium = TextStyle(
+        fontFamily    = FontFamily.Serif,
+        fontWeight    = FontWeight.SemiBold,
+        fontSize      = 20.sp,
+        lineHeight    = 28.sp,
+        letterSpacing = 0.15.sp,
+    ),
+)
+```
+
+## Step 4 — Replace `ui/main/MainScreen.kt`
+
+Replace the **entire file** with the code below.
+Every composable signature is identical to the original — same parameters, only visuals change.
+
+```kotlin
 package com.example.hindisantali.ui.main
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -58,13 +240,8 @@ fun MainScreen(viewModel: MainScreenViewModel = viewModel()) {
             Spacer(Modifier.height(36.dp))
             MicSection(
                 stage        = uiState.stage,
-                onClick      = {
-                    if (uiState.stage == PipelineStage.IDLE || uiState.stage == PipelineStage.ERROR) {
-                        viewModel.startListening()
-                    } else if (uiState.stage == PipelineStage.RECORDING) {
-                        viewModel.stopListening()
-                    }
-                }
+                onPressStart = { viewModel.startRecording() },
+                onPressEnd   = { viewModel.stopRecordingAndProcess() }
             )
             Spacer(Modifier.height(32.dp))
             PipelineStepRow(stage = uiState.stage)
@@ -191,7 +368,8 @@ private fun OfflineBadge(isOffline: Boolean) {
 @Composable
 private fun MicSection(
     stage: PipelineStage,
-    onClick: () -> Unit,
+    onPressStart: () -> Unit,
+    onPressEnd: () -> Unit,
 ) {
     val isRecording = stage == PipelineStage.RECORDING
     val isBusy      = stage != PipelineStage.IDLE &&
@@ -248,8 +426,16 @@ private fun MicSection(
                         colors = listOf(micColor.copy(alpha = 0.95f), micColor.copy(alpha = 0.65f))
                     )
                 )
-                .clickable(enabled = !isBusy) {
-                    onClick()
+                .pointerInput(isBusy) {
+                    if (!isBusy) {
+                        detectTapGestures(
+                            onPress = {
+                                onPressStart()
+                                tryAwaitRelease()
+                                onPressEnd()
+                            }
+                        )
+                    }
                 }
         ) {
             Text(
@@ -644,3 +830,63 @@ private fun ModelDownloadItem(title: String, subtitle: String, size: String, col
         }
     }
 }
+```
+
+---
+
+## Step 5 — Build
+
+```powershell
+cd d:\sih2026\HindiSantaliApp
+.\gradlew.bat assembleDebug --no-daemon 2>&1
+```
+
+Expected: `BUILD SUCCESSFUL`
+
+### Pre-empted Errors and Exact Fixes
+
+**Error:** `Unresolved reference: BgDeep` (or any Sohrai color)
+- **Fix:** Verify `Color.kt` package is exactly `package com.example.hindisantali.theme`
+  and `MainScreen.kt` imports `import com.example.hindisantali.theme.*`
+
+**Error:** `Unresolved reference: AnimatedContent` or `togetherWith`
+- **Fix:** Ensure `import androidx.compose.animation.*` and `import androidx.compose.animation.core.*` are both present.
+
+**Error:** `Unresolved reference: StrokeCap`
+- **Fix:** Add `import androidx.compose.ui.graphics.StrokeCap`
+
+**Error:** `None of the following candidates is applicable` on `LinearProgressIndicator`
+- **Fix:** If on older Material3 (< 1.3), change `progress = { uiState.downloadProgress }` to `progress = uiState.downloadProgress` (no lambda wrapper).
+
+**Error:** `Overload resolution ambiguity` on `animateColorAsState`
+- **Fix:** Already resolved by the `import androidx.compose.animation.core.*` wildcard import.
+
+**Error:** `HindiSantaliTheme` call sites fail (missing `darkTheme` parameter)
+- **Fix:** The new `HindiSantaliTheme` takes only `content`. Find where it is called in `MainActivity.kt` and remove the `darkTheme` and `dynamicColor` arguments.
+
+---
+
+## Step 6 — Verify
+
+Install and confirm:
+
+1. Background is **warm charcoal** `#141210` — NOT navy blue
+2. Mic button is **copper-clay** `#C47255` at idle — NOT blue
+3. HINDI card has a **copper left bar**; SANTALI card has a **sage-green left bar**
+4. Pipeline dots animate through Listen → Recognise → Translate → Speak
+5. Play button is **sage green** at rest, **brick red** while playing
+6. Santali text is visibly **larger** (22sp) than Hindi text (17sp)
+7. **Functional test passes:** speak Hindi → see transcription → see Santali → hear audio
+
+---
+
+## Summary of What Changed
+
+| File | Change |
+|---|---|
+| `Color.kt` | Replaced cold blue/purple palette with warm Sohrai earths |
+| `Theme.kt` | Disabled dynamic color override; locked to dark Sohrai scheme |
+| `Type.kt` | Added Serif for headings, refined letter spacing |
+| `MainScreen.kt` | Full redesign — same logic, all-new visual layer |
+
+**Zero engine files were modified. Zero Gradle dependencies were added.**

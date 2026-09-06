@@ -21,16 +21,14 @@ object TranslationModelDownloader {
     private const val TAG = "TranslationDownloader"
     const val MODEL_DIR_NAME = "translation_model"
 
-    const val TRANSLATION_BASE_URL = "https://huggingface.co/hari31416/indictrans2-indic-indic-dist-320M-ONNX-int8/resolve/main/"
+    const val TRANSLATION_BASE_URL = "https://huggingface.co/sharjilsharma/indictrans2-hi-sat-int8/resolve/main/"
 
     val REQUIRED_FILES = listOf(
-        "encoder_model.onnx",
-        "encoder_model.onnx.data",
-        "decoder_model.onnx",
-        "decoder_shared.onnx.data",
-        "decoder_with_past_model.onnx",
-        "model.SRC",
-        "model.TGT"
+        "encoder_model_int8.onnx",
+        "decoder_model_int8.onnx",
+        "sentencepiece.bpe.model",
+        "config.json",
+        "tokenizer_config.json"
     )
 
     fun getModelDir(context: Context): File {

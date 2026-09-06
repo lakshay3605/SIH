@@ -4,25 +4,14 @@ import android.content.Context
 import android.util.Log
 import ai.onnxruntime.*
 import java.io.File
+import java.nio.FloatBuffer
 import java.nio.LongBuffer
 
-/**
- * Hindi → Santali (Ol Chiki) translation using IndicTrans2 Distilled 200M ONNX.
- *
- *      - Step 0: decoder_model.onnx  (input_ids, encoder_attention_mask, encoder_hidden_states)
- *      - Step 1+: decoder_with_past_model.onnx  (input_ids, encoder_attention_mask, past_key_values.*)
- *      - Output present.N.* tensors are renamed → past_key_values.N.* for the next step
- *
- * Lifecycle: initialize() → translate() → release()
- */
 class HindiSantaliTranslator(private val context: Context) {
 
     private val TAG = "HindiSantaliTranslator"
 
     private var ortEnv: OrtEnvironment? = null
-    private var encoderSession: OrtSession? = null
-    private var decoderSession: OrtSession? = null
-    private var decoderWithPastSession: OrtSession? = null
     private var tokenizer: IndicSpmTokenizer? = null
     private var isInitialized = false
 
@@ -32,25 +21,12 @@ class HindiSantaliTranslator(private val context: Context) {
         if (isInitialized) return
 
         Log.d(TAG, "Initializing translation engine...")
-        val opts = OrtSession.SessionOptions().apply {
-            setIntraOpNumThreads(2)
-            setInterOpNumThreads(1)
-            setOptimizationLevel(OrtSession.SessionOptions.OptLevel.BASIC_OPT)
-        }
-
         ortEnv = OrtEnvironment.getEnvironment()
-        val env = ortEnv!!
 
-        encoderSession = env.createSession(
-            File(modelDir, "encoder_model.onnx").absolutePath, opts)
-        decoderSession = env.createSession(
-            File(modelDir, "decoder_model.onnx").absolutePath, opts)
-        decoderWithPastSession = env.createSession(
-            File(modelDir, "decoder_with_past_model.onnx").absolutePath, opts)
-
+        // As per Phase C:
         tokenizer = IndicSpmTokenizer(
-            srcSpmModel = File(modelDir, "model.SRC"),
-            tgtSpmModel = File(modelDir, "model.TGT")
+            srcSpmModel = File(modelDir, "sentencepiece.bpe.model"),
+            tgtSpmModel = File(modelDir, "sentencepiece.bpe.model")
         )
 
         isInitialized = true
@@ -60,55 +36,58 @@ class HindiSantaliTranslator(private val context: Context) {
     fun translate(hindiText: String, maxLength: Int = 128): String {
         check(isInitialized) { "Call initialize() first" }
         val env = ortEnv ?: return ""
-        val enc = encoderSession ?: return ""
-        val dec = decoderSession ?: return ""
-        val decPast = decoderWithPastSession ?: return ""
-        val tk  = tokenizer ?: return ""
+        val tk = tokenizer ?: return ""
+
+        Log.d(TAG, "Starting sequential translation for: $hindiText")
+        
+        val opts = OrtSession.SessionOptions().apply {
+            setIntraOpNumThreads(4)
+            setOptimizationLevel(OrtSession.SessionOptions.OptLevel.BASIC_OPT)
+        }
 
         // 1. Tokenize: "<2sat_Olck> hindiText </s>"
         val inputIds = tk.encode(hindiText, srcLang = "hin_Deva", tgtLang = "sat_Olck")
         val attentionMask = LongArray(inputIds.size) { 1L }
         val srcLen = inputIds.size.toLong()
 
-        Log.d(TAG, "Encoded ${inputIds.size} tokens for: $hindiText")
+        // ── 1. Load ONLY encoder, run it, then release it immediately ──
+        val encSession = env.createSession(File(modelDir, "encoder_model_int8.onnx").absolutePath, opts)
+        
+        val hiddenStatesArray: FloatArray
+        val encAttnArray = attentionMask
 
-        // 2. Run Encoder once
-        val encAttnTensor = OnnxTensor.createTensor(
-            env, LongBuffer.wrap(attentionMask), longArrayOf(1L, srcLen))
-        val encoderOutput = enc.run(mapOf(
+        val encOut = encSession.run(mapOf(
             "input_ids"      to OnnxTensor.createTensor(env, LongBuffer.wrap(inputIds), longArrayOf(1L, srcLen)),
-            "attention_mask" to encAttnTensor
+            "attention_mask" to OnnxTensor.createTensor(env, LongBuffer.wrap(attentionMask), longArrayOf(1L, srcLen))
         ))
-        val hiddenStates = encoderOutput[0] as OnnxTensor  // [1, srcLen, hidden]
+        val hiddenTensor = encOut[0] as OnnxTensor
+        hiddenStatesArray = FloatArray(hiddenTensor.floatBuffer.remaining()).also { hiddenTensor.floatBuffer.get(it) }
+        val hiddenShape = hiddenTensor.info.shape.clone()
+        
+        encOut.close()
+        encSession.close()  // ← FREE ENCODER RAM BEFORE LOADING DECODER
+        Log.d(TAG, "Encoder finished and released")
 
-        // 3. Greedy decode
+        // ── 2. Load ONLY decoder, run greedy decode, then release ──
+        val decSession = env.createSession(File(modelDir, "decoder_model_int8.onnx").absolutePath, opts)
+        val hiddenStatesTensor = OnnxTensor.createTensor(env, FloatBuffer.wrap(hiddenStatesArray), hiddenShape)
+        val encAttnTensor = OnnxTensor.createTensor(env, LongBuffer.wrap(encAttnArray), longArrayOf(1L, srcLen))
+
         val eosId = tk.eosId.toLong()
         val bosId = tk.bosId.toLong()
         val generatedIds = mutableListOf(bosId)
-
-        var pastKeyValues: Map<String, OnnxTensor>? = null
 
         for (step in 0 until maxLength) {
             val lastToken = longArrayOf(generatedIds.last())
             val decInputIds = OnnxTensor.createTensor(
                 env, LongBuffer.wrap(lastToken), longArrayOf(1L, 1L))
 
-            val usePast = pastKeyValues != null
-            val activeSession = if (usePast) decPast else dec
-            
-            val decInputs = mutableMapOf<String, OnnxTensor>()
-            for (name in activeSession.inputNames) {
-                when {
-                    name == "input_ids"              -> decInputs[name] = decInputIds
-                    name == "encoder_hidden_states"  -> decInputs[name] = hiddenStates
-                    name == "encoder_attention_mask" -> decInputs[name] = encAttnTensor
-                    usePast && pastKeyValues!!.containsKey(name) -> decInputs[name] = pastKeyValues!![name]!!
-                }
-            }
+            val decOutput = decSession.run(mapOf(
+                "input_ids"              to decInputIds,
+                "encoder_hidden_states"  to hiddenStatesTensor,
+                "encoder_attention_mask" to encAttnTensor
+            ))
 
-            val decOutput = activeSession.run(decInputs)
-
-            // logits shape: [1, 1, vocabSize]
             val logitsTensor = decOutput[0] as OnnxTensor
             val logits       = logitsTensor.floatBuffer
             val vocabSize    = logitsTensor.info.shape[2].toInt()
@@ -119,23 +98,14 @@ class HindiSantaliTranslator(private val context: Context) {
                 val v = logits.get()
                 if (v > maxVal) { maxVal = v; maxIdx = i }
             }
-
             generatedIds.add(maxIdx.toLong())
-
-            val newPast = mutableMapOf<String, OnnxTensor>()
-            for (entry in decOutput) {
-                val key = entry.key
-                if (key.startsWith("present.")) {
-                    val pastName = key.replace("present.", "past_key_values.")
-                    newPast[pastName] = entry.value as OnnxTensor
-                }
-            }
-            pastKeyValues = newPast
-
+            decOutput.close()
+            
             if (maxIdx.toLong() == eosId) break
         }
 
-        encoderOutput.close()
+        decSession.close()  // ← FREE DECODER RAM WHEN DONE
+        Log.d(TAG, "Decoder finished and released")
 
         // 4. Detokenize — drop BOS and EOS
         val outputIds = generatedIds.drop(1)
@@ -148,13 +118,7 @@ class HindiSantaliTranslator(private val context: Context) {
     }
 
     fun release() {
-        encoderSession?.close()
-        decoderSession?.close()
-        decoderWithPastSession?.close()
         ortEnv?.close()
-        encoderSession = null
-        decoderSession = null
-        decoderWithPastSession = null
         ortEnv = null
         tokenizer = null
         isInitialized = false
