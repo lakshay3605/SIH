@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Hindi → Santali</string>
+    <string name="hold_to_speak">Hold to Speak Hindi</string>
+    <string name="recording">Recording… release when done</string>
+    <string name="transcribing">Recognising Hindi speech…</string>
+    <string name="translating">Translating to Santali…</string>
+    <string name="synthesizing">Generating Santali audio…</string>
+    <string name="play_audio">Play Santali Audio</string>
+    <string name="offline_badge">● OFFLINE</string>
+    <string name="hindi_placeholder">Your Hindi speech will appear here…</string>
+    <string name="santali_placeholder">Santali Ol Chiki translation will appear here…</string>
+</resources>

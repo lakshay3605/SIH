@@ -37,3 +37,5 @@ final_lora_model/
 # OS
 .DS_Store
 Thumbs.db
+
+HindiSantaliApp/pulled_models/
