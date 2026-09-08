@@ -77,7 +77,10 @@ class PhraseCache(private val context: Context) {
             val iter = obj.keys() as Iterator<String>
             while (iter.hasNext()) {
                 val key = iter.next()
-                exactCache[key] = obj.getString(key)
+                // Strip punctuation from the key at load time so that ASR output
+                // (which never includes । or ? or .) can still match exactly.
+                val normalizedKey = stripPunctuation(key)
+                exactCache[normalizedKey] = obj.getString(key)
             }
             isLoaded = true
             Log.d(TAG, "PhraseCache loaded: ${exactCache.size} entries")
@@ -99,8 +102,8 @@ class PhraseCache(private val context: Context) {
         val normalized = normalizeText(hindiText)
         if (normalized.isEmpty()) return ""
 
-        // 1. Exact match
-        exactCache[normalized]?.let { return it }
+        // 1. Exact match — strip punctuation from input to match stripped cache keys
+        exactCache[stripPunctuation(normalized)]?.let { return it }
 
         // 2. Phrase map substitution on the input
         var working = normalized.replace("?", "").replace("।", "").replace("!", "").replace(".", "").trim()
@@ -131,5 +134,13 @@ class PhraseCache(private val context: Context) {
     private fun normalizeText(text: String): String {
         val nfc = Normalizer.normalize(text, Normalizer.Form.NFC)
         return nfc.replace(Regex("\\s+"), " ").trim()
+    }
+
+    // Strip Hindi/English punctuation so ASR output matches cache keys
+    private fun stripPunctuation(text: String): String {
+        return text
+            .replace(Regex("[।॥?!.,;:\"'()-]"), "")
+            .replace(Regex("\\s+"), " ")
+            .trim()
     }
 }
