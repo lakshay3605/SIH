@@ -301,9 +301,7 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     fun stopListening() {
-        listeningJob?.cancel()          // Cleanly cancels the coroutine → triggers
-        listeningJob = null             // invokeOnCancellation → recognizer.cancel()
-        _uiState.update { it.copy(stage = PipelineStage.IDLE) }
+        speechRecognizer.stopListening()
     }
 
     // ── Full pipeline ────────────────────────────────────────────────────────
