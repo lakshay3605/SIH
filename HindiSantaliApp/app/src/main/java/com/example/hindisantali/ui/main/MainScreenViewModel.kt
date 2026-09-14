@@ -1,4 +1,4 @@
-﻿package com.example.hindisantali.ui.main
+package com.example.hindisantali.ui.main
 
 import android.Manifest
 import android.app.Application
@@ -222,8 +222,8 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
             latency       = LatencyBreakdown()
         )}
 
-        viewModelScope.launch(Dispatchers.IO) {
-            // Simulate a brief processing moment (600ms) so the UI looks live
+        viewModelScope.launch(Dispatchers.Main) {
+            // Suspend (non-blocking) 600ms processing animation
             kotlinx.coroutines.delay(600)
 
             _uiState.update { it.copy(
@@ -233,8 +233,8 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
                 audioFilePath = "DEMO"
             )}
 
-            val ctx = getApplication<Application>()
-            val mp  = MediaPlayer.create(ctx, demo.rawResId) ?: run {
+            // MediaPlayer.create() MUST be on Main thread (needs Looper)
+            val mp = MediaPlayer.create(getApplication(), demo.rawResId) ?: run {
                 _uiState.update { it.copy(stage = PipelineStage.IDLE) }
                 return@launch
             }
