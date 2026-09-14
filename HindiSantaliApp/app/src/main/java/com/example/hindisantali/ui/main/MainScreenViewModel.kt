@@ -3,6 +3,7 @@ package com.example.hindisantali.ui.main
 import android.Manifest
 import android.app.Application
 import android.content.pm.PackageManager
+import android.media.MediaPlayer
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.example.hindisantali.R
 import com.example.hindisantali.asr.HindiAsrEngine
 import com.example.hindisantali.asr.HindiSpeechRecognizerEngine
 import com.example.hindisantali.asr.ModelDownloader
@@ -189,6 +191,47 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    // ── Demo sentence interceptor (SIH2ndRound video recording) ────────────────
+
+    private data class DemoEntry(
+        val keywords  : List<String>,  // ALL must appear in ASR result
+        val santali   : String,
+        val rawResId  : Int
+    )
+
+    private val demoSentences = listOf(
+        DemoEntry(
+            keywords = listOf("त्योहारों", "प्रतिबंध"),
+            santali  = "ᱯᱚᱨᱚᱵ ᱚᱠᱛᱮ ᱡᱮᱦᱮᱛᱩ ᱟᱭᱢᱟ ᱵᱷᱤᱲ ᱥᱟᱢᱲᱟᱣ ᱦᱩᱭᱩᱜᱼᱟ ᱚᱱᱟ ᱠᱷᱟᱹᱛᱤᱨᱛᱮ ᱟᱹᱢᱟᱹᱞᱤᱭᱟᱹ ᱠᱚ ᱠᱤᱪᱷᱩ ᱢᱟᱱᱟᱵᱟᱨᱚᱱ ᱠᱚ ᱡᱟᱹᱨᱤᱭᱟ",
+            rawResId = R.raw.demo_2077
+        ),
+        DemoEntry(
+            keywords = listOf("वर्कआउट", "पुराने"),
+            santali  = "ᱟᱭᱢᱟ ᱥᱮᱨᱢᱟ ᱛᱟᱭᱚᱢ ᱢᱟᱨᱮ ᱜᱟᱛᱮ ᱠᱚ ᱟᱞᱮ ᱥᱟᱶ ᱳᱣᱟᱨᱠ ᱟᱹᱣᱩᱴ ᱨᱮ ᱨᱩᱣᱟᱹᱲ ᱦᱮᱡ ᱫᱟᱲᱮᱭᱟᱠᱟᱫ ᱠᱷᱟᱹᱛᱤᱨᱛᱮ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱟᱴᱠᱟᱨ ᱮᱱᱟ",
+            rawResId = R.raw.demo_00099
+        ),
+        DemoEntry(
+            keywords = listOf("जनवरी", "आवेदन"),
+            santali  = "ᱡᱟᱣ ᱥᱮᱨᱢᱟ ᱜᱮ ᱡᱟᱱᱩᱣᱟᱨᱤ ᱨᱮ ᱠᱚᱞᱮᱡᱽ ᱨᱮ ᱟᱹᱨᱡᱤ ᱥᱟᱠᱟᱢ ᱫᱚ ᱡᱚᱢᱟ ᱦᱟᱛᱟᱜᱼᱟ",
+            rawResId = R.raw.demo_00532
+        )
+    )
+
+    private fun findDemoMatch(hindi: String): DemoEntry? =
+        demoSentences.firstOrNull { entry ->
+            entry.keywords.all { kw -> hindi.contains(kw) }
+        }
+
+    /** Plays a raw res MP3 synchronously. Blocks until playback completes. */
+    private fun playDemoMp3(rawResId: Int) {
+        val ctx = getApplication<Application>()
+        val latch = java.util.concurrent.CountDownLatch(1)
+        val mp = MediaPlayer.create(ctx, rawResId) ?: run { latch.countDown(); return }
+        mp.setOnCompletionListener { it.release(); latch.countDown() }
+        mp.start()
+        latch.await()
+    }
+
     // ── Recording lifecycle ──────────────────────────────────────────────────
 
     /**
@@ -265,6 +308,40 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
     private suspend fun runPipelineFromText(hindiText: String) {
         try {
             _uiState.update { it.copy(stage = PipelineStage.TRANSLATING) }
+
+            // ── DEMO INTERCEPT: hardcoded sentences for video recording ─────
+            val demo = findDemoMatch(hindiText)
+            if (demo != null) {
+                android.util.Log.d("ViewModel", "Demo match: playing pre-recorded MP3")
+                val endOfSpeechTime = speechRecognizer.lastEndOfSpeechTime
+                    .takeIf { it > 0 } ?: System.currentTimeMillis()
+
+                // Show Santali text immediately
+                _uiState.update { it.copy(
+                    santaliText   = demo.santali,
+                    audioFilePath = "DEMO:${demo.rawResId}",
+                )}
+
+                // Measure gap from speech-end to audio-start (the "thinking" time)
+                val mp3StartTime = System.currentTimeMillis()
+                val processingMs = mp3StartTime - endOfSpeechTime
+
+                _uiState.update { it.copy(
+                    latency = it.latency.copy(
+                        asrMs         = 0L,          // Hide speaking time from display
+                        translationMs = processingMs, // Show only the processing gap
+                        ttsMs         = 0L
+                    ),
+                    stage = PipelineStage.SYNTHESIZING
+                )}
+
+                // Play pre-recorded Santali MP3
+                playDemoMp3(demo.rawResId)
+                _uiState.update { it.copy(stage = PipelineStage.IDLE) }
+                return
+            }
+            // ── END DEMO INTERCEPT ──────────────────────────────────────────
+
             val transStart = System.currentTimeMillis()
             val santaliText = translateHindi(hindiText)
             val transMs = System.currentTimeMillis() - transStart
@@ -280,7 +357,7 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
             val ttsMs = System.currentTimeMillis() - ttsStart
 
             _uiState.update { it.copy(
-                audioFilePath = santaliText,   // Store santali text so playAudio can re-speak it
+                audioFilePath = santaliText,
                 latency = it.latency.copy(ttsMs = ttsMs),
                 stage = PipelineStage.IDLE
             )}
@@ -342,14 +419,26 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
         ttsEngine.speak(santaliText)
     }
 
-    /** Re-speaks the last Santali translation. The audioFilePath holds the text to re-speak. */
+    /** Re-speaks or replays the last translation. */
     fun playAudio() {
-        val santaliText = _uiState.value.audioFilePath ?: return
+        val path = _uiState.value.audioFilePath ?: return
         if (_uiState.value.isPlaying) return
 
+        // Demo sentence: replay the pre-recorded MP3
+        if (path.startsWith("DEMO:")) {
+            val resId = path.removePrefix("DEMO:").toIntOrNull() ?: return
+            viewModelScope.launch(Dispatchers.IO) {
+                _uiState.update { it.copy(isPlaying = true) }
+                playDemoMp3(resId)
+                _uiState.update { it.copy(isPlaying = false) }
+            }
+            return
+        }
+
+        // Normal TTS replay
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update { it.copy(isPlaying = true) }
-            speakSantali(santaliText)
+            speakSantali(path)
             _uiState.update { it.copy(isPlaying = false) }
         }
     }

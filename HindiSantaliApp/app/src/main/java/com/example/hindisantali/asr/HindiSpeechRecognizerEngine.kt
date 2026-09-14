@@ -1,5 +1,6 @@
 package com.example.hindisantali.asr
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -25,6 +26,10 @@ class HindiSpeechRecognizerEngine(private val context: Context) {
     private val TAG = "HindiSpeechRecognizerEngine"
     private var recognizer: SpeechRecognizer? = null
 
+    /** Timestamp (ms) when the user stopped speaking. Updated on every recognition. */
+    var lastEndOfSpeechTime: Long = 0L
+        private set
+
     /**
      * Check if the device supports speech recognition.
      */
@@ -42,7 +47,18 @@ class HindiSpeechRecognizerEngine(private val context: Context) {
         suspendCancellableCoroutine { continuation ->
             // Destroy any previous instance
             recognizer?.destroy()
-            recognizer = SpeechRecognizer.createSpeechRecognizer(context)
+            // Explicitly use Google's recognizer (bypasses Samsung's default which lacks Hindi offline)
+            val googleComponent = ComponentName(
+                "com.google.android.googlequicksearchbox",
+                "com.google.android.voicesearch.serviceapi.GoogleRecognitionService"
+            )
+            recognizer = try {
+                SpeechRecognizer.createSpeechRecognizer(context, googleComponent)
+                    .also { Log.d(TAG, "Using Google recognizer") }
+            } catch (e: Exception) {
+                Log.w(TAG, "Google recognizer unavailable, using default: ${e.message}")
+                SpeechRecognizer.createSpeechRecognizer(context)
+            }
 
             val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -50,6 +66,7 @@ class HindiSpeechRecognizerEngine(private val context: Context) {
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE, "hi-IN")
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "hi-IN")
                 putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, false)
+                putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)  // Force on-device model
                 putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
                 putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, timeoutMs.toLong())
                 putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 1500L)
@@ -67,21 +84,25 @@ class HindiSpeechRecognizerEngine(private val context: Context) {
 
                 override fun onError(error: Int) {
                     val msg = when (error) {
-                        SpeechRecognizer.ERROR_AUDIO -> "Audio recording error"
-                        SpeechRecognizer.ERROR_CLIENT -> "Client side error"
+                        SpeechRecognizer.ERROR_AUDIO            -> "Audio recording error"
+                        SpeechRecognizer.ERROR_CLIENT           -> "Client side error"
                         SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Insufficient permissions"
-                        SpeechRecognizer.ERROR_NETWORK -> "Network error"
-                        SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "Network timeout"
-                        SpeechRecognizer.ERROR_NO_MATCH -> "No speech detected"
-                        SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "Recognizer busy"
-                        SpeechRecognizer.ERROR_SERVER -> "Server error"
-                        SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "Speech timeout"
-                        else -> "Unknown error ($error)"
+                        SpeechRecognizer.ERROR_NETWORK          -> "Network error"
+                        SpeechRecognizer.ERROR_NETWORK_TIMEOUT  -> "Network timeout"
+                        SpeechRecognizer.ERROR_NO_MATCH         -> "No speech detected"
+                        SpeechRecognizer.ERROR_RECOGNIZER_BUSY  -> "Recognizer busy"
+                        SpeechRecognizer.ERROR_SERVER           -> "Server error"
+                        SpeechRecognizer.ERROR_SPEECH_TIMEOUT   -> "Speech timeout"
+                        else                                    -> "Unknown error ($error)"
                     }
                     Log.e(TAG, "ASR error: $msg")
-                    // On no-match or timeout, return empty string (not an exception)
-                    if (error == SpeechRecognizer.ERROR_NO_MATCH ||
-                        error == SpeechRecognizer.ERROR_SPEECH_TIMEOUT) {
+                    // Network/server/no-match/timeout all return empty string — never crash offline
+                    val isRecoverable = error == SpeechRecognizer.ERROR_NO_MATCH ||
+                        error == SpeechRecognizer.ERROR_SPEECH_TIMEOUT ||
+                        error == SpeechRecognizer.ERROR_NETWORK ||
+                        error == SpeechRecognizer.ERROR_NETWORK_TIMEOUT ||
+                        error == SpeechRecognizer.ERROR_SERVER
+                    if (isRecoverable) {
                         resumeSafely(continuation, "")
                     } else {
                         resumeWithExceptionSafely(continuation,
@@ -95,7 +116,10 @@ class HindiSpeechRecognizerEngine(private val context: Context) {
                 override fun onBeginningOfSpeech() {}
                 override fun onRmsChanged(rmsdB: Float) {}
                 override fun onBufferReceived(buffer: ByteArray?) {}
-                override fun onEndOfSpeech() { Log.d(TAG, "End of speech detected") }
+                override fun onEndOfSpeech() {
+                    lastEndOfSpeechTime = System.currentTimeMillis()
+                    Log.d(TAG, "End of speech detected")
+                }
                 override fun onPartialResults(partialResults: Bundle?) {}
                 override fun onEvent(eventType: Int, params: Bundle?) {}
             })
