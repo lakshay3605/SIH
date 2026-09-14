@@ -67,7 +67,8 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
     private val speechRecognizer = HindiSpeechRecognizerEngine(application)
-    
+    private var listeningJob: kotlinx.coroutines.Job? = null
+
     private val asrEngine = HindiAsrEngine(application)
     private val translator = HindiSantaliTranslator(application)
     private val ttsEngine = SantaliTtsEngine(application)
@@ -263,7 +264,7 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
         )}
 
         // IMPORTANT: SpeechRecognizer requires Main thread
-        viewModelScope.launch(Dispatchers.Main) {
+        listeningJob = viewModelScope.launch(Dispatchers.Main) {
             try {
                 val asrStart = System.currentTimeMillis()
 
@@ -300,8 +301,9 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     fun stopListening() {
-        _uiState.update { it.copy(stage = PipelineStage.TRANSCRIBING) }
-        speechRecognizer.stopListening()
+        listeningJob?.cancel()          // Cleanly cancels the coroutine → triggers
+        listeningJob = null             // invokeOnCancellation → recognizer.cancel()
+        _uiState.update { it.copy(stage = PipelineStage.IDLE) }
     }
 
     // ── Full pipeline ────────────────────────────────────────────────────────
