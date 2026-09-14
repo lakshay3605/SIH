@@ -59,10 +59,11 @@ fun MainScreen(viewModel: MainScreenViewModel = viewModel()) {
             MicSection(
                 stage        = uiState.stage,
                 onClick      = {
-                    if (uiState.stage == PipelineStage.IDLE || uiState.stage == PipelineStage.ERROR) {
-                        viewModel.startListening()
-                    } else if (uiState.stage == PipelineStage.RECORDING) {
-                        viewModel.stopListening()
+                    when (uiState.stage) {
+                        PipelineStage.IDLE,
+                        PipelineStage.ERROR        -> viewModel.startListening()
+                        PipelineStage.SYNTHESIZING -> viewModel.stopListening()
+                        else                       -> {}
                     }
                 }
             )
@@ -193,10 +194,9 @@ private fun MicSection(
     stage: PipelineStage,
     onClick: () -> Unit,
 ) {
-    val isRecording = stage == PipelineStage.RECORDING
-    val isBusy      = stage != PipelineStage.IDLE &&
-                      stage != PipelineStage.RECORDING &&
-                      stage != PipelineStage.ERROR
+    val isRecording = stage == PipelineStage.RECORDING || stage == PipelineStage.SYNTHESIZING
+    val isBusy      = stage == PipelineStage.TRANSLATING ||
+                      stage == PipelineStage.TRANSCRIBING
 
     val micColor by animateColorAsState(
         targetValue = when {
