@@ -300,6 +300,7 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     fun stopListening() {
+        _uiState.update { it.copy(stage = PipelineStage.TRANSCRIBING) }
         speechRecognizer.stopListening()
     }
 
