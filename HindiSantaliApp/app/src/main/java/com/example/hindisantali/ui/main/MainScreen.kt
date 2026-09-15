@@ -35,7 +35,13 @@ import com.example.hindisantali.theme.*
 @Composable
 fun MainScreen(viewModel: MainScreenViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var currentScreen by remember { mutableStateOf("main") }
     LaunchedEffect(Unit) { viewModel.checkModelsReady() }
+
+    when (currentScreen) {
+        "worksheet" -> { WorksheetScreen(onBack = { currentScreen = "main" }); return }
+        "flashcard" -> { FlashcardScreen(onBack = { currentScreen = "main" }); return }
+    }
 
     if (!uiState.modelsReady) {
         ModelDownloadScreen(uiState = uiState, onDownload = { viewModel.downloadModels() })
@@ -61,9 +67,9 @@ fun MainScreen(viewModel: MainScreenViewModel = viewModel()) {
                 onClick      = {
                     when (uiState.stage) {
                         PipelineStage.IDLE,
-                        PipelineStage.ERROR        -> viewModel.startListening()
-                        PipelineStage.SYNTHESIZING -> viewModel.stopListening()
-                        else                       -> {}
+                        PipelineStage.ERROR    -> viewModel.startListening()
+                        PipelineStage.RECORDING -> viewModel.stopListening()
+                        else                   -> {}
                     }
                 }
             )
@@ -96,6 +102,30 @@ fun MainScreen(viewModel: MainScreenViewModel = viewModel()) {
                 onPlay    = { viewModel.playAudio() },
                 onStop    = { viewModel.stopAudio() },
             )
+            Spacer(Modifier.height(12.dp))
+            Row(
+                modifier              = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedButton(
+                    onClick  = { currentScreen = "worksheet" },
+                    modifier = Modifier.weight(1f).height(46.dp),
+                    shape    = RoundedCornerShape(14.dp),
+                    border   = androidx.compose.foundation.BorderStroke(1.dp, Amber.copy(alpha = 0.5f))
+                ) {
+                    Text("📄 Worksheet", color = Amber, fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold)
+                }
+                OutlinedButton(
+                    onClick  = { currentScreen = "flashcard" },
+                    modifier = Modifier.weight(1f).height(46.dp),
+                    shape    = RoundedCornerShape(14.dp),
+                    border   = androidx.compose.foundation.BorderStroke(1.dp, Sage.copy(alpha = 0.5f))
+                ) {
+                    Text("🃏 Flashcards", color = Sage, fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold)
+                }
+            }
             Spacer(Modifier.height(20.dp))
             AnimatedVisibility(
                 visible = uiState.latency.totalMs > 0,
@@ -194,9 +224,10 @@ private fun MicSection(
     stage: PipelineStage,
     onClick: () -> Unit,
 ) {
-    val isRecording = stage == PipelineStage.RECORDING || stage == PipelineStage.SYNTHESIZING
-    val isBusy      = stage == PipelineStage.TRANSLATING ||
-                      stage == PipelineStage.TRANSCRIBING
+    val isRecording = stage == PipelineStage.RECORDING
+    val isBusy      = stage == PipelineStage.TRANSCRIBING ||
+                      stage == PipelineStage.TRANSLATING  ||
+                      stage == PipelineStage.SYNTHESIZING
 
     val micColor by animateColorAsState(
         targetValue = when {
