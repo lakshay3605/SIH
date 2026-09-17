@@ -26,6 +26,7 @@ wheels/
 merged_model/
 onnx_export/
 final_lora_model/
+models/
 
 
 # IDE

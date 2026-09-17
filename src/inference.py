@@ -84,16 +84,24 @@ class NeuralHindiSantaliTranslator:
         """Loads genuine neural model weights into memory."""
         print(f"Initializing Neural Translation Engine on {self.device}...")
         try:
-            self.tokenizer = AutoTokenizer.from_pretrained(self.model_path, trust_remote_code=True)
-            if self.tokenizer.pad_token is None:
-                self.tokenizer.pad_token = self.tokenizer.eos_token or "<pad>"
-
             adapter_cfg = os.path.join(self.model_path, "adapter_config.json")
+            base_id = self.base_model_id
             if os.path.exists(adapter_cfg):
                 # PEFT LoRA adapter
                 with open(adapter_cfg, "r", encoding="utf-8") as f:
                     cfg = json.load(f)
-                base_id = self.base_model_id or cfg.get("base_model_name_or_path")
+                base_id = base_id or cfg.get("base_model_name_or_path")
+
+            try:
+                self.tokenizer = AutoTokenizer.from_pretrained(self.model_path, trust_remote_code=True)
+            except Exception:
+                tok_id = base_id or "ai4bharat/indictrans2-indic-indic-dist-320M"
+                self.tokenizer = AutoTokenizer.from_pretrained(tok_id, trust_remote_code=True)
+
+            if self.tokenizer.pad_token is None:
+                self.tokenizer.pad_token = self.tokenizer.eos_token or "<pad>"
+
+            if os.path.exists(adapter_cfg):
                 print(f"Loading base model '{base_id}' and applying LoRA adapter '{self.model_path}'...")
                 base_model = AutoModelForSeq2SeqLM.from_pretrained(
                     base_id,

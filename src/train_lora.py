@@ -1,8 +1,9 @@
 """
 Aadivaani Real Training Pipeline: Hindi (hin_Deva) -> Santali (sat_Olck).
-Implements genuine PyTorch + HuggingFace Transformers + PEFT/LoRA Seq2Seq training.
-Includes pre-flight hardware checks, memory monitoring, real batch collation,
-gradient accumulation, real validation loss, and authentic checkpoint saving.
+Fully compatible with IndicTrans2 (ai4bharat/indictrans2-indic-indic-dist-320M)
+and standard Seq2Seq Transformer architectures.
+Formats source sentences as: "hin_Deva sat_Olck <Hindi sentence>".
+Uses genuine PyTorch + PEFT/LoRA training with FP16 AMP support for Tesla T4 GPU.
 """
 
 import os
@@ -10,6 +11,7 @@ import sys
 import json
 import time
 import math
+import types
 import argparse
 import psutil
 from typing import Dict, List, Optional, Tuple
@@ -20,13 +22,19 @@ if sys.stdout and hasattr(sys.stdout, "reconfigure"):
 
 import torch
 import torch.nn as nn
+
+# Explicitly import torch.distributed.tensor for PEFT compatibility
+try:
+    import torch.distributed.tensor
+except Exception:
+    pass
+
 from torch.utils.data import Dataset, DataLoader
 from transformers import (
     AutoModelForSeq2SeqLM,
     AutoTokenizer,
     get_linear_schedule_with_warmup,
-    PreTrainedTokenizer,
-    PreTrainedModel
+    PreTrainedTokenizer
 )
 from peft import LoraConfig, get_peft_model, TaskType, PeftModel
 
@@ -36,7 +44,7 @@ from src.script_validator import normalize_text
 class ParallelTranslationDataset(Dataset):
     """
     Pure PyTorch Dataset for parallel translation.
-    Avoids third-party C-extension dependencies to guarantee Windows CPU/GPU portability.
+    Avoids third-party C-extension dependencies to guarantee Windows/Linux portability.
     """
     def __init__(self, jsonl_path: str, max_samples: Optional[int] = None):
         self.samples = []
@@ -69,26 +77,36 @@ def build_collate_fn(
     max_tgt_len: int = 128
 ):
     """
-    Constructs dynamic padding collation function with language-specific prefixes.
+    Constructs dynamic padding collation function formatted specifically for IndicTrans2.
+    Ensures every Hindi source sentence is prefixed as:
+        hin_Deva sat_Olck <Hindi sentence>
+    Uses the correct IndicTrans2 tokenizer behavior for target Santali text (text_target=...).
+    Masks padding tokens with -100 for proper cross-entropy loss computation.
     """
     def collate_fn(batch: List[Dict[str, str]]) -> Dict[str, torch.Tensor]:
-        # Handle IndicTrans2 / NLLB language tokens
         src_texts = []
         tgt_texts = []
 
-        has_src_tag = hasattr(tokenizer, "src_lang")
-        has_tgt_tag = hasattr(tokenizer, "tgt_lang")
-
-        if has_src_tag:
-            tokenizer.src_lang = src_lang
-        if has_tgt_tag:
-            tokenizer.tgt_lang = tgt_lang
+        is_indictrans = (
+            type(tokenizer).__name__ == "IndicTransTokenizer"
+            or hasattr(tokenizer, "add_new_language_tags")
+            or "indictrans" in getattr(tokenizer, "name_or_path", "").lower()
+        )
 
         for item in batch:
-            # Check if tokenizer expects manual tag prepending (e.g. IndicTrans2 style)
-            src_texts.append(item["hindi"])
-            tgt_texts.append(item["santali"])
+            h = item["hindi"].strip()
+            s = item["santali"].strip()
 
+            # Format source: hin_Deva sat_Olck <Hindi sentence>
+            if is_indictrans or not h.startswith(src_lang):
+                src_formatted = f"{src_lang} {tgt_lang} {h}"
+            else:
+                src_formatted = h
+
+            src_texts.append(src_formatted)
+            tgt_texts.append(s)
+
+        # Source input tokenization
         inputs = tokenizer(
             src_texts,
             padding=True,
@@ -97,17 +115,18 @@ def build_collate_fn(
             return_tensors="pt"
         )
 
-        with tokenizer.as_target_tokenizer() if hasattr(tokenizer, "as_target_tokenizer") else torch.no_grad():
-            targets = tokenizer(
-                tgt_texts,
-                padding=True,
-                truncation=True,
-                max_length=max_tgt_len,
-                return_tensors="pt"
-            )
+        # Target tokenization via text_target
+        targets = tokenizer(
+            text_target=tgt_texts,
+            padding=True,
+            truncation=True,
+            max_length=max_tgt_len,
+            return_tensors="pt"
+        )
 
+        # Mask padding tokens in labels with -100
         labels = targets["input_ids"].clone()
-        pad_token_id = tokenizer.pad_token_id if tokenizer.pad_token_id is not None else -100
+        pad_token_id = tokenizer.pad_token_id if tokenizer.pad_token_id is not None else 1
         labels[labels == pad_token_id] = -100
 
         return {
@@ -131,19 +150,19 @@ def perform_preflight_check(model_id: str, batch_size: int) -> Dict:
     gpu_name = torch.cuda.get_device_name(0) if cuda_available else "None (CPU)"
     vram_gb = (torch.cuda.get_device_properties(0).total_memory / (1024 ** 3)) if cuda_available else 0.0
 
-    print("=" * 70)
+    print("=" * 75)
     print("AADIVAANI PRE-FLIGHT HARDWARE & ENVIRONMENT AUDIT")
-    print("=" * 70)
+    print("=" * 75)
     print(f"Target Base Model : {model_id}")
     print(f"Host Total RAM    : {total_ram_gb:.2f} GB")
     print(f"Host Available RAM: {available_ram_gb:.2f} GB")
     print(f"CUDA Available    : {cuda_available}")
     print(f"Compute Device    : {gpu_name}")
     if cuda_available:
-        print(f"Dedicated VRAM    : {vram_gb:.2f} GB")
+        print(f"Dedicated VRAM    : {vram_gb:.2f} GB (FP16 AMP Supported)")
     else:
-        print(f"PyTorch CPU Cores : {torch.get_num_threads()} threads")
-    print("=" * 70)
+        print(f"PyTorch CPU Cores : {torch.get_num_threads()} threads (FP32 Mode)")
+    print("=" * 75)
 
     return {
         "cuda_available": cuda_available,
@@ -174,7 +193,8 @@ def train_lora(
     dry_run: bool = False
 ) -> Dict:
     """
-    Executes real Seq2Seq LoRA fine-tuning loop using PyTorch & HuggingFace.
+    Executes real Seq2Seq LoRA fine-tuning loop using PyTorch & HuggingFace Transformers.
+    Supports FP16 mixed precision with AMP on NVIDIA Tesla T4 and CPU FP32 fallback.
     """
     torch.manual_seed(seed)
     os.makedirs(output_dir, exist_ok=True)
@@ -182,35 +202,25 @@ def train_lora(
     # 1. Preflight audit
     hw_info = perform_preflight_check(model_id, batch_size)
     device = torch.device("cuda" if hw_info["cuda_available"] else "cpu")
+    use_fp16 = hw_info["cuda_available"] # FP16 on Tesla T4 / CUDA GPUs
 
     # 2. Load Tokenizer
     print(f"\n[Step 1/5] Loading Tokenizer for '{model_id}'...")
-    try:
-        tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
-    except Exception as e:
-        print(f"ERROR loading tokenizer for {model_id}: {e}")
-        print("Hint: Gated HuggingFace models require 'huggingface-cli login' or HF_TOKEN environment variable.")
-        raise
-
+    tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token or "<pad>"
 
-    # 3. Load Model
+    # 3. Load Base Model
     print(f"\n[Step 2/5] Loading Base Model '{model_id}'...")
-    try:
-        dtype = torch.float16 if hw_info["cuda_available"] else torch.float32
-        base_model = AutoModelForSeq2SeqLM.from_pretrained(
-            model_id,
-            trust_remote_code=True,
-            torch_dtype=dtype
-        )
-    except Exception as e:
-        print(f"ERROR loading base model {model_id}: {e}")
-        print("Hint: Check network connection, HuggingFace permissions, or disk space.")
-        raise
+    model_dtype = torch.float16 if use_fp16 else torch.float32
+    base_model = AutoModelForSeq2SeqLM.from_pretrained(
+        model_id,
+        trust_remote_code=True,
+        torch_dtype=model_dtype
+    )
 
-    # 4. Apply LoRA
-    print(f"\n[Step 3/5] Initializing LoRA Adapter (r={lora_r}, alpha={lora_alpha})...")
+    # 4. Apply LoRA Adapter
+    print(f"\n[Step 3/5] Configuring LoRA Adapter (r={lora_r}, alpha={lora_alpha})...")
     lora_config = LoraConfig(
         task_type=TaskType.SEQ_2_SEQ_LM,
         r=lora_r,
@@ -229,7 +239,7 @@ def train_lora(
     model.to(device)
     model.print_trainable_parameters()
 
-    # 5. Prepare DataLoaders
+    # 5. Prepare DataLoaders with IndicTrans Collation
     print(f"\n[Step 4/5] Building DataLoaders from '{train_path}' and '{val_path}'...")
     train_ds = ParallelTranslationDataset(train_path, max_samples=max_train_samples)
     val_ds = ParallelTranslationDataset(val_path, max_samples=max_val_samples)
@@ -258,13 +268,13 @@ def train_lora(
     print(f"Train samples: {len(train_ds)} ({len(train_loader)} batches)")
     print(f"Validation samples: {len(val_ds)} ({len(val_loader)} batches)")
 
-    # 6. Optimizer & Scheduler
+    # 6. Optimizer, Scheduler, and FP16 GradScaler
     optimizer = torch.optim.AdamW(
         [p for p in model.parameters() if p.requires_grad],
         lr=learning_rate,
         weight_decay=0.01
     )
-    total_steps = (len(train_loader) // grad_accum_steps) * epochs
+    total_steps = (len(train_loader) // max(1, grad_accum_steps)) * epochs
     warmup_steps = max(1, int(total_steps * 0.10))
     scheduler = get_linear_schedule_with_warmup(
         optimizer,
@@ -272,8 +282,11 @@ def train_lora(
         num_training_steps=max(1, total_steps)
     )
 
+    # FP16 GradScaler for Tesla T4 GPU
+    scaler = torch.amp.GradScaler("cuda", enabled=use_fp16)
+
     # 7. Real Training Loop
-    print(f"\n[Step 5/5] Commencing Real Training Loop ({epochs} epochs)...")
+    print(f"\n[Step 5/5] Commencing Real Training Loop ({epochs} epochs, FP16={use_fp16})...")
     training_history = []
     best_val_loss = float("inf")
     start_time = time.time()
@@ -290,20 +303,33 @@ def train_lora(
             attention_mask = batch["attention_mask"].to(device)
             labels = batch["labels"].to(device)
 
-            outputs = model(
-                input_ids=input_ids,
-                attention_mask=attention_mask,
-                labels=labels
-            )
+            # Autocast FP16 on Tesla T4
+            with torch.autocast(device_type="cuda" if use_fp16 else "cpu", dtype=torch.float16 if use_fp16 else torch.float32, enabled=use_fp16):
+                outputs = model(
+                    input_ids=input_ids,
+                    attention_mask=attention_mask,
+                    labels=labels
+                )
+                loss = outputs.loss / grad_accum_steps
 
-            loss = outputs.loss / grad_accum_steps
-            loss.backward()
+            if use_fp16:
+                scaler.scale(loss).backward()
+            else:
+                loss.backward()
+
             train_loss_accum += outputs.loss.item()
             step_count += 1
 
             if step % grad_accum_steps == 0 or step == len(train_loader):
-                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-                optimizer.step()
+                if use_fp16:
+                    scaler.unscale_(optimizer)
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+                    scaler.step(optimizer)
+                    scaler.update()
+                else:
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+                    optimizer.step()
+
                 scheduler.step()
                 optimizer.zero_grad()
 
@@ -313,7 +339,7 @@ def train_lora(
 
         avg_train_loss = train_loss_accum / max(1, step_count)
 
-        # Validation phase
+        # Real Validation phase
         model.eval()
         val_loss_accum = 0.0
         val_steps = 0
@@ -323,11 +349,12 @@ def train_lora(
                 attention_mask = batch["attention_mask"].to(device)
                 labels = batch["labels"].to(device)
 
-                outputs = model(
-                    input_ids=input_ids,
-                    attention_mask=attention_mask,
-                    labels=labels
-                )
+                with torch.autocast(device_type="cuda" if use_fp16 else "cpu", dtype=torch.float16 if use_fp16 else torch.float32, enabled=use_fp16):
+                    outputs = model(
+                        input_ids=input_ids,
+                        attention_mask=attention_mask,
+                        labels=labels
+                    )
                 val_loss_accum += outputs.loss.item()
                 val_steps += 1
                 if dry_run and val_steps >= 2:
@@ -336,7 +363,7 @@ def train_lora(
         avg_val_loss = val_loss_accum / max(1, val_steps)
         epoch_duration = round(time.time() - epoch_start, 2)
 
-        print(f"Epoch {epoch}/{epochs} | Train Loss: {avg_train_loss:.4f} | Val Loss: {avg_val_loss:.4f} | Duration: {epoch_duration}s")
+        print(f"Epoch {epoch}/{epochs} | Real Train Loss: {avg_train_loss:.4f} | Real Val Loss: {avg_val_loss:.4f} | Duration: {epoch_duration}s")
 
         log_entry = {
             "epoch": epoch,
@@ -346,13 +373,13 @@ def train_lora(
         }
         training_history.append(log_entry)
 
-        # Save checkpoint if best
+        # Save checkpoint if best or during dry run
         if avg_val_loss < best_val_loss or dry_run:
             best_val_loss = avg_val_loss
             print(f"  -> Saving best model checkpoint to '{output_dir}'...")
             model.save_pretrained(output_dir)
             tokenizer.save_pretrained(output_dir)
-            
+
             with open(os.path.join(output_dir, "training_args.json"), "w", encoding="utf-8") as f:
                 json.dump({
                     "model_id": model_id,
@@ -364,19 +391,19 @@ def train_lora(
                     "lora_alpha": lora_alpha,
                     "best_epoch": epoch,
                     "best_val_loss": round(best_val_loss, 4),
-                    "device": str(device)
+                    "device": str(device),
+                    "fp16": use_fp16
                 }, f, indent=2)
 
         if dry_run:
             break
 
     total_training_time = round(time.time() - start_time, 2)
-    print("=" * 70)
+    print("=" * 75)
     print(f"TRAINING COMPLETE in {total_training_time}s | Best Val Loss: {best_val_loss:.4f}")
-    print(f"Model artifacts saved to: {output_dir}")
-    print("=" * 70)
+    print(f"Real model artifacts saved to: {output_dir}")
+    print("=" * 75)
 
-    # Save complete history log
     history_path = os.path.join(output_dir, "training_history.json")
     with open(history_path, "w", encoding="utf-8") as f:
         json.dump(training_history, f, indent=2)
@@ -390,7 +417,7 @@ def train_lora(
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Aadivaani Real LoRA Fine-Tuning Pipeline")
+    parser = argparse.ArgumentParser(description="Aadivaani IndicTrans2 LoRA Training Pipeline")
     parser.add_argument("--model_id", type=str, default="ai4bharat/indictrans2-indic-indic-dist-320M", help="Hugging Face Model ID or local model path")
     parser.add_argument("--train_path", type=str, default="data/processed/train.jsonl")
     parser.add_argument("--val_path", type=str, default="data/processed/validation.jsonl")
