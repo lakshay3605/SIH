@@ -1,0 +1,30 @@
+{
+  "total_valid_pairs": 4046,
+  "total_rejected_pairs": 2001,
+  "split_counts": {
+    "train": 3236,
+    "validation": 404,
+    "test": 406
+  },
+  "split_percentages": {
+    "train": 79.98,
+    "validation": 9.99,
+    "test": 10.03
+  },
+  "token_statistics": {
+    "avg_hindi_words": 16.13,
+    "max_hindi_words": 67,
+    "min_hindi_words": 3,
+    "avg_santali_words": 14.69,
+    "max_santali_words": 68,
+    "min_santali_words": 3
+  },
+  "provenance_distribution": {
+    "human_translation": 2001,
+    "verified_corpus": 2045
+  },
+  "source_distribution": {
+    "FLORES-200": 2001,
+    "master_dataset_csv": 2045
+  }
+}

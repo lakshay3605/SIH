@@ -2,9 +2,9 @@ torch>=2.0.0
 transformers>=4.40.0
 peft>=0.10.0
 accelerate>=0.29.0
-datasets>=2.18.0
 sacrebleu>=2.4.0
-evaluate>=0.4.0
 sentencepiece>=0.2.0
 indic-nlp-library>=0.92
-bitsandbytes>=0.43.0
+psutil>=5.9.0
+# Optional GPU acceleration (Linux/CUDA only)
+# bitsandbytes>=0.43.0

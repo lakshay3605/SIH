@@ -1,0 +1,123 @@
+{
+  "evaluation_metadata": {
+    "model_path": "ai4bharat/indictrans2-indic-indic-dist-320M",
+    "tokenizer_path": "ai4bharat/indictrans2-indic-indic-dist-320M",
+    "test_set_path": "data/processed/test.jsonl",
+    "evaluated_samples_count": 10,
+    "num_beams": 1,
+    "total_duration_sec": 11.01,
+    "device": "cpu"
+  },
+  "aggregate_metrics": {
+    "bleu_4": 1.72,
+    "chrf_plus_plus": 25.85,
+    "ol_chiki_validity_pct": 100.0,
+    "foreign_contamination_pct": 0.0,
+    "repetition_pct": 0.0,
+    "empty_output_pct": 0.0,
+    "average_latency_sec": 1.1,
+    "total_evaluated_samples": 10
+  },
+  "inspectable_samples": [
+    {
+      "sample_index": 1,
+      "hindi_input": "गैलापागोस में मनुष्य के आगमन के बाद से, कई स्तनधारी का आगमन हुआ है जिसमें बकरियाँ, घोड़े, गाय, चूहे, बिल्लियाँ और कुत्ते शामिल हैं.",
+      "santali_reference": "ᱜᱮᱞᱚᱯᱟᱜᱳᱥ ᱨᱮ ᱦᱚᱲ ᱥᱮᱴᱮᱨᱚᱜ ᱞᱟᱦᱟᱨᱮ ᱟᱭᱢᱟ ᱢᱟᱢᱟᱞ ᱠᱚ ᱴᱷᱤᱠᱟᱹ ᱦᱚᱪᱚ ᱞᱮᱱᱟ, ᱡᱮᱢᱚᱱ ᱢᱮᱨᱚᱢ, ᱥᱟᱫᱚᱢ, ᱜᱟᱹᱭ, ᱜᱩᱰᱩ, ᱯᱩᱥᱤ ᱟᱨ ᱥᱮᱛᱟ ᱠᱚ᱾",
+      "santali_hypothesis": "ᱦᱚᱲ ᱠᱚ ᱜᱟᱞᱚᱯᱟᱜᱳᱥ ᱨᱮ ᱦᱮᱡ ᱛᱟᱭᱚᱢ ᱠᱷᱚᱱ ᱟᱭᱢᱟ ᱢᱚᱵᱟᱭ ᱢᱮᱱᱟᱜ ᱟᱠᱟᱫᱟ, ᱡᱟᱦᱟᱸ ᱢᱩᱫᱨᱮ ᱢᱮᱱᱟᱜᱼᱟ ᱵᱟᱠᱩ, ᱜᱳᱲᱟ, ᱜᱳᱲᱤᱭᱟᱹ, ᱢᱳᱭᱥ, ᱵᱳᱭᱥ ᱟᱨ ᱜᱳᱲᱤᱭᱟᱹ ᱾",
+      "ol_chiki_valid": true,
+      "foreign_chars_detected": [],
+      "sample_bleu_4": 2.47,
+      "sample_chrf_plus_plus": 24.92
+    },
+    {
+      "sample_index": 2,
+      "hindi_input": "माताजी शांति से पेड़ लगा रहा है।",
+      "santali_reference": "ᱟᱭᱳ ᱱᱤᱨᱚᱲ ᱛᱮ ᱫᱟᱨᱮ ᱨᱚᱦᱚᱭ ᱮᱫᱟᱭ।",
+      "santali_hypothesis": "ᱟᱭᱳ ᱫᱚ ᱥᱩᱛᱚᱱ ᱞᱮᱠᱟᱛᱮ ᱢᱤᱫᱴᱟᱝ ᱵᱤᱨ ᱮ ᱛᱷᱟᱯᱚᱱ ᱞᱮᱫᱟ ᱾",
+      "ol_chiki_valid": true,
+      "foreign_chars_detected": [],
+      "sample_bleu_4": 4.2,
+      "sample_chrf_plus_plus": 14.26
+    },
+    {
+      "sample_index": 3,
+      "hindi_input": "मेरा भाई शांति से चिट्ठी लिख रहा है।",
+      "santali_reference": "ᱤᱧᱤᱡ ᱵᱚᱭᱦᱟ ᱱᱤᱨᱚᱲ ᱛᱮ ᱚᱞ ᱚᱞ ᱮᱫᱟᱭ।",
+      "santali_hypothesis": "ᱤᱧᱨᱮᱱ ᱵᱚᱭᱦᱟ ᱫᱚ ᱥᱩᱛᱚᱱᱛᱤ ᱛᱮ ᱚᱞ ᱟᱠᱟᱫᱟᱭ ᱾",
+      "ol_chiki_valid": true,
+      "foreign_chars_detected": [],
+      "sample_bleu_4": 12.22,
+      "sample_chrf_plus_plus": 27.17
+    },
+    {
+      "sample_index": 4,
+      "hindi_input": "मैं खुशी से पानी पी रहा है।",
+      "santali_reference": "ᱤᱧ ᱨᱟᱹᱥᱠᱟᱹ ᱛᱮ ᱫᱟᱜ ᱧᱩ ᱠᱟᱱᱟᱭ।",
+      "santali_hypothesis": "ᱤᱧ ᱱᱟᱯᱟᱭ ᱛᱮ ᱫᱟᱜᱧᱟᱢ ᱮᱫᱟ ᱾",
+      "ol_chiki_valid": true,
+      "foreign_chars_detected": [],
+      "sample_bleu_4": 9.65,
+      "sample_chrf_plus_plus": 24.07
+    },
+    {
+      "sample_index": 5,
+      "hindi_input": "गाड़ी कब आएगी?",
+      "santali_reference": "ᱜᱟᱹᱰᱤ ᱛᱤᱥ ᱦᱤᱡᱩᱜ-ᱟ?",
+      "santali_hypothesis": "ᱜᱟᱹᱰᱤ ᱫᱚ ᱪᱮᱫ ᱚᱠᱛᱚ ᱦᱮᱡᱚᱜᱼᱟ ᱾",
+      "ol_chiki_valid": true,
+      "foreign_chars_detected": [],
+      "sample_bleu_4": 8.12,
+      "sample_chrf_plus_plus": 18.37
+    },
+    {
+      "sample_index": 6,
+      "hindi_input": "मेरा भाई दोपहर में नाच रहा है।",
+      "santali_reference": "ᱤᱧᱤᱡ ᱵᱚᱭᱦᱟ ᱛᱤᱠᱤᱱ ᱵᱮᱲᱟ ᱮᱱᱮᱡ ᱠᱟᱱᱟᱭ।",
+      "santali_hypothesis": "ᱤᱧᱨᱮᱱ ᱵᱚᱭᱦᱟ ᱫᱚ ᱪᱟᱸᱫᱳ ᱨᱮ ᱱᱟᱪᱟ ᱟᱠᱟᱫᱟᱭ ᱾",
+      "ol_chiki_valid": true,
+      "foreign_chars_detected": [],
+      "sample_bleu_4": 5.52,
+      "sample_chrf_plus_plus": 16.49
+    },
+    {
+      "sample_index": 7,
+      "hindi_input": "हम शांति से किताब पढ़ रहा है।",
+      "santali_reference": "ᱟᱵᱚ ᱱᱤᱨᱚᱲ ᱛᱮ ᱯᱩᱛᱷᱤ ᱯᱟᱲᱦᱟᱣ ᱠᱟᱱᱟᱭ।",
+      "santali_hypothesis": "ᱤᱧᱟᱹᱜ ᱯᱚᱛᱚᱵ ᱫᱚ ᱥᱩᱛᱚᱱ ᱞᱮᱠᱟᱛᱮ ᱯᱟᱲᱦᱟᱣ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ ᱾",
+      "ol_chiki_valid": true,
+      "foreign_chars_detected": [],
+      "sample_bleu_4": 4.77,
+      "sample_chrf_plus_plus": 23.11
+    },
+    {
+      "sample_index": 8,
+      "hindi_input": "इन दोनों टावर की ऊँचाई 83 मीटर है. इनकी लंबाई 378 मीटर है और इनमें 3.50 मीटर चौड़ी दो लेन हैं.",
+      "santali_reference": "ᱵᱟᱨᱭᱟ ᱴᱟᱣᱟᱨ ᱜᱮ ᱘᱓ ᱢᱤᱴᱚᱨ ᱨᱮᱭᱟᱜ ᱩᱥᱩᱞ ᱫᱷᱟᱹᱵᱤᱡ ᱠᱚ ᱩᱥᱩᱞᱟ, ᱱᱚᱶᱟ ᱫᱚ ᱓᱗᱘ ᱢᱤᱴᱚᱨ ᱩᱥᱩᱞ ᱟ ᱟᱨ ᱱᱟᱶᱟ ᱨᱮ ᱓.᱕᱐ ᱢᱤᱴᱚᱨ ᱚᱥᱟᱨ ᱵᱟᱨᱭᱟ ᱞᱮᱱ ᱠᱟᱱᱟ᱾",
+      "santali_hypothesis": "ᱱᱚᱶᱟ ᱵᱟᱨᱭᱟ ᱴᱟᱣᱟᱨ ᱨᱮᱭᱟᱜ ᱩᱥᱩᱞ 83 ᱢᱤᱴᱟᱨ ᱾ ᱱᱚᱶᱟ ᱨᱮᱭᱟᱜ ᱡᱮᱞᱮᱧ 378 ᱢᱤᱴᱟᱨ ᱟᱨ ᱱᱚᱶᱟ ᱨᱮᱭᱟᱜ 3.50 ᱢᱤᱴᱟᱨ ᱯᱟᱥᱱᱟᱣ ᱵᱟᱨᱭᱟ ᱰᱟᱦᱟᱨ ᱢᱮᱱᱟᱜᱼᱟ ᱾",
+      "ol_chiki_valid": true,
+      "foreign_chars_detected": [],
+      "sample_bleu_4": 4.31,
+      "sample_chrf_plus_plus": 27.83
+    },
+    {
+      "sample_index": 9,
+      "hindi_input": "स्प्रिंगबोक्स के लिए, इसने पांच-मैचों की हार का सिलसिला समाप्त कर दिया.",
+      "santali_reference": "ᱥᱯᱨᱤᱝᱜᱽᱵᱚᱠᱥ ᱞᱟᱹᱜᱤᱫ, ᱩᱱᱤ ᱫᱚ ᱢᱚᱬᱮ ᱜᱚᱴᱟᱝ ᱢᱮᱭᱪ ᱨᱮᱱᱟᱜ ᱦᱟᱨᱟᱣ ᱨᱮᱱᱟᱜ ᱥᱤᱞᱥᱤᱞᱟ ᱪᱟᱵᱟ ᱦᱩᱭ ᱮᱱᱟ᱾",
+      "santali_hypothesis": "ᱥᱯᱨᱤᱝᱵᱚᱠᱥ ᱞᱟᱹᱜᱤᱫ ᱱᱚᱶᱟ ᱫᱚ ᱢᱚᱬᱮ ᱢᱮᱪ ᱨᱮᱱᱟᱜ ᱦᱤᱨᱟᱹᱣ ᱨᱮᱭᱟᱜ ᱢᱤᱫᱴᱟᱝ ᱥᱠᱳᱭᱮᱱᱥ ᱢᱩᱪᱟᱹᱫ ᱞᱮᱫᱟ ᱾",
+      "ol_chiki_valid": true,
+      "foreign_chars_detected": [],
+      "sample_bleu_4": 6.29,
+      "sample_chrf_plus_plus": 32.69
+    },
+    {
+      "sample_index": 10,
+      "hindi_input": "गंभीर मौसम किसी भी खतरनाक मौसमी घटना के लिए वर्गीय शब्द है जिसमें नुकसान, गंभीर सामाजिक व्यवधान, या मानव जीवन की हानि की संभावना है।",
+      "santali_reference": "ᱜᱚᱢᱵᱷᱤᱨ ᱨᱤᱛᱩ ᱡᱟᱦᱟᱸᱱᱟᱜ ᱜᱤ ᱵᱚᱛᱚᱨᱟᱱ ᱚᱸᱦᱚᱨ ᱜᱷᱚᱴᱚᱱ ᱠᱚ ᱞᱟᱹᱜᱤᱫ ᱥᱟᱹᱠᱤᱞ ᱟᱹᱲᱟᱹ ᱠᱟᱱᱟ ᱡᱟᱦᱟᱸ ᱫᱚ ᱵᱟᱹᱲᱤᱡ, ᱜᱚᱢᱵᱷᱤᱨ ᱥᱟᱶᱛᱟ ᱵᱭᱟᱫᱷᱟᱱ ᱟᱨᱵᱟᱝ ᱢᱟᱹᱱᱢᱤ ᱡᱤᱭᱚᱱ ᱨᱮᱱᱟᱝ ᱦᱟᱹᱱ ᱨᱮᱱᱟᱜ ᱥᱟᱸᱵᱷᱟᱵ ᱢᱮᱱᱟᱜᱼᱟ᱾",
+      "santali_hypothesis": "ᱟᱹᱰᱤ ᱦᱚᱭᱦᱩᱫᱥᱤᱫ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ ᱡᱟᱦᱟᱸ ᱞᱮᱠᱟᱱ ᱦᱤᱫᱤᱡᱟᱱ ᱦᱚᱭᱦᱩᱫᱥᱤᱫ ᱨᱮᱭᱟᱜ ᱜᱷᱚᱴᱱᱟ ᱞᱟᱹᱜᱤᱫ ᱢᱤᱫᱴᱟᱝ ᱦᱟᱹᱴᱤᱧ ᱟᱱᱟᱜ ᱥᱟᱵᱟᱫ ᱡᱟᱦᱟᱸ ᱨᱮ ᱜᱷᱟᱹᱞ, ᱟᱹᱰᱤ ᱜᱟᱱ ᱥᱟᱶᱛᱟᱹᱨᱤ ᱵᱚᱱᱚᱫᱚᱞ ᱥᱮ ᱦᱚᱲ ᱠᱚᱣᱟᱜ ᱡᱤᱭᱚᱱ ᱦᱟᱹᱱ ᱨᱮᱭᱟᱜ ᱦᱩᱭᱫᱟᱲᱮᱭᱟᱜᱼᱟ ᱾",
+      "ol_chiki_valid": true,
+      "foreign_chars_detected": [],
+      "sample_bleu_4": 3.16,
+      "sample_chrf_plus_plus": 26.68
+    }
+  ]
+}
