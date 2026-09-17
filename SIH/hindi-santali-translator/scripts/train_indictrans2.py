@@ -179,7 +179,14 @@ def main():
 
     # 1. Use all CPU threads
     torch.set_num_threads(args.num_threads)
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
     log(f"PyTorch num_threads set to {args.num_threads}")
+    log(f"Device                  : {device}")
+
+    if device.type == "cuda":
+        log(f"GPU                     : {torch.cuda.get_device_name(0)}")
 
     # 2. Determinism
     random.seed(args.seed)
@@ -212,7 +219,13 @@ def main():
     # 4. Load Model & Apply LoRA
     log("\n[Step 2/5] Loading Base Model...")
     t_load = time.time()
-    model = AutoModelForSeq2SeqLM.from_pretrained(args.model, trust_remote_code=True, torch_dtype=torch.float32)
+    model = AutoModelForSeq2SeqLM.from_pretrained(
+        args.model,
+        trust_remote_code=True,
+        torch_dtype=torch.float32
+    )
+    model = model.to(device)
+    log(f"  Model moved to         : {device}")
     log(f"  Model loaded in {time.time()-t_load:.1f}s. RAM: {psutil.Process().memory_info().rss/(1024**2):.0f} MB")
 
     log("  Injecting LoRA adapters (q_proj, v_proj)...")
@@ -271,9 +284,9 @@ def main():
         log(f"{'='*60}")
 
         for step, batch in enumerate(train_loader):
-            input_ids = batch["input_ids"]
-            attention_mask = batch["attention_mask"]
-            labels = batch["labels"]
+            input_ids = batch["input_ids"].to(device)
+            attention_mask = batch["attention_mask"].to(device)
+            labels = batch["labels"].to(device)
 
             outputs = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
             loss = outputs.loss / args.gradient_accumulation_steps
@@ -308,9 +321,11 @@ def main():
         total_val_loss = 0.0
         with torch.no_grad():
             for vbatch in val_loader:
-                val_out = model(input_ids=vbatch["input_ids"],
-                                attention_mask=vbatch["attention_mask"],
-                                labels=vbatch["labels"])
+                val_out = model(
+                    input_ids=vbatch["input_ids"].to(device),
+                    attention_mask=vbatch["attention_mask"].to(device),
+                    labels=vbatch["labels"].to(device)
+                )
                 total_val_loss += val_out.loss.item()
 
         avg_val_loss = total_val_loss / len(val_loader)
