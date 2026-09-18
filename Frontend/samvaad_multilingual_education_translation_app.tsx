@@ -278,55 +278,53 @@ export default function App() {
   // 20 Exact Screen Renderers (Pixel-Matched to Poster)
   // ==========================================
 
-  // SCREEN 1: Splash Screen
+  // SCREEN 1: Splash Screen (Exact Reference Spacing & Government-App Style)
   const renderScreen1 = () => (
     <div
       onClick={() => navigateTo(2)}
-      className="flex-1 flex flex-col justify-between items-center text-center px-4 py-3 bg-[#FAF7EE] dark:bg-[#0E1513] cursor-pointer select-none"
+      className="flex-1 flex flex-col justify-between items-center text-center px-4 pt-2.5 pb-2 bg-[#FAF7EE] dark:bg-[#0E1513] cursor-pointer select-none"
     >
-      {/* Top: State Emblem of India + Government of Jharkhand */}
-      <div className="pt-2 flex flex-col items-center space-y-0.5">
+      {/* Top: Official Emblem of India + Government of Jharkhand (Title Case as in Reference) */}
+      <div className="flex flex-col items-center pt-1 space-y-0.5">
         <StateEmblemArtwork className="w-8 h-10 mb-0.5" />
-        <p className="text-[10px] font-semibold text-[#1C362B] dark:text-[#34D399] tracking-wider uppercase">
+        <p className="text-[11px] font-medium text-[#1A2621] dark:text-gray-200 tracking-normal">
           Government of Jharkhand
         </p>
-        <p className="text-[13px] font-bold text-[#1C362B] dark:text-gray-100">
+        <p className="text-[13.5px] font-bold text-[#1A2621] dark:text-gray-100 leading-tight">
           झारखंड सरकार
         </p>
       </div>
 
-      {/* Middle: Brand Logo, Title, Tagline, Subtitle and Storybook Illustration */}
-      <div className="w-full my-auto space-y-1.5 pt-1">
-        <div className="w-12 h-10 mx-auto flex items-center justify-center">
-          <SamvaadLeavesLogo className="w-11 h-9" />
-        </div>
-        <h1 className="text-3xl font-black text-[#0C5A3E] dark:text-[#34D399] tracking-tight">
+      {/* Middle: Brand Logo, Title, Tagline, Subtitle */}
+      <div className="w-full flex flex-col items-center pt-2">
+        <SamvaadLeavesLogo className="w-12 h-9" />
+        <h1 className="text-[32px] font-black text-[#0F513A] dark:text-[#34D399] tracking-tight leading-none mt-1">
           Samvaad
         </h1>
-        <p className="text-xs font-bold text-[#0C5A3E] dark:text-[#34D399]">
+        <p className="text-[13px] font-bold text-[#0F513A] dark:text-[#34D399] mt-1.5">
           भाषा से सीखें, साथ मिलकर बढ़ें
         </p>
-        <p className="text-[9.5px] text-[#3E5C4E] dark:text-gray-400 max-w-[210px] mx-auto pt-0.5 leading-snug">
-          An initiative for Mother Tongue-Based Multilingual Education (MTB-MLE)
+        <p className="text-[10px] text-[#2C3E35] dark:text-gray-300 font-medium max-w-[230px] mx-auto mt-2 leading-snug">
+          An initiative for Mother Tongue-Based<br />Multilingual Education (MTB-MLE)
         </p>
-
-        {/* Storybook Rural Children Watercolor Artwork */}
-        <div className="pt-2 px-1">
-          <img
-            src="/assets/rural_children.jpg"
-            alt="Storybook Rural Children"
-            className="w-full h-44 object-cover rounded-2xl border border-[#E7DFCE] shadow-xs"
-          />
-        </div>
       </div>
 
-      {/* Bottom Motto Text: Clean text directly on cream background */}
-      <div className="w-full pb-1">
-        <p className="text-sm font-bold text-[#0C5A3E] dark:text-[#34D399] tracking-tight">
+      {/* Storybook Teacher & Children Illustration (Matching Reference Request) */}
+      <div className="w-full px-0.5 py-1">
+        <img
+          src="/assets/splash_teacher_children.jpg"
+          alt="Female teacher teaching children in rural Jharkhand"
+          className="w-full h-50 object-cover rounded-2xl shadow-xs"
+        />
+      </div>
+
+      {/* Bottom Motto Text: Simple, official, clean typography directly on parchment */}
+      <div className="w-full pb-1 pt-0.5">
+        <p className="text-[15px] font-bold text-[#0F513A] dark:text-[#34D399] tracking-wide">
           सबकी भाषा, बेहतर शिक्षा
         </p>
         {/* Subtle Home Indicator Line */}
-        <div className="w-28 h-1 bg-[#2D4539]/20 rounded-full mx-auto mt-2"></div>
+        <div className="w-24 h-1 bg-[#2D4539]/20 rounded-full mx-auto mt-2"></div>
       </div>
     </div>
   );
