@@ -27,6 +27,9 @@ merged_model/
 onnx_export/
 final_lora_model/
 models/
+node_modules/
+dist/
+Frontend/dist/
 
 
 # IDE
