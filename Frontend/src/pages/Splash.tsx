@@ -44,9 +44,9 @@ export const Splash: React.FC = () => {
         </p>
       </div>
 
-      {/* 3. Large Storybook Teacher-and-Children Illustration (~40% of viewport) */}
-      <div className="w-full px-1 my-2">
-        <div className="w-full h-[330px] rounded-2xl overflow-hidden shadow-xs border border-[#E7DFCE]/90">
+      {/* 3. Large Storybook Teacher-and-Children Illustration */}
+      <div className="w-full px-1 my-1">
+        <div className="w-full h-[340px] rounded-2xl overflow-hidden">
           <img
             src="/assets/splash_teacher_children.jpg"
             alt="Female teacher teaching children in rural Jharkhand"
@@ -55,12 +55,11 @@ export const Splash: React.FC = () => {
         </div>
       </div>
 
-      {/* 4. Bottom Section: Tagline & Home Bar */}
-      <div className="w-full pb-1">
-        <p className="text-base font-bold text-[#0F513A] dark:text-[#34D399] tracking-wide">
+      {/* 4. Bottom Section: Tagline */}
+      <div className="w-full pb-2">
+        <p className="text-[17px] font-bold text-[#0F513A] dark:text-[#34D399] tracking-wide">
           सबकी भाषा, बेहतर शिक्षा
         </p>
-        <div className="w-28 h-1 bg-[#2D4539]/25 rounded-full mx-auto mt-2.5"></div>
       </div>
     </div>
   );

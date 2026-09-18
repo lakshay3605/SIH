@@ -81,12 +81,13 @@ const AppContent: React.FC = () => {
 
   return (
     // Desktop canvas: dark neutral background to cleanly isolate the 390x844 mobile app viewport
-    <div className="w-full min-h-screen bg-[#18181B] flex items-center justify-center sm:py-6 sm:px-4 antialiased selection:bg-emerald-100">
-      {/* 390 × 844 px Mobile App Viewport (Actual App UI - Clean, No Mockup Frames) */}
+    <div className="w-full min-h-screen bg-[#18181B] flex items-center justify-center sm:py-6 sm:px-4 antialiased selection:bg-emerald-100 overflow-x-hidden">
+      {/* 390 × 844 px Mobile App Viewport (Actual App UI - Clean, Sharp, No Mockup Bezels or Borders) */}
       <div
+        id="samvaad-app-viewport"
         className={`w-full sm:w-[390px] h-screen sm:h-[844px] sm:max-h-[844px] ${
           isDarkMode ? 'bg-[#0E1513] text-gray-100' : 'bg-[#FAF7EE] text-gray-900'
-        } flex flex-col relative overflow-hidden sm:rounded-2xl sm:shadow-2xl sm:border sm:border-neutral-800`}
+        } flex flex-col relative overflow-hidden sm:shadow-2xl`}
       >
         {/* Main App Content */}
         <main className="w-full flex-1 flex flex-col relative overflow-y-auto overflow-x-hidden">
