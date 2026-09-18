@@ -278,49 +278,51 @@ export default function App() {
   // 20 Exact Screen Renderers (Pixel-Matched to Poster)
   // ==========================================
 
-  // SCREEN 1: Splash Screen (Exact Reference Spacing & Government-App Style)
+  // SCREEN 1: Splash Screen (Pixel-Matched to Original Reference Proportions & Density)
   const renderScreen1 = () => (
     <div
       onClick={() => navigateTo(2)}
-      className="flex-1 flex flex-col justify-between items-center text-center px-4 pt-2.5 pb-2 bg-[#FAF7EE] dark:bg-[#0E1513] cursor-pointer select-none"
+      className="flex-1 flex flex-col items-center justify-between text-center px-4 pt-4 pb-2.5 bg-[#FAF7EE] dark:bg-[#0E1513] cursor-pointer select-none"
     >
       {/* Top: Official Emblem of India + Government of Jharkhand (Title Case as in Reference) */}
-      <div className="flex flex-col items-center pt-1 space-y-0.5">
-        <StateEmblemArtwork className="w-8 h-10 mb-0.5" />
-        <p className="text-[11px] font-medium text-[#1A2621] dark:text-gray-200 tracking-normal">
+      <div className="w-full flex flex-col items-center pt-0.5">
+        <StateEmblemArtwork className="w-9 h-11 mb-1" />
+        <p className="text-[11.5px] font-medium text-[#1A2621] dark:text-gray-200 tracking-normal leading-tight">
           Government of Jharkhand
         </p>
-        <p className="text-[13.5px] font-bold text-[#1A2621] dark:text-gray-100 leading-tight">
+        <p className="text-[14px] font-bold text-[#1A2621] dark:text-gray-100 leading-tight mt-0.5">
           झारखंड सरकार
         </p>
       </div>
 
-      {/* Middle: Brand Logo, Title, Tagline, Subtitle */}
-      <div className="w-full flex flex-col items-center pt-2">
-        <SamvaadLeavesLogo className="w-12 h-9" />
-        <h1 className="text-[32px] font-black text-[#0F513A] dark:text-[#34D399] tracking-tight leading-none mt-1">
+      {/* Middle: Brand Logo, Title, Tagline, Subtitle (Tightly Grouped to Match Reference) */}
+      <div className="w-full flex flex-col items-center mt-2">
+        <SamvaadLeavesLogo className="w-13 h-10" />
+        <h1 className="text-[34px] font-black text-[#0F513A] dark:text-[#34D399] tracking-tight leading-none mt-1">
           Samvaad
         </h1>
-        <p className="text-[13px] font-bold text-[#0F513A] dark:text-[#34D399] mt-1.5">
+        <p className="text-[13.5px] font-bold text-[#0F513A] dark:text-[#34D399] mt-1.5">
           भाषा से सीखें, साथ मिलकर बढ़ें
         </p>
-        <p className="text-[10px] text-[#2C3E35] dark:text-gray-300 font-medium max-w-[230px] mx-auto mt-2 leading-snug">
+        <p className="text-[10px] text-[#2C3E35] dark:text-gray-300 font-medium max-w-[240px] mx-auto mt-1.5 leading-snug">
           An initiative for Mother Tongue-Based<br />Multilingual Education (MTB-MLE)
         </p>
       </div>
 
-      {/* Storybook Teacher & Children Illustration (Matching Reference Request) */}
-      <div className="w-full px-0.5 py-1">
-        <img
-          src="/assets/splash_teacher_children.jpg"
-          alt="Female teacher teaching children in rural Jharkhand"
-          className="w-full h-50 object-cover rounded-2xl shadow-xs"
-        />
+      {/* Large Teacher-and-Children Illustration (Matching Original Reference Size & Proportions) */}
+      <div className="w-full px-1 mt-2.5 mb-1">
+        <div className="w-full h-[275px] rounded-2xl overflow-hidden shadow-xs border border-[#E7DFCE]/90">
+          <img
+            src="/assets/splash_teacher_children.jpg"
+            alt="Female teacher teaching children in rural Jharkhand"
+            className="w-full h-full object-cover object-center"
+          />
+        </div>
       </div>
 
-      {/* Bottom Motto Text: Simple, official, clean typography directly on parchment */}
-      <div className="w-full pb-1 pt-0.5">
-        <p className="text-[15px] font-bold text-[#0F513A] dark:text-[#34D399] tracking-wide">
+      {/* Bottom Motto Text: Clean, official typography with comfortable spacing near bottom */}
+      <div className="w-full pb-0.5 pt-0.5">
+        <p className="text-[15.5px] font-bold text-[#0F513A] dark:text-[#34D399] tracking-wide">
           सबकी भाषा, बेहतर शिक्षा
         </p>
         {/* Subtle Home Indicator Line */}
