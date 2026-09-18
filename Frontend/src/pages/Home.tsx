@@ -1,112 +1,144 @@
 import React from 'react';
-import { ArrowLeftRight, BookOpen, GraduationCap, Layers, HelpCircle, FileText, Settings } from 'lucide-react';
+import { ChevronLeft, User, ArrowLeftRight, BookOpen, GraduationCap, Layers, HelpCircle, FileText } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { SamvaadLogo } from '../components/SamvaadLogo';
 
 export const Home: React.FC = () => {
-  const { navigateTo } = useApp();
+  const { navigateTo, goBack } = useApp();
 
   return (
-    <div className="w-full flex-1 flex flex-col bg-[#FAF7EE] dark:bg-[#0E1513]">
-      <div className="p-4 sm:p-6 space-y-4 max-w-lg mx-auto w-full flex-1 overflow-y-auto">
-        {/* Top Header */}
-        <div className="flex items-center justify-between pt-1">
-          <div className="flex items-center gap-2.5">
-            <SamvaadLogo className="w-8 h-8" />
-            <div>
-              <h1 className="text-xl font-black text-[#0C5A3E] dark:text-[#34D399] leading-tight">Samvaad</h1>
-              <p className="text-[11px] text-[#0C5A3E] font-medium">भाषा से सीखें, साथ मिलकर बढ़ें</p>
-            </div>
-          </div>
-          <button
-            onClick={() => navigateTo('settings')}
-            className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300"
-            aria-label="Settings"
-          >
-            <Settings className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Teacher Hero Banner */}
-        <div
-          onClick={() => navigateTo('onboarding1')}
-          className="p-4 rounded-2xl bg-[#FFF9E6] dark:bg-[#1E1B13] border border-[#F1E3B8] dark:border-[#382F1B] flex items-center justify-between overflow-hidden shadow-xs cursor-pointer hover:border-amber-300 transition"
+    <div className="w-full h-full flex flex-col justify-between px-4 pt-2.5 pb-2.5 bg-[#FAF7EE] dark:bg-[#0E1513] select-none">
+      {/* 1. Header matching reference: Back Arrow, Centered Samvaad Logo & Tagline, Profile Icon */}
+      <div className="w-full flex items-center justify-between pt-0.5">
+        <button
+          onClick={() => goBack()}
+          className="w-9 h-9 rounded-full flex items-center justify-center text-gray-800 dark:text-gray-200 hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition"
+          aria-label="Go Back"
         >
-          <div className="max-w-[180px] sm:max-w-xs space-y-1">
-            <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-gray-100 leading-snug">
-              Teaching is easier when language is no longer a barrier.
-            </h3>
+          <ChevronLeft className="w-6 h-6 stroke-[2.4]" />
+        </button>
+
+        <div className="flex flex-col items-center justify-center text-center">
+          <div className="flex items-center gap-1.5">
+            <SamvaadLogo className="w-6 h-5" />
+            <span className="text-[19px] font-black text-[#0F513A] dark:text-[#34D399] tracking-tight leading-none">
+              Samvaad
+            </span>
           </div>
-          <div className="w-28 h-20 sm:w-36 sm:h-24 relative rounded-xl overflow-hidden border border-[#EBDDB5] shrink-0">
-            <img
-              src="/assets/teacher_village.jpg"
-              alt="Teacher Banner"
-              className="w-full h-full object-cover"
-            />
-          </div>
+          <p className="text-[10.5px] font-bold text-[#0F513A] dark:text-[#34D399] mt-0.5 tracking-tight">
+            भाषा से सीखें, साथ मिलकर बढ़ें
+          </p>
         </div>
 
-        {/* 2x3 Grid of 6 Action Cards */}
-        <div className="grid grid-cols-2 gap-3.5 pt-1">
-          <div
-            onClick={() => navigateTo('translate', 'translate')}
-            className="p-4 rounded-2xl bg-white dark:bg-[#15231E] border border-[#ECE7DA] dark:border-[#20372E] shadow-xs flex flex-col items-center text-center cursor-pointer hover:border-emerald-400 active:scale-95 transition"
-          >
-            <div className="w-12 h-12 rounded-xl bg-[#E8F3EE] dark:bg-[#183126] text-[#0C5A3E] dark:text-[#34D399] flex items-center justify-center mb-2">
-              <ArrowLeftRight className="w-6 h-6 stroke-[2]" />
-            </div>
-            <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100">Translate</h4>
-          </div>
+        <button
+          onClick={() => navigateTo('settings')}
+          className="w-9 h-9 rounded-full border border-gray-300/80 dark:border-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-200 hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition"
+          aria-label="User Profile"
+        >
+          <User className="w-5 h-5 stroke-[1.8]" />
+        </button>
+      </div>
 
-          <div
-            onClick={() => navigateTo('dictionary')}
-            className="p-4 rounded-2xl bg-white dark:bg-[#15231E] border border-[#ECE7DA] dark:border-[#20372E] shadow-xs flex flex-col items-center text-center cursor-pointer hover:border-emerald-400 active:scale-95 transition"
-          >
-            <div className="w-12 h-12 rounded-xl bg-[#E8F3EE] dark:bg-[#183126] text-[#0C5A3E] dark:text-[#34D399] flex items-center justify-center mb-2">
-              <BookOpen className="w-6 h-6 stroke-[2]" />
-            </div>
-            <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100">Dictionary</h4>
-          </div>
+      {/* 2. Hero Banner: Warm Yellow Background with Storybook Art & Text */}
+      <div
+        onClick={() => navigateTo('translate', 'translate')}
+        className="w-full h-[155px] rounded-2xl bg-[#FCE59F] dark:bg-[#2A2312] border border-[#EED076] dark:border-[#42371E] flex items-center justify-between overflow-hidden shadow-xs cursor-pointer hover:border-amber-400 transition relative"
+      >
+        <div className="flex-1 pl-4 pr-1 py-3 z-10 flex flex-col justify-center">
+          <h3 className="text-[15.5px] font-extrabold text-[#202922] dark:text-[#F3EFE0] leading-[1.3] tracking-tight">
+            Teaching is easier<br />
+            when language<br />
+            is no longer a barrier.
+          </h3>
+        </div>
 
-          <div
-            onClick={() => navigateTo('learning')}
-            className="p-4 rounded-2xl bg-white dark:bg-[#15231E] border border-[#ECE7DA] dark:border-[#20372E] shadow-xs flex flex-col items-center text-center cursor-pointer hover:border-emerald-400 active:scale-95 transition"
-          >
-            <div className="w-12 h-12 rounded-xl bg-[#E8F3EE] dark:bg-[#183126] text-[#0C5A3E] dark:text-[#34D399] flex items-center justify-center mb-2">
-              <GraduationCap className="w-6 h-6 stroke-[2]" />
-            </div>
-            <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100">Learn</h4>
-          </div>
+        <div className="w-[155px] h-full relative shrink-0 overflow-hidden rounded-r-2xl">
+          <img
+            src="/assets/home_banner.jpg"
+            alt="Teacher and students in village"
+            className="w-full h-full object-cover object-[78%_center]"
+          />
+        </div>
+      </div>
 
-          <div
-            onClick={() => navigateTo('flashcards')}
-            className="p-4 rounded-2xl bg-white dark:bg-[#15231E] border border-[#ECE7DA] dark:border-[#20372E] shadow-xs flex flex-col items-center text-center cursor-pointer hover:border-emerald-400 active:scale-95 transition"
-          >
-            <div className="w-12 h-12 rounded-xl bg-[#E8F3EE] dark:bg-[#183126] text-[#0C5A3E] dark:text-[#34D399] flex items-center justify-center mb-2">
-              <Layers className="w-6 h-6 stroke-[2]" />
-            </div>
-            <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100">Flashcards</h4>
+      {/* 3. 2-Column Grid of 6 Compact Feature Cards */}
+      <div className="grid grid-cols-2 gap-2.5">
+        {/* Card 1: Translate */}
+        <div
+          onClick={() => navigateTo('translate', 'translate')}
+          className="h-[96px] rounded-2xl bg-[#FCFAF5] dark:bg-[#15231E] border border-[#EBE3D3] dark:border-[#20372E] shadow-xs flex flex-col items-center justify-center text-center cursor-pointer hover:border-emerald-500/50 active:scale-[0.98] transition px-2"
+        >
+          <div className="w-9 h-9 rounded-xl bg-[#EAF4EF] dark:bg-[#183126] text-[#0C5A3E] dark:text-[#34D399] flex items-center justify-center mb-1.5">
+            <ArrowLeftRight className="w-5 h-5 stroke-[2.2]" />
           </div>
+          <span className="text-[13px] font-bold text-[#1C2620] dark:text-gray-100 tracking-tight leading-tight">
+            Translate
+          </span>
+        </div>
 
-          <div
-            onClick={() => navigateTo('quiz')}
-            className="p-4 rounded-2xl bg-white dark:bg-[#15231E] border border-[#ECE7DA] dark:border-[#20372E] shadow-xs flex flex-col items-center text-center cursor-pointer hover:border-emerald-400 active:scale-95 transition"
-          >
-            <div className="w-12 h-12 rounded-xl bg-[#E8F3EE] dark:bg-[#183126] text-[#0C5A3E] dark:text-[#34D399] flex items-center justify-center mb-2">
-              <HelpCircle className="w-6 h-6 stroke-[2]" />
-            </div>
-            <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100">Quiz</h4>
+        {/* Card 2: Dictionary */}
+        <div
+          onClick={() => navigateTo('dictionary')}
+          className="h-[96px] rounded-2xl bg-[#FCFAF5] dark:bg-[#15231E] border border-[#EBE3D3] dark:border-[#20372E] shadow-xs flex flex-col items-center justify-center text-center cursor-pointer hover:border-emerald-500/50 active:scale-[0.98] transition px-2"
+        >
+          <div className="w-9 h-9 rounded-xl bg-[#EAF4EF] dark:bg-[#183126] text-[#0C5A3E] dark:text-[#34D399] flex items-center justify-center mb-1.5">
+            <BookOpen className="w-5 h-5 stroke-[2.2]" />
           </div>
+          <span className="text-[13px] font-bold text-[#1C2620] dark:text-gray-100 tracking-tight leading-tight">
+            Dictionary
+          </span>
+        </div>
 
-          <div
-            onClick={() => navigateTo('worksheet-gen')}
-            className="p-4 rounded-2xl bg-white dark:bg-[#15231E] border border-[#ECE7DA] dark:border-[#20372E] shadow-xs flex flex-col items-center text-center cursor-pointer hover:border-emerald-400 active:scale-95 transition"
-          >
-            <div className="w-12 h-12 rounded-xl bg-[#E8F3EE] dark:bg-[#183126] text-[#0C5A3E] dark:text-[#34D399] flex items-center justify-center mb-2">
-              <FileText className="w-6 h-6 stroke-[2]" />
-            </div>
-            <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100">Worksheets</h4>
+        {/* Card 3: Learn */}
+        <div
+          onClick={() => navigateTo('learning')}
+          className="h-[96px] rounded-2xl bg-[#FCFAF5] dark:bg-[#15231E] border border-[#EBE3D3] dark:border-[#20372E] shadow-xs flex flex-col items-center justify-center text-center cursor-pointer hover:border-emerald-500/50 active:scale-[0.98] transition px-2"
+        >
+          <div className="w-9 h-9 rounded-xl bg-[#EAF4EF] dark:bg-[#183126] text-[#0C5A3E] dark:text-[#34D399] flex items-center justify-center mb-1.5">
+            <GraduationCap className="w-5 h-5 stroke-[2.2]" />
           </div>
+          <span className="text-[13px] font-bold text-[#1C2620] dark:text-gray-100 tracking-tight leading-tight">
+            Learn
+          </span>
+        </div>
+
+        {/* Card 4: Flashcards */}
+        <div
+          onClick={() => navigateTo('flashcards')}
+          className="h-[96px] rounded-2xl bg-[#FCFAF5] dark:bg-[#15231E] border border-[#EBE3D3] dark:border-[#20372E] shadow-xs flex flex-col items-center justify-center text-center cursor-pointer hover:border-emerald-500/50 active:scale-[0.98] transition px-2"
+        >
+          <div className="w-9 h-9 rounded-xl bg-[#EAF4EF] dark:bg-[#183126] text-[#0C5A3E] dark:text-[#34D399] flex items-center justify-center mb-1.5">
+            <Layers className="w-5 h-5 stroke-[2.2]" />
+          </div>
+          <span className="text-[13px] font-bold text-[#1C2620] dark:text-gray-100 tracking-tight leading-tight">
+            Flashcards
+          </span>
+        </div>
+
+        {/* Card 5: Quiz */}
+        <div
+          onClick={() => navigateTo('quiz')}
+          className="h-[96px] rounded-2xl bg-[#FCFAF5] dark:bg-[#15231E] border border-[#EBE3D3] dark:border-[#20372E] shadow-xs flex flex-col items-center justify-center text-center cursor-pointer hover:border-emerald-500/50 active:scale-[0.98] transition px-2"
+        >
+          <div className="w-9 h-9 rounded-xl bg-[#EAF4EF] dark:bg-[#183126] text-[#0C5A3E] dark:text-[#34D399] flex items-center justify-center mb-1.5">
+            <HelpCircle className="w-5 h-5 stroke-[2.2]" />
+          </div>
+          <span className="text-[13px] font-bold text-[#1C2620] dark:text-gray-100 tracking-tight leading-tight">
+            Quiz
+          </span>
+        </div>
+
+        {/* Card 6: Worksheets */}
+        <div
+          onClick={() => navigateTo('worksheet-gen')}
+          className="h-[96px] rounded-2xl bg-[#FCFAF5] dark:bg-[#15231E] border border-[#EBE3D3] dark:border-[#20372E] shadow-xs flex flex-col items-center justify-center text-center cursor-pointer hover:border-emerald-500/50 active:scale-[0.98] transition px-2"
+        >
+          <div className="w-9 h-9 rounded-xl bg-[#EAF4EF] dark:bg-[#183126] text-[#0C5A3E] dark:text-[#34D399] flex items-center justify-center mb-1.5">
+            <FileText className="w-5 h-5 stroke-[2.2]" />
+          </div>
+          <span className="text-[13px] font-bold text-[#1C2620] dark:text-gray-100 tracking-tight leading-tight">
+            Worksheets
+          </span>
         </div>
       </div>
     </div>
