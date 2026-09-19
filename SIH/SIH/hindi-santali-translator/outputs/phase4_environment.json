@@ -1,0 +1,39 @@
+{
+  "indictrans2_model_identifier": "ai4bharat/indictrans2-indic-indic-1B",
+  "model_architecture": "IndicTransForConditionalGeneration (Encoder-Decoder Seq2Seq Transformer, 18 encoder layers, 18 decoder layers, d_model=1024, ffn_dim=8192, 16 attention heads)",
+  "total_parameters": 1208096768,
+  "tokenizer": "IndicTransTokenizer (SentencePiece unigram with 122,706 subwords, language control tokens, script-aware IndicProcessor)",
+  "source_language_code": "hin_Deva",
+  "target_language_code": "sat_Olck",
+  "preprocessing_pipeline": "IndicProcessor(inference=True/False) script-unification, Devanagari normalization, and language tag prepending (<2sat_Olck>)",
+  "decoding_configuration": {
+    "strategy": "Greedy with Repetition Penalty",
+    "repetition_penalty": 1.2,
+    "num_beams": 1,
+    "max_length": 256,
+    "use_cache": true
+  },
+  "available_hardware": {
+    "device": "cpu",
+    "cuda_available": false,
+    "cpu_model": "AMD Ryzen 5 5600H with Radeon Graphics",
+    "physical_cores": 6,
+    "logical_threads": 12,
+    "total_ram_gb": 15.4,
+    "available_ram_gb": 7.27
+  },
+  "software_environment": {
+    "python_version": "3.13.14",
+    "pytorch_version": "2.13.0+cpu",
+    "transformers_version": "4.46.1",
+    "peft_version": "0.20.0",
+    "accelerate_version": "1.14.0",
+    "safetensors_version": "0.8.0",
+    "indictrans2_dependencies": [
+      "indic-nlp-library",
+      "sacremoses",
+      "sentencepiece",
+      "transformers_modules"
+    ]
+  }
+}

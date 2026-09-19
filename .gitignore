@@ -1,0 +1,8 @@
+﻿*.onnx
+*.data
+*.apk
+*.zip
+**/build/
+.gradle/
+.idea/
+

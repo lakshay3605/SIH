@@ -1,0 +1,343 @@
+[
+  {
+    "configuration": "Config A: Baseline (Greedy)",
+    "gen_kwargs": {
+      "num_beams": 1,
+      "repetition_penalty": 1.0,
+      "no_repeat_ngram_size": 0
+    },
+    "total_time_sec": 32.95,
+    "avg_time_sec": 6.59,
+    "records": [
+      {
+        "id": "casual",
+        "category": "Casual Conversation",
+        "hindi_input": "नमस्ते, आप कैसे हैं और आपका दिन कैसा बीत रहा है?",
+        "santali_output": "ᱦᱚᱞᱮ, ᱟᱢ ᱪᱮᱫ ᱞᱮᱠᱟ ᱠᱟᱱᱟ ᱟᱨ ᱟᱢᱟᱜ ᱫᱤᱱ ᱪᱮᱫ ᱞᱮᱠᱟ ᱠᱟᱱᱟ?",
+        "latency_sec": 7.2,
+        "script_valid": true,
+        "ol_chiki_ratio": 1.0,
+        "invalid_spans": [],
+        "has_repetition": false,
+        "cleaned_candidate": "ᱦᱚᱞᱮ, ᱟᱢ ᱪᱮᱫ ᱞᱮᱠᱟ ᱠᱟᱱᱟ ᱟᱨ ᱟᱢᱟᱜ ᱫᱤᱱ ᱪᱮᱫ ᱞᱮᱠᱟ ᱠᱟᱱᱟ?"
+      },
+      {
+        "id": "question",
+        "category": "Question",
+        "hindi_input": "क्या आप मुझे नजदीकी प्राथमिक स्वास्थ्य केंद्र का रास्ता बता सकते हैं?",
+        "santali_output": "ᱟᱢ ᱠᱤ ᱤᱧ ᱥᱳᱨᱥᱳᱯᱳᱨ ᱮᱛᱚᱦᱚᱵ ᱥᱟᱣᱟᱨ ᱛᱟᱞᱢᱟ ᱨᱮᱭᱟᱜ ᱰᱟᱦᱟᱨ ᱮᱢ ᱞᱟᱹᱭ ᱫᱟᱲᱮᱭᱟᱜᱼᱟᱢ?",
+        "latency_sec": 3.8,
+        "script_valid": true,
+        "ol_chiki_ratio": 1.0,
+        "invalid_spans": [],
+        "has_repetition": false,
+        "cleaned_candidate": "ᱟᱢ ᱠᱤ ᱤᱧ ᱥᱳᱨᱥᱳᱯᱳᱨ ᱮᱛᱚᱦᱚᱵ ᱥᱟᱣᱟᱨ ᱛᱟᱞᱢᱟ ᱨᱮᱭᱟᱜ ᱰᱟᱦᱟᱨ ᱮᱢ ᱞᱟᱹᱭ ᱫᱟᱲᱮᱭᱟᱜᱼᱟᱢ?"
+      },
+      {
+        "id": "instruction",
+        "category": "Instruction",
+        "hindi_input": "कृपया यहाँ शांति से बैठिए और जब तक डॉक्टर न बुलाएँ प्रतीक्षा कीजिए।",
+        "santali_output": "ᱫᱟᱭᱟ ᱠᱟᱛᱮ ᱱᱚᱶᱟ ᱨᱮ ᱥᱩᱛᱚᱱᱛᱮ ᱵᱮᱶᱦᱟᱨ ᱢᱮ ᱟᱨ ᱰᱤᱠᱟᱨ ᱫᱚ ᱯᱷᱳᱱ ᱵᱟᱝ ᱠᱚᱨᱟᱣ ᱦᱟᱹᱵᱤᱡ ᱚᱱᱢᱟᱱ ᱢᱮ ᱾",
+        "latency_sec": 4.85,
+        "script_valid": true,
+        "ol_chiki_ratio": 1.0,
+        "invalid_spans": [],
+        "has_repetition": false,
+        "cleaned_candidate": "ᱫᱟᱭᱟ ᱠᱟᱛᱮ ᱱᱚᱶᱟ ᱨᱮ ᱥᱩᱛᱚᱱᱛᱮ ᱵᱮᱶᱦᱟᱨ ᱢᱮ ᱟᱨ ᱰᱤᱠᱟᱨ ᱫᱚ ᱯᱷᱳᱱ ᱵᱟᱝ ᱠᱚᱨᱟᱣ ᱦᱟᱹᱵᱤᱡ ᱚᱱᱢᱟᱱ ᱢᱮ ᱾"
+      },
+      {
+        "id": "numbers",
+        "category": "Numbers & Quantities",
+        "hindi_input": "बाजार से दो किलो चावल, तीन लीटर दूध और पाँच सौ ग्राम दाल लेकर आओ।",
+        "santali_output": "ᱵᱟᱡᱟᱨ ᱠᱷᱚᱱ ᱵᱟᱨ ᱠᱤᱞᱳᱢᱤᱴᱟᱨ ꯆꯦꯡ, ᱯᱮ ᱞᱤᱴᱟᱨ دودھ ᱟᱨ ᱢᱚᱬᱮ ᱥᱟᱭ ᱜᱨᱟᱢ ᱰᱚᱞᱥ ᱦᱟᱛᱟᱣ ᱢᱮ ᱾",
+        "latency_sec": 4.05,
+        "script_valid": false,
+        "ol_chiki_ratio": 0.8983,
+        "invalid_spans": [
+          {
+            "start": 25,
+            "end": 28,
+            "text": "ꯆꯦꯡ",
+            "script": "Meitei Mayek"
+          },
+          {
+            "start": 39,
+            "end": 43,
+            "text": "دودھ",
+            "script": "Arabic/Urdu"
+          }
+        ],
+        "has_repetition": false,
+        "cleaned_candidate": "ᱵᱟᱡᱟᱨ ᱠᱷᱚᱱ ᱵᱟᱨ ᱠᱤᱞᱳᱢᱤᱴᱟᱨ [ꯆꯦꯡ], ᱯᱮ ᱞᱤᱴᱟᱨ [دودھ] ᱟᱨ ᱢᱚᱬᱮ ᱥᱟᱭ ᱜᱨᱟᱢ ᱰᱚᱞᱥ ᱦᱟᱛᱟᱣ ᱢᱮ ᱾"
+      },
+      {
+        "id": "agriculture",
+        "category": "Rural & Agriculture",
+        "hindi_input": "इस साल मानसूनी बारिश अच्छी होने से धान और मक्के की फसल बहुत अच्छी हुई है।",
+        "santali_output": "ᱱᱚᱶᱟ ᱥᱮᱨᱢᱟ ᱨᱮ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱾",
+        "latency_sec": 13.05,
+        "script_valid": true,
+        "ol_chiki_ratio": 1.0,
+        "invalid_spans": [],
+        "has_repetition": true,
+        "cleaned_candidate": "ᱱᱚᱶᱟ ᱥᱮᱨᱢᱟ ᱨᱮ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱦᱚᱭᱩᱜ ᱟ ᱾"
+      }
+    ]
+  },
+  {
+    "configuration": "Config B: Repetition Penalty (1.2)",
+    "gen_kwargs": {
+      "num_beams": 1,
+      "repetition_penalty": 1.2,
+      "no_repeat_ngram_size": 0
+    },
+    "total_time_sec": 20.83,
+    "avg_time_sec": 4.17,
+    "records": [
+      {
+        "id": "casual",
+        "category": "Casual Conversation",
+        "hindi_input": "नमस्ते, आप कैसे हैं और आपका दिन कैसा बीत रहा है?",
+        "santali_output": "ᱦᱚᱞᱮ, ᱟᱢ ᱪᱮᱫ ᱞᱮᱠᱟ ᱠᱟᱱᱟ ᱟᱨ ᱟᱢᱟᱜ ᱫᱤᱱ ᱫᱚ ᱪᱮᱫ ᱞᱮᱠᱟ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ?",
+        "latency_sec": 3.32,
+        "script_valid": true,
+        "ol_chiki_ratio": 1.0,
+        "invalid_spans": [],
+        "has_repetition": false,
+        "cleaned_candidate": "ᱦᱚᱞᱮ, ᱟᱢ ᱪᱮᱫ ᱞᱮᱠᱟ ᱠᱟᱱᱟ ᱟᱨ ᱟᱢᱟᱜ ᱫᱤᱱ ᱫᱚ ᱪᱮᱫ ᱞᱮᱠᱟ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ?"
+      },
+      {
+        "id": "question",
+        "category": "Question",
+        "hindi_input": "क्या आप मुझे नजदीकी प्राथमिक स्वास्थ्य केंद्र का रास्ता बता सकते हैं?",
+        "santali_output": "ᱟᱢ ᱠᱤ ᱤᱧ ᱥᱳᱨᱥᱳᱯᱳᱨ ᱮᱛᱚᱦᱚᱵ ᱥᱟᱣᱟᱨ ᱛᱟᱞᱢᱟ ᱨᱮᱭᱟᱜ ᱰᱟᱦᱟᱨ ᱮᱢ ᱞᱟᱹᱭ ᱫᱟᱲᱮᱭᱟᱜᱼᱟᱢ?",
+        "latency_sec": 3.92,
+        "script_valid": true,
+        "ol_chiki_ratio": 1.0,
+        "invalid_spans": [],
+        "has_repetition": false,
+        "cleaned_candidate": "ᱟᱢ ᱠᱤ ᱤᱧ ᱥᱳᱨᱥᱳᱯᱳᱨ ᱮᱛᱚᱦᱚᱵ ᱥᱟᱣᱟᱨ ᱛᱟᱞᱢᱟ ᱨᱮᱭᱟᱜ ᱰᱟᱦᱟᱨ ᱮᱢ ᱞᱟᱹᱭ ᱫᱟᱲᱮᱭᱟᱜᱼᱟᱢ?"
+      },
+      {
+        "id": "instruction",
+        "category": "Instruction",
+        "hindi_input": "कृपया यहाँ शांति से बैठिए और जब तक डॉक्टर न बुलाएँ प्रतीक्षा कीजिए।",
+        "santali_output": "ᱫᱟᱭᱟ ᱠᱟᱛᱮ ᱱᱚᱶᱟ ᱨᱮ ᱥᱩᱛᱚᱱᱛᱮ ᱵᱮᱶᱦᱟᱨ ᱢᱮ ᱟᱨ ᱰᱤᱠᱟᱨ ᱫᱚ ᱯᱷᱳᱱ ᱵᱟᱝ ᱠᱚᱨᱟᱣ ᱦᱟᱹᱵᱤᱡ ᱚᱱᱢᱟᱱ ᱢᱮ ᱾ \"",
+        "latency_sec": 4.67,
+        "script_valid": true,
+        "ol_chiki_ratio": 1.0,
+        "invalid_spans": [],
+        "has_repetition": false,
+        "cleaned_candidate": "ᱫᱟᱭᱟ ᱠᱟᱛᱮ ᱱᱚᱶᱟ ᱨᱮ ᱥᱩᱛᱚᱱᱛᱮ ᱵᱮᱶᱦᱟᱨ ᱢᱮ ᱟᱨ ᱰᱤᱠᱟᱨ ᱫᱚ ᱯᱷᱳᱱ ᱵᱟᱝ ᱠᱚᱨᱟᱣ ᱦᱟᱹᱵᱤᱡ ᱚᱱᱢᱟᱱ ᱢᱮ ᱾ \""
+      },
+      {
+        "id": "numbers",
+        "category": "Numbers & Quantities",
+        "hindi_input": "बाजार से दो किलो चावल, तीन लीटर दूध और पाँच सौ ग्राम दाल लेकर आओ।",
+        "santali_output": "ᱵᱟᱡᱟᱨ ᱠᱷᱚᱱ ᱵᱟᱨ ᱠᱤᱞᱳᱢᱤᱴᱟᱨ ꯆꯦꯡ, ᱯᱮ ᱞᱤᱴᱟᱨ دودھ ᱟᱨ ᱢᱚᱬᱮ ᱥᱟᱭ ᱜᱨᱟᱢ ᱰᱚᱞᱥ ᱦᱟᱛᱟᱣ ᱢᱮ ᱾",
+        "latency_sec": 4.0,
+        "script_valid": false,
+        "ol_chiki_ratio": 0.8983,
+        "invalid_spans": [
+          {
+            "start": 25,
+            "end": 28,
+            "text": "ꯆꯦꯡ",
+            "script": "Meitei Mayek"
+          },
+          {
+            "start": 39,
+            "end": 43,
+            "text": "دودھ",
+            "script": "Arabic/Urdu"
+          }
+        ],
+        "has_repetition": false,
+        "cleaned_candidate": "ᱵᱟᱡᱟᱨ ᱠᱷᱚᱱ ᱵᱟᱨ ᱠᱤᱞᱳᱢᱤᱴᱟᱨ [ꯆꯦꯡ], ᱯᱮ ᱞᱤᱴᱟᱨ [دودھ] ᱟᱨ ᱢᱚᱬᱮ ᱥᱟᱭ ᱜᱨᱟᱢ ᱰᱚᱞᱥ ᱦᱟᱛᱟᱣ ᱢᱮ ᱾"
+      },
+      {
+        "id": "agriculture",
+        "category": "Rural & Agriculture",
+        "hindi_input": "इस साल मानसूनी बारिश अच्छी होने से धान और मक्के की फसल बहुत अच्छी हुई है।",
+        "santali_output": "ᱱᱚᱶᱟ ᱥᱮᱨᱢᱟ ᱨᱮ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱦᱚᱭᱩᱜ ᱟ, ᱡᱟᱦᱟᱸᱛᱮ ᱚᱛᱢᱚᱱ ᱟᱨ ᱢᱮᱠᱦᱟ ᱨᱮᱭᱟᱜ ᱪᱟᱥ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱦᱩᱭ ᱟᱠᱟᱱᱟ ᱾",
+        "latency_sec": 4.93,
+        "script_valid": true,
+        "ol_chiki_ratio": 1.0,
+        "invalid_spans": [],
+        "has_repetition": false,
+        "cleaned_candidate": "ᱱᱚᱶᱟ ᱥᱮᱨᱢᱟ ᱨᱮ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱦᱚᱭᱩᱜ ᱟ, ᱡᱟᱦᱟᱸᱛᱮ ᱚᱛᱢᱚᱱ ᱟᱨ ᱢᱮᱠᱦᱟ ᱨᱮᱭᱟᱜ ᱪᱟᱥ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱦᱩᱭ ᱟᱠᱟᱱᱟ ᱾"
+      }
+    ]
+  },
+  {
+    "configuration": "Config C: Repetition Penalty (1.2) + N-gram (3)",
+    "gen_kwargs": {
+      "num_beams": 1,
+      "repetition_penalty": 1.2,
+      "no_repeat_ngram_size": 3
+    },
+    "total_time_sec": 21.36,
+    "avg_time_sec": 4.27,
+    "records": [
+      {
+        "id": "casual",
+        "category": "Casual Conversation",
+        "hindi_input": "नमस्ते, आप कैसे हैं और आपका दिन कैसा बीत रहा है?",
+        "santali_output": "ᱦᱚᱞᱮ, ᱟᱢ ᱪᱮᱫ ᱞᱮᱠᱟ ᱠᱟᱱᱟ ᱟᱨ ᱟᱢᱟᱜ ᱫᱤᱱ ᱫᱚ ᱪᱮᱫ ᱞᱮᱠᱟ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ?",
+        "latency_sec": 3.53,
+        "script_valid": true,
+        "ol_chiki_ratio": 1.0,
+        "invalid_spans": [],
+        "has_repetition": false,
+        "cleaned_candidate": "ᱦᱚᱞᱮ, ᱟᱢ ᱪᱮᱫ ᱞᱮᱠᱟ ᱠᱟᱱᱟ ᱟᱨ ᱟᱢᱟᱜ ᱫᱤᱱ ᱫᱚ ᱪᱮᱫ ᱞᱮᱠᱟ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ?"
+      },
+      {
+        "id": "question",
+        "category": "Question",
+        "hindi_input": "क्या आप मुझे नजदीकी प्राथमिक स्वास्थ्य केंद्र का रास्ता बता सकते हैं?",
+        "santali_output": "ᱟᱢ ᱠᱤ ᱤᱧ ᱥᱳᱨᱥᱳᱯᱳᱨ ᱮᱛᱚᱦᱚᱵ ᱥᱟᱣᱟᱨ ᱛᱟᱞᱢᱟ ᱨᱮᱭᱟᱜ ᱰᱟᱦᱟᱨ ᱮᱢ ᱞᱟᱹᱭ ᱫᱟᱲᱮᱭᱟᱜᱼᱟᱢ?",
+        "latency_sec": 4.01,
+        "script_valid": true,
+        "ol_chiki_ratio": 1.0,
+        "invalid_spans": [],
+        "has_repetition": false,
+        "cleaned_candidate": "ᱟᱢ ᱠᱤ ᱤᱧ ᱥᱳᱨᱥᱳᱯᱳᱨ ᱮᱛᱚᱦᱚᱵ ᱥᱟᱣᱟᱨ ᱛᱟᱞᱢᱟ ᱨᱮᱭᱟᱜ ᱰᱟᱦᱟᱨ ᱮᱢ ᱞᱟᱹᱭ ᱫᱟᱲᱮᱭᱟᱜᱼᱟᱢ?"
+      },
+      {
+        "id": "instruction",
+        "category": "Instruction",
+        "hindi_input": "कृपया यहाँ शांति से बैठिए और जब तक डॉक्टर न बुलाएँ प्रतीक्षा कीजिए।",
+        "santali_output": "ᱫᱟᱭᱟ ᱠᱟᱛᱮ ᱱᱚᱶᱟ ᱨᱮ ᱥᱩᱛᱚᱱᱛᱮ ᱵᱮᱶᱦᱟᱨ ᱢᱮ ᱟᱨ ᱰᱤᱠᱟᱨ ᱫᱚ ᱯᱷᱳᱱ ᱵᱟᱝ ᱠᱚᱨᱟᱣ ᱦᱟᱹᱵᱤᱡ ᱚᱱᱢᱟᱱ ᱢᱮ ᱾ \"",
+        "latency_sec": 4.98,
+        "script_valid": true,
+        "ol_chiki_ratio": 1.0,
+        "invalid_spans": [],
+        "has_repetition": false,
+        "cleaned_candidate": "ᱫᱟᱭᱟ ᱠᱟᱛᱮ ᱱᱚᱶᱟ ᱨᱮ ᱥᱩᱛᱚᱱᱛᱮ ᱵᱮᱶᱦᱟᱨ ᱢᱮ ᱟᱨ ᱰᱤᱠᱟᱨ ᱫᱚ ᱯᱷᱳᱱ ᱵᱟᱝ ᱠᱚᱨᱟᱣ ᱦᱟᱹᱵᱤᱡ ᱚᱱᱢᱟᱱ ᱢᱮ ᱾ \""
+      },
+      {
+        "id": "numbers",
+        "category": "Numbers & Quantities",
+        "hindi_input": "बाजार से दो किलो चावल, तीन लीटर दूध और पाँच सौ ग्राम दाल लेकर आओ।",
+        "santali_output": "ᱵᱟᱡᱟᱨ ᱠᱷᱚᱱ ᱵᱟᱨ ᱠᱤᱞᱳᱢᱤᱴᱟᱨ ꯆꯦꯡ, ᱯᱮ ᱞᱤᱴᱟᱨ دودھ ᱟᱨ ᱢᱚᱬᱮ ᱥᱟᱭ ᱜᱨᱟᱢ ᱰᱚᱞᱥ ᱦᱟᱛᱟᱣ ᱢᱮ ᱾",
+        "latency_sec": 4.11,
+        "script_valid": false,
+        "ol_chiki_ratio": 0.8983,
+        "invalid_spans": [
+          {
+            "start": 25,
+            "end": 28,
+            "text": "ꯆꯦꯡ",
+            "script": "Meitei Mayek"
+          },
+          {
+            "start": 39,
+            "end": 43,
+            "text": "دودھ",
+            "script": "Arabic/Urdu"
+          }
+        ],
+        "has_repetition": false,
+        "cleaned_candidate": "ᱵᱟᱡᱟᱨ ᱠᱷᱚᱱ ᱵᱟᱨ ᱠᱤᱞᱳᱢᱤᱴᱟᱨ [ꯆꯦꯡ], ᱯᱮ ᱞᱤᱴᱟᱨ [دودھ] ᱟᱨ ᱢᱚᱬᱮ ᱥᱟᱭ ᱜᱨᱟᱢ ᱰᱚᱞᱥ ᱦᱟᱛᱟᱣ ᱢᱮ ᱾"
+      },
+      {
+        "id": "agriculture",
+        "category": "Rural & Agriculture",
+        "hindi_input": "इस साल मानसूनी बारिश अच्छी होने से धान और मक्के की फसल बहुत अच्छी हुई है।",
+        "santali_output": "ᱱᱚᱶᱟ ᱥᱮᱨᱢᱟ ᱨᱮ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱦᱚᱭᱩᱜ ᱟ, ᱡᱟᱦᱟᱸᱛᱮ ᱚᱛᱢᱚᱱ ᱟᱨ ᱢᱮᱠᱦᱟ ᱨᱮᱭᱟᱜ ᱪᱟᱥ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱦᱩᱭ ᱟᱠᱟᱱᱟ ᱾",
+        "latency_sec": 4.73,
+        "script_valid": true,
+        "ol_chiki_ratio": 1.0,
+        "invalid_spans": [],
+        "has_repetition": false,
+        "cleaned_candidate": "ᱱᱚᱶᱟ ᱥᱮᱨᱢᱟ ᱨᱮ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱦᱚᱭᱩᱜ ᱟ, ᱡᱟᱦᱟᱸᱛᱮ ᱚᱛᱢᱚᱱ ᱟᱨ ᱢᱮᱠᱦᱟ ᱨᱮᱭᱟᱜ ᱪᱟᱥ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱦᱩᱭ ᱟᱠᱟᱱᱟ ᱾"
+      }
+    ]
+  },
+  {
+    "configuration": "Config D: Beam Search (Beams=4)",
+    "gen_kwargs": {
+      "num_beams": 4,
+      "early_stopping": true,
+      "repetition_penalty": 1.0,
+      "no_repeat_ngram_size": 0
+    },
+    "total_time_sec": 53.33,
+    "avg_time_sec": 10.67,
+    "records": [
+      {
+        "id": "casual",
+        "category": "Casual Conversation",
+        "hindi_input": "नमस्ते, आप कैसे हैं और आपका दिन कैसा बीत रहा है?",
+        "santali_output": "ᱦᱚᱞᱮ, ᱟᱢ ᱪᱮᱫ ᱞᱮᱠᱟ ᱠᱟᱱᱟ ᱟᱨ ᱟᱢᱟᱜ ᱫᱤᱱ ᱪᱮᱫ ᱞᱮᱠᱟ ᱠᱟᱱᱟ?",
+        "latency_sec": 7.93,
+        "script_valid": true,
+        "ol_chiki_ratio": 1.0,
+        "invalid_spans": [],
+        "has_repetition": false,
+        "cleaned_candidate": "ᱦᱚᱞᱮ, ᱟᱢ ᱪᱮᱫ ᱞᱮᱠᱟ ᱠᱟᱱᱟ ᱟᱨ ᱟᱢᱟᱜ ᱫᱤᱱ ᱪᱮᱫ ᱞᱮᱠᱟ ᱠᱟᱱᱟ?"
+      },
+      {
+        "id": "question",
+        "category": "Question",
+        "hindi_input": "क्या आप मुझे नजदीकी प्राथमिक स्वास्थ्य केंद्र का रास्ता बता सकते हैं?",
+        "santali_output": "ᱟᱢ ᱠᱤ ᱤᱧ ᱥᱳᱨᱥᱳᱯᱳᱨ ᱮᱛᱚᱦᱚᱵ ᱥᱟᱣᱟᱨ ᱛᱟᱞᱢᱟ ᱨᱮᱭᱟᱜ ᱰᱟᱦᱟᱨ ᱮᱢ ᱞᱟᱹᱭ ᱫᱟᱲᱮᱭᱟᱜᱼᱟᱢ?",
+        "latency_sec": 9.89,
+        "script_valid": true,
+        "ol_chiki_ratio": 1.0,
+        "invalid_spans": [],
+        "has_repetition": false,
+        "cleaned_candidate": "ᱟᱢ ᱠᱤ ᱤᱧ ᱥᱳᱨᱥᱳᱯᱳᱨ ᱮᱛᱚᱦᱚᱵ ᱥᱟᱣᱟᱨ ᱛᱟᱞᱢᱟ ᱨᱮᱭᱟᱜ ᱰᱟᱦᱟᱨ ᱮᱢ ᱞᱟᱹᱭ ᱫᱟᱲᱮᱭᱟᱜᱼᱟᱢ?"
+      },
+      {
+        "id": "instruction",
+        "category": "Instruction",
+        "hindi_input": "कृपया यहाँ शांति से बैठिए और जब तक डॉक्टर न बुलाएँ प्रतीक्षा कीजिए।",
+        "santali_output": "ᱫᱟᱭᱟ ᱠᱟᱛᱮ ᱱᱚᱶᱟ ᱨᱮ ᱥᱩᱛᱚᱱᱛᱮ ᱵᱮᱶᱦᱟᱨ ᱢᱮ ᱟᱨ ᱰᱤᱠᱟᱨ ᱫᱚ ᱯᱷᱳᱱ ᱵᱟᱝ ᱠᱚᱨᱟᱣ ᱦᱟᱹᱵᱤᱡ ᱚᱱᱢᱟᱱ ᱢᱮ ᱾",
+        "latency_sec": 11.87,
+        "script_valid": true,
+        "ol_chiki_ratio": 1.0,
+        "invalid_spans": [],
+        "has_repetition": false,
+        "cleaned_candidate": "ᱫᱟᱭᱟ ᱠᱟᱛᱮ ᱱᱚᱶᱟ ᱨᱮ ᱥᱩᱛᱚᱱᱛᱮ ᱵᱮᱶᱦᱟᱨ ᱢᱮ ᱟᱨ ᱰᱤᱠᱟᱨ ᱫᱚ ᱯᱷᱳᱱ ᱵᱟᱝ ᱠᱚᱨᱟᱣ ᱦᱟᱹᱵᱤᱡ ᱚᱱᱢᱟᱱ ᱢᱮ ᱾"
+      },
+      {
+        "id": "numbers",
+        "category": "Numbers & Quantities",
+        "hindi_input": "बाजार से दो किलो चावल, तीन लीटर दूध और पाँच सौ ग्राम दाल लेकर आओ।",
+        "santali_output": "ᱵᱟᱡᱟᱨ ᱠᱷᱚᱱ ᱵᱟᱨ ᱠᱤᱞᱳᱢᱤᱴᱟᱨ ꯆꯦꯡ, ᱯᱮ ᱞᱤᱴᱟᱨ دودھ ᱟᱨ ᱢᱚᱬᱮ ᱥᱟᱭ ᱜᱨᱟᱢ ᱰᱚᱞᱥ ᱦᱟᱛᱟᱣ ᱢᱮ ᱾",
+        "latency_sec": 10.39,
+        "script_valid": false,
+        "ol_chiki_ratio": 0.8983,
+        "invalid_spans": [
+          {
+            "start": 25,
+            "end": 28,
+            "text": "ꯆꯦꯡ",
+            "script": "Meitei Mayek"
+          },
+          {
+            "start": 39,
+            "end": 43,
+            "text": "دودھ",
+            "script": "Arabic/Urdu"
+          }
+        ],
+        "has_repetition": false,
+        "cleaned_candidate": "ᱵᱟᱡᱟᱨ ᱠᱷᱚᱱ ᱵᱟᱨ ᱠᱤᱞᱳᱢᱤᱴᱟᱨ [ꯆꯦꯡ], ᱯᱮ ᱞᱤᱴᱟᱨ [دودھ] ᱟᱨ ᱢᱚᱬᱮ ᱥᱟᱭ ᱜᱨᱟᱢ ᱰᱚᱞᱥ ᱦᱟᱛᱟᱣ ᱢᱮ ᱾"
+      },
+      {
+        "id": "agriculture",
+        "category": "Rural & Agriculture",
+        "hindi_input": "इस साल मानसूनी बारिश अच्छी होने से धान और मक्के की फसल बहुत अच्छी हुई है।",
+        "santali_output": "ᱱᱚᱶᱟ ᱥᱮᱨᱢᱟ ᱨᱮ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱢᱟᱱᱥᱩᱢᱤ ᱫᱟᱜ ᱨᱮᱭᱟᱜ ᱚᱡᱮᱛᱮ ᱚᱛᱢᱚᱱ ᱟᱨ ᱢᱮᱠᱦᱟ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱪᱟᱥ ᱦᱩᱭ ᱟᱠᱟᱱᱟ ᱾",
+        "latency_sec": 13.24,
+        "script_valid": true,
+        "ol_chiki_ratio": 1.0,
+        "invalid_spans": [],
+        "has_repetition": false,
+        "cleaned_candidate": "ᱱᱚᱶᱟ ᱥᱮᱨᱢᱟ ᱨᱮ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱢᱟᱱᱥᱩᱢᱤ ᱫᱟᱜ ᱨᱮᱭᱟᱜ ᱚᱡᱮᱛᱮ ᱚᱛᱢᱚᱱ ᱟᱨ ᱢᱮᱠᱦᱟ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱪᱟᱥ ᱦᱩᱭ ᱟᱠᱟᱱᱟ ᱾"
+      }
+    ]
+  }
+]

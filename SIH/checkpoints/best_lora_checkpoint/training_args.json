@@ -1,0 +1,9 @@
+{
+  "learning_rate": 0.0003,
+  "batch_size": 4,
+  "gradient_accumulation_steps": 4,
+  "epochs": 5,
+  "seed": 42,
+  "fp16": true,
+  "device": "NVIDIA GeForce RTX 3050 Laptop GPU (4 GB)"
+}

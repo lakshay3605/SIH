@@ -1,0 +1,8 @@
+{
+  "initial_candidates": 2012,
+  "duplicate_pairs_removed": 0,
+  "rejected_malformed_pairs": 5,
+  "unique_hindi_prompts": 2007,
+  "unique_santali_targets": 2007,
+  "cross_split_leakage": 0
+}

@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Settings</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
+  :root {
+    --bg:#000; --card-bg:#1c1c1e; --text-primary:#fff;
+    --text-secondary:#8e8e93; --text-blue:#4da6ff;
+    --separator:#2c2c2e; --accent-green:#30d158;
+    --accent-blue:#0a84ff; --accent-cyan:#64d2ff;
+  }
+  html,body { background:#000; color:#fff; font-family:-apple-system,'Helvetica Neue',Arial,sans-serif; height:100%; width:100%; overflow:hidden; }
+
+  /* Full-screen on device */
+  .phone-wrapper { display:block; width:100%; height:100vh; background:#000; }
+  .phone { width:100%; height:100%; background:#000; position:relative; }
+  .screen { width:100%; height:100%; position:relative; }
+
+  /* Status bar is hidden — Android's real status bar shows above the WebView */
+  .status-bar { display:none !important; }
+
+  /* Pages */
+  .page { position:fixed; top:0; left:0; right:0; bottom:0; display:flex; flex-direction:column;
+    transition:transform .35s cubic-bezier(.4,0,.2,1); background:#000; }
+  .page.hidden { transform:translateX(100%); pointer-events:none; }
+
+  /* Scroll */
+  .scroll-area { flex:1; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .scroll-area::-webkit-scrollbar { display:none; }
+
+  /* Settings header */
+  .settings-header-big { padding:28px 24px 8px; }
+  .settings-title-big { font-size:34px; font-weight:300; letter-spacing:-0.5px; margin-bottom:10px; }
+  .search-row { display:flex; justify-content:flex-end; padding:0 24px 12px; }
+  .search-icon-btn { width:38px; height:38px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .search-icon-btn svg { fill:white; width:22px; height:22px; }
+
+  /* Cards */
+  .settings-scroll { padding:0 14px 30px; display:flex; flex-direction:column; gap:10px; }
+  .settings-card { background:#1c1c1e; border-radius:18px; overflow:hidden; }
+
+  /* Account card */
+  .account-card { padding:18px; display:flex; align-items:center; justify-content:space-between; gap:14px; cursor:pointer; }
+  .account-card:active { background:#252527; }
+  .account-name { font-size:16px; font-weight:500; margin-bottom:4px; }
+  .account-sub { font-size:12px; color:#8e8e93; line-height:1.4; }
+  .account-avatar { width:46px; height:46px; border-radius:50%; background:#3a3a3c;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .account-avatar svg { fill:#8e8e93; width:28px; height:28px; }
+
+  /* Suggestion */
+  .suggestion-card { padding:16px 18px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; }
+  .suggestion-card:active { background:#252527; }
+  .sug-title { font-size:15px; margin-bottom:3px; }
+  .sug-sub { font-size:12px; color:#8e8e93; }
+  .star-icon { font-size:22px; color:#ffd700; flex-shrink:0; }
+
+  /* Settings item */
+  .settings-item { display:flex; align-items:center; padding:13px 18px; gap:16px; cursor:pointer; position:relative; }
+  .settings-item:active { background:#252527; }
+  .settings-item+.settings-item::before { content:''; position:absolute; top:0; left:70px; right:0; height:.5px; background:#2c2c2e; }
+  .item-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .item-icon svg { width:22px; height:22px; fill:white; }
+  .item-text { flex:1; }
+  .item-title { font-size:15px; font-weight:400; margin-bottom:2px; }
+  .item-sub { font-size:12px; color:#8e8e93; }
+
+  /* Icon colours */
+  .bg-blue{background:#0a84ff} .bg-teal{background:#32ade6} .bg-purple{background:#6e6ce8}
+  .bg-purple2{background:#9b59b6} .bg-red{background:#ff453a} .bg-orange{background:#ff6b35}
+  .bg-green{background:#30d158} .bg-green2{background:#34c759} .bg-pink{background:#ff375f}
+  .bg-indigo{background:#5e5ce6} .bg-cyan{background:#32ade6} .bg-lime{background:#7ac143}
+  .bg-sky{background:#1c9cf6} .bg-violet{background:#bf5af2}
+
+  /* Home indicator */
+  .home-indicator { height:28px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .home-bar { width:120px; height:5px; background:#444; border-radius:3px; }
+
+  /* ── Device care page ── */
+  .dc-topbar { display:flex; align-items:center; padding:8px 16px 10px; gap:8px; }
+  .dc-back { width:40px; height:40px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; border-radius:50%; flex-shrink:0; }
+  .dc-back:active { background:#252527; }
+  .dc-back svg { fill:white; width:22px; height:22px; }
+  .dc-title { font-size:19px; font-weight:500; flex:1; }
+  .dc-icons { display:flex; gap:10px; }
+  .dc-icons svg { fill:white; width:22px; height:22px; cursor:pointer; }
+
+  .dc-scroll { padding:4px 14px 30px; display:flex; flex-direction:column; gap:10px; }
+
+  /* Great card */
+  .great-card { background:linear-gradient(145deg,#1c2a3a,#1a1a2e); border-radius:18px; padding:22px 20px; text-align:center; }
+  .great-title { font-size:26px; font-weight:700; color:#4da6ff; margin-bottom:10px; }
+  .great-sub { font-size:13px; color:#aaa; line-height:1.5; }
+  .great-sub span { color:#4da6ff; }
+
+  /* Stats */
+  .stats-card { background:#1c1c1e; border-radius:18px; overflow:hidden; }
+  .stat-row { padding:16px 18px; }
+  .stat-row+.stat-row { border-top:.5px solid #2c2c2e; }
+  .stat-label-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+  .stat-label-row svg { width:16px; height:16px; fill:#8e8e93; }
+  .stat-label-text { font-size:13px; color:#8e8e93; }
+  .stat-value-row { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; }
+  .stat-main { font-size:20px; font-weight:700; }
+  .stat-right { font-size:13px; color:#8e8e93; }
+  .progress-track { height:8px; background:#3a3a3c; border-radius:4px; overflow:hidden; }
+  .progress-fill { height:100%; border-radius:4px; width:0%; transition:width 1.2s ease; }
+  .green-fill { background:linear-gradient(90deg,#30d158,#34c759); }
+  .cyan-fill  { background:linear-gradient(90deg,#32ade6,#64d2ff); }
+  .blue-fill  { background:linear-gradient(90deg,#0a84ff,#64d2ff); }
+
+  /* App protection */
+  .protection-row { padding:16px 18px; display:flex; align-items:center; justify-content:space-between; border-top:.5px solid #2c2c2e; }
+  .prot-label { font-size:13px; color:#8e8e93; margin-bottom:4px; }
+  .prot-val { font-size:17px; font-weight:600; }
+  .check-circle { width:32px; height:32px; background:#30d158; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  .check-circle svg { fill:white; width:18px; height:18px; }
+
+  /* Ultra data saving */
+  .ultra-card { background:#1c1c1e; border-radius:18px; padding:16px 18px; }
+  .ultra-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .ultra-label { display:flex; align-items:center; gap:8px; }
+  .ultra-label svg { width:18px; height:18px; fill:#8e8e93; }
+  .ultra-label-text { font-size:13px; color:#8e8e93; }
+  .ultra-start { font-size:13px; color:#8e8e93; }
+  .toggle-track { height:6px; background:#3a3a3c; border-radius:3px; position:relative; }
+  .toggle-knob { width:24px; height:24px; background:#5e5ce6; border-radius:50%; position:absolute;
+    top:-9px; left:0; box-shadow:0 2px 6px rgba(0,0,0,.5); }
+
+  /* Performance */
+  .perf-section-label { font-size:13px; color:#8e8e93; padding:0 4px 6px; }
+  .perf-card { background:#1c1c1e; border-radius:18px; padding:18px; display:flex; align-items:center; justify-content:space-between; }
+  .perf-title { font-size:17px; font-weight:600; }
+  .perf-sub { font-size:13px; color:#8e8e93; margin-top:2px; }
+  .perf-icon { width:38px; height:38px; background:#2c2c2e; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  .perf-icon svg { fill:#8e8e93; width:20px; height:20px; }
+</style>
+</head>
+<body>
+
+<div class="phone-wrapper">
+<div class="phone">
+<div class="screen">
+
+<!-- ═══════ SETTINGS PAGE ═══════ -->
+<div class="page" id="page-settings">
+
+  <div class="status-bar">
+    <span class="status-time">00:40</span>
+    <div class="status-icons">
+      <svg viewBox="0 0 24 24"><path d="M6.87 3.29L4.74 1.4 3.4 2.9l2.12 1.9 1.35-1.51zM20.6 2.9l-1.34-1.5-2.13 1.9 1.35 1.5L20.6 2.9zM12 4C8.13 4 5 7.13 5 11s3.13 7 7 7 7-3.13 7-7-3.13-7-7-7zm0 12.5c-3.03 0-5.5-2.47-5.5-5.5S8.97 5.5 12 5.5 17.5 7.97 17.5 11 15.03 16.5 12 16.5zm.5-9.5h-1.5v5l4 2.4.75-1.23-3.25-1.92V7z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M1 9l2 2c5.07-5.07 11.14-5.07 18 0l2-2C14.9 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      <span class="battery-text">42%</span>
+      <svg viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+    </div>
+  </div>
+
+  <div class="settings-header-big">
+    <div class="settings-title-big">Settings</div>
+  </div>
+
+  <div class="search-row">
+    <div class="search-icon-btn">
+      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+    </div>
+  </div>
+
+  <div class="scroll-area">
+    <div class="settings-scroll">
+
+      <!-- Samsung Account -->
+      <div class="settings-card">
+        <div class="account-card">
+          <div>
+            <div class="account-name">Sharjil Sharma</div>
+            <div class="account-sub">Samsung account &bull; sha**********@gmail.com</div>
+          </div>
+          <div class="account-avatar">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Suggestion -->
+      <div class="settings-card">
+        <div class="suggestion-card">
+          <div>
+            <div class="sug-title">Access your pictures anywhere</div>
+            <div class="sug-sub">1 more suggestion</div>
+          </div>
+          <div class="star-icon">✦</div>
+        </div>
+      </div>
+
+      <!-- Connections + Connected -->
+      <div class="settings-card">
+        <div class="settings-item">
+          <div class="item-icon bg-blue"><svg viewBox="0 0 24 24"><path d="M1 9l2 2c5.07-5.07 11.14-5.07 18 0l2-2C14.9 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Connections</div>
+            <div class="item-sub">Wi-Fi &bull; Bluetooth &bull; SIM manager</div>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="item-icon bg-teal"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Connected devices</div>
+            <div class="item-sub">Quick Share &bull; Android Auto</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modes, Sounds, Notifications -->
+      <div class="settings-card">
+        <div class="settings-item">
+          <div class="item-icon bg-indigo"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Modes and Routines</div>
+            <div class="item-sub">Modes &bull; Routines</div>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="item-icon bg-purple"><svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Sounds and vibration</div>
+            <div class="item-sub">Sound mode &bull; Ringtone</div>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="item-icon bg-red"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-2 4.5l-6 3.75L6 8.5V7l6 3.75L18 7v1.5z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Notifications</div>
+            <div class="item-sub">Status bar &bull; Do not disturb</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Display, Wallpaper, Themes, Home, Lock -->
+      <div class="settings-card">
+        <div class="settings-item">
+          <div class="item-icon bg-green"><svg viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.45 3.17 2.83 5.55 6 6v2c-4.42-.5-7.5-4.05-8-8zM11 3v2c-3.17.45-5.55 2.83-6 6H3C3.5 7.05 6.58 3.5 11 3zm2 0c4.42.5 7.5 4.05 8 8h-2c-.45-3.17-2.83-5.55-6-6V3zm1 18v-2c3.17-.45 5.55-2.83 6-6h2c-.5 3.95-3.58 7.5-8 8z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Display</div>
+            <div class="item-sub">Brightness &bull; Eye comfort shield &bull; Navigation bar</div>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="item-icon bg-sky"><svg viewBox="0 0 24 24"><path d="M2.53 19.65l1.34.56v-9.03l-2.43 5.86c-.41 1.02.08 2.19 1.09 2.61zm19.5-3.7L17.07 3.98c-.31-.75-1.04-1.21-1.81-1.23-.26 0-.53.04-.79.15L7.1 5.95c-.75.31-1.21 1.03-1.23 1.8-.01.27.04.54.15.8l4.96 11.97c.31.76 1.05 1.22 1.83 1.23.26 0 .52-.05.77-.15l7.36-3.05c1.02-.42 1.51-1.59 1.09-2.6z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Wallpaper and style</div>
+            <div class="item-sub">Wallpapers &bull; Colour palette</div>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="item-icon bg-purple2"><svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Themes</div>
+            <div class="item-sub">Themes &bull; Wallpapers &bull; Icons</div>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="item-icon bg-orange"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Home screen</div>
+            <div class="item-sub">Layout &bull; App icon badges</div>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="item-icon bg-green2"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Lock screen</div>
+            <div class="item-sub">Screen lock type &bull; Always On Display</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security, Location, Safety -->
+      <div class="settings-card">
+        <div class="settings-item">
+          <div class="item-icon bg-blue"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Security and privacy</div>
+            <div class="item-sub">Biometrics &bull; Permission manager</div>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="item-icon bg-red"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Location</div>
+            <div class="item-sub">Location requests</div>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="item-icon bg-lime"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Safety and emergency</div>
+            <div class="item-sub">Medical info &bull; Wireless emergency alerts</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accounts, Google -->
+      <div class="settings-card">
+        <div class="settings-item">
+          <div class="item-icon bg-violet"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Accounts and backup</div>
+            <div class="item-sub">Manage accounts &bull; Smart Switch</div>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="item-icon bg-blue"><svg viewBox="0 0 24 24"><path d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.35 0 9.25-3.67 9.25-9.09 0-1.15-.15-1.81-.15-1.81z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Google</div>
+            <div class="item-sub">Google services</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advanced features -->
+      <div class="settings-card">
+        <div class="settings-item">
+          <div class="item-icon bg-pink"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Advanced features</div>
+            <div class="item-sub">Labs &bull; Side key</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Digital Wellbeing, Battery care, Apps -->
+      <div class="settings-card">
+        <div class="settings-item">
+          <div class="item-icon bg-green"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Digital Wellbeing and parental controls</div>
+            <div class="item-sub">Screen time &bull; App timers</div>
+          </div>
+        </div>
+        <div class="settings-item" onclick="openDeviceCare()">
+          <div class="item-icon bg-sky"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Battery and device care</div>
+            <div class="item-sub">Storage &bull; Memory &bull; Device protection</div>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="item-icon bg-indigo"><svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Apps</div>
+            <div class="item-sub">Default apps &bull; App settings</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- General management, Accessibility -->
+      <div class="settings-card">
+        <div class="settings-item">
+          <div class="item-icon bg-orange"><svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">General management</div>
+            <div class="item-sub">Language and keyboard &bull; Date and time</div>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="item-icon bg-green"><svg viewBox="0 0 24 24"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Accessibility</div>
+            <div class="item-sub">TalkBack &bull; Mono audio &bull; Assistant menu</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Software update, User manual, Remote support -->
+      <div class="settings-card">
+        <div class="settings-item">
+          <div class="item-icon bg-orange"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Software update</div>
+            <div class="item-sub">Download and install</div>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="item-icon bg-purple2"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">User manual</div>
+            <div class="item-sub">Learn more</div>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="item-icon bg-red"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg></div>
+          <div class="item-text">
+            <div class="item-title">Remote support</div>
+            <div class="item-sub">Remote support</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="home-indicator"><div class="home-bar"></div></div>
+</div>
+<!-- END SETTINGS PAGE -->
+
+
+<!-- ═══════ DEVICE CARE PAGE ═══════ -->
+<div class="page hidden" id="page-device-care">
+
+  <div class="status-bar">
+    <span class="status-time">00:41</span>
+    <div class="status-icons">
+      <svg viewBox="0 0 24 24"><path d="M21 6.5h-4v-2c0-.83-.67-1.5-1.5-1.5h-7C7.67 3 7 3.67 7 4.5v2H3c-.83 0-1.5.67-1.5 1.5v10c0 .83.67 1.5 1.5 1.5h18c.83 0 1.5-.67 1.5-1.5V8c0-.83-.67-1.5-1.5-1.5zm-13-2h8v2H8v-2z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M1 9l2 2c5.07-5.07 11.14-5.07 18 0l2-2C14.9 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      <span class="battery-text">42%</span>
+      <svg viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+    </div>
+  </div>
+
+  <div class="dc-topbar">
+    <div class="dc-back" onclick="closeDeviceCare()">
+      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </div>
+    <div class="dc-title">Device care</div>
+    <div class="dc-icons">
+      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+    </div>
+  </div>
+
+  <div class="scroll-area" id="dc-scroll-area">
+    <div class="dc-scroll">
+
+      <!-- Great card -->
+      <div class="great-card">
+        <div class="great-title">Great!</div>
+        <div class="great-sub"><span>Your care report has been updated.</span> See what Device care has done to keep your phone in good condition.</div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-card">
+
+        <!-- Battery (REAL via Battery API) -->
+        <div class="stat-row">
+          <div class="stat-label-row">
+            <svg viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+            <span class="stat-label-text">Battery</span>
+          </div>
+          <div class="stat-value-row">
+            <div class="stat-main" style="color:#30d158;">⚡ <span id="real-battery-pct">--</span>%</div>
+            <div class="stat-right" id="real-battery-status">Loading...</div>
+          </div>
+          <div class="progress-track"><div class="progress-fill green-fill" id="battery-bar" data-target="50"></div></div>
+        </div>
+
+        <!-- Storage -->
+        <div class="stat-row">
+          <div class="stat-label-row">
+            <svg viewBox="0 0 24 24"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z"/></svg>
+            <span class="stat-label-text">Storage</span>
+          </div>
+          <div class="stat-value-row">
+            <div class="stat-main">54% used</div>
+            <div class="stat-right">34.6 GB / 64 GB</div>
+          </div>
+          <div class="progress-track"><div class="progress-fill cyan-fill" data-target="54"></div></div>
+        </div>
+
+        <!-- Memory — FAKE 2 GB -->
+        <div class="stat-row">
+          <div class="stat-label-row">
+            <svg viewBox="0 0 24 24"><path d="M4 6h18V4H4c-1.1 0-2 .9-2 2v11H0v3h14v-3H4V6zm19 2h-6c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h6c.55 0 1-.45 1-1V9c0-.55-.45-1-1-1zm-1 9h-4v-7h4v7z"/></svg>
+            <span class="stat-label-text">Memory</span>
+          </div>
+          <div class="stat-value-row">
+            <div class="stat-main">58% used</div>
+            <div class="stat-right">1.2 GB / 2 GB</div>
+          </div>
+          <div class="progress-track"><div class="progress-fill blue-fill" data-target="58"></div></div>
+        </div>
+
+        <!-- App protection -->
+        <div class="protection-row">
+          <div>
+            <div class="prot-label">App protection</div>
+            <div class="prot-val">No threats found</div>
+          </div>
+          <div class="check-circle">
+            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Ultra data saving -->
+      <div class="ultra-card">
+        <div class="ultra-top">
+          <div class="ultra-label">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93V18h-2v1.93C7.06 19.45 4.55 16.94 4.07 14H6v-2H4.07C4.55 9.06 7.06 6.55 10 6.07V8h2V6.07C14.94 6.55 17.45 9.06 17.93 12H16v2h1.93c-.48 2.94-2.99 5.45-5.93 5.93z"/></svg>
+            <span class="ultra-label-text">Ultra data saving</span>
+          </div>
+          <span class="ultra-start">Start saving</span>
+        </div>
+        <div class="toggle-track"><div class="toggle-knob"></div></div>
+      </div>
+
+      <!-- Performance -->
+      <div class="perf-section-label">Performance</div>
+      <div class="perf-card">
+        <div>
+          <div class="perf-title">Auto optimisation</div>
+          <div class="perf-sub">Every day at 2:00 AM</div>
+        </div>
+        <div class="perf-icon">
+          <svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="home-indicator"><div class="home-bar"></div></div>
+</div>
+<!-- END DEVICE CARE PAGE -->
+
+</div>
+</div>
+</div>
+
+<script>
+// ── Real Battery via Web Battery API ──
+var realBatteryLevel = 50;
+var realBatteryCharging = false;
+
+function updateBatteryUI(battery) {
+  realBatteryLevel = Math.round(battery.level * 100);
+  realBatteryCharging = battery.charging;
+  var pct = realBatteryLevel;
+  document.getElementById('real-battery-pct').textContent = pct;
+  var statusEl = document.getElementById('real-battery-status');
+  if (battery.charging) {
+    var mins = Math.round(battery.chargingTime / 60);
+    if (isFinite(mins) && mins > 0) {
+      var h = Math.floor(mins/60); var m = mins%60;
+      statusEl.textContent = (h>0 ? h+' h '+m+' m' : m+' m') + ' until full';
+    } else {
+      statusEl.textContent = 'Charging...';
+    }
+  } else {
+    var dmins = Math.round(battery.dischargingTime / 60);
+    if (isFinite(dmins) && dmins > 0) {
+      var dh = Math.floor(dmins/60); var dm = dmins%60;
+      statusEl.textContent = (dh>0 ? dh+' h '+dm+' m' : dm+' m') + ' remaining';
+    } else {
+      statusEl.textContent = pct + '% battery';
+    }
+  }
+  // Update bar data-target for animation
+  var bar = document.getElementById('battery-bar');
+  bar.setAttribute('data-target', pct);
+}
+
+if (navigator.getBattery) {
+  navigator.getBattery().then(function(battery) {
+    updateBatteryUI(battery);
+    battery.addEventListener('levelchange', function() { updateBatteryUI(battery); });
+    battery.addEventListener('chargingchange', function() { updateBatteryUI(battery); });
+  });
+} else {
+  // Fallback
+  document.getElementById('real-battery-pct').textContent = '42';
+  document.getElementById('real-battery-status').textContent = 'Battery status';
+  document.getElementById('battery-bar').setAttribute('data-target', '42');
+}
+
+// ── Page navigation ──
+function openDeviceCare() {
+  document.getElementById('page-settings').classList.add('hidden');
+  var dc = document.getElementById('page-device-care');
+  dc.classList.remove('hidden');
+  document.getElementById('dc-scroll-area').scrollTop = 0;
+
+  // Animate progress bars
+  var fills = dc.querySelectorAll('.progress-fill');
+  fills.forEach(function(el) {
+    el.style.transition = 'none';
+    el.style.width = '0%';
+  });
+  setTimeout(function() {
+    fills.forEach(function(el) {
+      el.style.transition = 'width 1.2s ease';
+      var target = el.getAttribute('data-target');
+      el.style.width = target + '%';
+    });
+  }, 80);
+}
+
+function closeDeviceCare() {
+  document.getElementById('page-device-care').classList.add('hidden');
+  document.getElementById('page-settings').classList.remove('hidden');
+}
+</script>
+</body>
+</html>

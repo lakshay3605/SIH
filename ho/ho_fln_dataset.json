@@ -1,0 +1,77 @@
+{
+    "metadata": {
+        "language_pair": "hin_hoc",
+        "framework": "NIPUN Bharat FLN (Class 1-3)",
+        "scripts_supported": [
+            "Devanagari",
+            "Warang Chiti"
+        ]
+    },
+    "classroom_commands": [
+        {
+            "id": "cmd_001",
+            "hindi": "अपनी किताब खोलो।",
+            "ho_devanagari": "अमाः पुथी उगाहमे।",
+            "ho_warang_chiti": "𑢢𑣃𑣁𑣋𑣁𑣄 𑢶𑣁𑣄 current_placeholder",
+            "context": "Literacy - Reading readiness"
+        },
+        {
+            "id": "cmd_002",
+            "hindi": "यहाँ देखो और सुनो।",
+            "ho_devanagari": "नेन्ताः नेलमे अड़ोः अयुममे।",
+            "context": "General attention"
+        },
+        {
+            "id": "cmd_003",
+            "hindi": "बहुत अच्छा! तालियाँ बजाओ।",
+            "ho_devanagari": "सुबुई गे! थबड़ीमे।",
+            "context": "Positive reinforcement"
+        },
+        {
+            "id": "cmd_004",
+            "hindi": "बैठ जाओ।",
+            "ho_devanagari": "दुबमे।",
+            "context": "Classroom management"
+        },
+        {
+            "id": "cmd_005",
+            "hindi": "बोर्ड पर देखो।",
+            "ho_devanagari": "बोर्ड रे नेलमे।",
+            "context": "Visual focus"
+        }
+    ],
+    "foundational_numeracy": [
+        {
+            "id": "num_count",
+            "hindi": "चलो गिनते हैं: एक, दो, तीन, चार, पाँच।",
+            "ho_devanagari": "दला बु हिसाबा: मियद, बार, अपी, उपुन, मोय।",
+            "context": "Counting 1 to 5"
+        },
+        {
+            "id": "num_ques_001",
+            "hindi": "यह कितने हैं?",
+            "ho_devanagari": "नेयाः चिमिनंग मेनाः?",
+            "context": "Quantity evaluation"
+        },
+        {
+            "id": "num_math_001",
+            "hindi": "जोड़कर बताओ कितना हुआ।",
+            "ho_devanagari": "मेसा कते उदूबमे चिमिनंग होबाअना।",
+            "context": "Addition prompt"
+        }
+    ],
+    "foundational_literacy": [
+        {
+            "id": "lit_letter_001",
+            "hindi": "यह कौन सा अक्षर है?",
+            "ho_devanagari": "नेयाः चिलाकन अखर तानाः?",
+            "context": "Letter recognition"
+        },
+        {
+            "id": "lit_story_001",
+            "hindi": "मैं एक कहानी सुनाता हूँ।",
+            "ho_devanagari": "अइंग मियद काहनी अयुमपे तनाइंग।",
+            "context": "Storytelling session"
+        }
+    ]
+}

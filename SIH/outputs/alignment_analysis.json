@@ -1,0 +1,7 @@
+{
+  "mean_hindi_length_chars": 31.63,
+  "mean_santali_length_chars": 30.95,
+  "mean_length_ratio_santali_to_hindi": 0.99,
+  "min_ratio": 0.52,
+  "max_ratio": 1.84
+}

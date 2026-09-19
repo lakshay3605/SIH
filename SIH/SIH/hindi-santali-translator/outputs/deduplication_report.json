@@ -1,0 +1,11 @@
+{
+  "total_records": 2007,
+  "exact_duplicates": 0,
+  "normalized_duplicates": 0,
+  "source_duplicates_differing_target": 0,
+  "target_duplicates_differing_source": 2,
+  "near_duplicates": 0,
+  "final_unique_records": 2007,
+  "exact_duplicate_details": [],
+  "near_duplicate_details": []
+}

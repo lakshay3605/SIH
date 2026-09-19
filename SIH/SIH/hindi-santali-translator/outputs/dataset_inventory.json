@@ -1,0 +1,141 @@
+{
+  "timestamp": "2026-09-01T02:37:00Z",
+  "total_datasets_inventoried": 7,
+  "parallel_corpora_found": [
+    "FLORES-200 Dev Set (Parallel Hindi-Santali)",
+    "FLORES-200 Devtest Set (Parallel Hindi-Santali)",
+    "Phase 2 Verified Hindi-Santali Test Prompts"
+  ],
+  "datasets": [
+    {
+      "dataset_name": "FLORES-200 Dev Set (Parallel Hindi-Santali)",
+      "file_path": "data/raw/flores200/flores200_dataset/dev/hin_Deva.dev & sat_Olck.dev",
+      "file_type": "TXT (.dev line-aligned)",
+      "num_records": 997,
+      "column_names_or_structure": "Line-by-line parallel aligned sentences",
+      "language_of_fields": {
+        "source": "hin_Deva (Hindi)",
+        "target": "sat_Olck (Santali)"
+      },
+      "is_parallel": true,
+      "contains_ol_chiki": true,
+      "estimated_quality": "High (Professional Human Translation)",
+      "duplicate_rate": "0.0%"
+    },
+    {
+      "dataset_name": "FLORES-200 Devtest Set (Parallel Hindi-Santali)",
+      "file_path": "data/raw/flores200/flores200_dataset/devtest/hin_Deva.devtest & sat_Olck.devtest",
+      "file_type": "TXT (.devtest line-aligned)",
+      "num_records": 1012,
+      "column_names_or_structure": "Line-by-line parallel aligned sentences",
+      "language_of_fields": {
+        "source": "hin_Deva (Hindi)",
+        "target": "sat_Olck (Santali)"
+      },
+      "is_parallel": true,
+      "contains_ol_chiki": true,
+      "estimated_quality": "High (Professional Human Translation)",
+      "duplicate_rate": "0.0%"
+    },
+    {
+      "dataset_name": "Santali Ol Chiki Agriculture Q&A Dataset",
+      "file_path": "data/raw/agriculture/Ol Chiki (Santali)-Agriculture QAs.csv",
+      "file_type": "CSV",
+      "num_records": 506,
+      "column_names_or_structure": [
+        "Id",
+        "Prompt",
+        "Completion"
+      ],
+      "language_of_fields": {
+        "Prompt": "sat_Olck (Santali)",
+        "Completion": "sat_Olck (Santali)"
+      },
+      "is_parallel": false,
+      "contains_ol_chiki": true,
+      "estimated_quality": "Medium-High (Domain specific agricultural Santali text)",
+      "duplicate_rate": "0.0%"
+    },
+    {
+      "dataset_name": "JanAI Workspace Chat Dataset",
+      "file_path": "data/raw/janai/chat.csv",
+      "file_type": "CSV",
+      "num_records": 0,
+      "column_names_or_structure": [
+        "user",
+        "msg"
+      ],
+      "language_of_fields": {
+        "user": "unknown",
+        "msg": "unknown"
+      },
+      "is_parallel": false,
+      "contains_ol_chiki": false,
+      "estimated_quality": "Empty template",
+      "duplicate_rate": "N/A"
+    },
+    {
+      "dataset_name": "JanAI Workspace Audio/Text Data Collection",
+      "file_path": "data/raw/janai/data.csv",
+      "file_type": "CSV",
+      "num_records": 0,
+      "column_names_or_structure": [
+        "timestamp",
+        "name",
+        "email",
+        "category",
+        "question",
+        "santali_latin",
+        "audio_path"
+      ],
+      "language_of_fields": {
+        "question": "Hindi/English",
+        "santali_latin": "Santali Latin"
+      },
+      "is_parallel": false,
+      "contains_ol_chiki": false,
+      "estimated_quality": "Empty template",
+      "duplicate_rate": "N/A"
+    },
+    {
+      "dataset_name": "Murmu Crawled Santali Web Data",
+      "file_path": "data/raw/murmu_crawl/crawl_output.json",
+      "file_type": "JSON",
+      "num_records": 1,
+      "column_names_or_structure": [
+        "url",
+        "content"
+      ],
+      "language_of_fields": {
+        "content": "sat_Olck (Santali text)"
+      },
+      "is_parallel": false,
+      "contains_ol_chiki": true,
+      "estimated_quality": "Raw unaligned web crawl",
+      "duplicate_rate": "N/A"
+    },
+    {
+      "dataset_name": "Phase 2 Verified Hindi-Santali Test Prompts",
+      "file_path": "outputs/end_to_end_results.json",
+      "file_type": "JSON",
+      "num_records": 3,
+      "column_names_or_structure": [
+        "hindi_input",
+        "santali_output",
+        "script_validation",
+        "translation_latency_seconds",
+        "tts_latency_seconds",
+        "audio_path",
+        "audio_duration_seconds"
+      ],
+      "language_of_fields": {
+        "hindi_input": "hin_Deva",
+        "santali_output": "sat_Olck"
+      },
+      "is_parallel": true,
+      "contains_ol_chiki": true,
+      "estimated_quality": "High (Verified by Phase 2 Audit)",
+      "duplicate_rate": "0.0%"
+    }
+  ]
+}

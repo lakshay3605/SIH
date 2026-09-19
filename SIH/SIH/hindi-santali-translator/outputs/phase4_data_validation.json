@@ -1,0 +1,76 @@
+{
+  "timestamp": "2026-09-01T02:47:45Z",
+  "overall_validation_pass": true,
+  "count_checks": {
+    "train_count_expected": 1605,
+    "train_count_actual": 1605,
+    "train_count_pass": true,
+    "val_count_expected": 200,
+    "val_count_actual": 200,
+    "val_count_pass": true,
+    "test_count_expected": 202,
+    "test_count_actual": 202,
+    "test_count_pass": true
+  },
+  "empty_checks": {
+    "train": {
+      "empty_source_count": 0,
+      "empty_target_count": 0,
+      "pass": true
+    },
+    "validation": {
+      "empty_source_count": 0,
+      "empty_target_count": 0,
+      "pass": true
+    },
+    "test": {
+      "empty_source_count": 0,
+      "empty_target_count": 0,
+      "pass": true
+    }
+  },
+  "duplicate_checks": {
+    "train": {
+      "duplicate_count": 0,
+      "pass": true
+    },
+    "validation": {
+      "duplicate_count": 0,
+      "pass": true
+    },
+    "test": {
+      "duplicate_count": 0,
+      "pass": true
+    }
+  },
+  "script_checks": {
+    "train": {
+      "source_hindi_valid_ratio": 1.0,
+      "target_ol_chiki_valid_ratio": 1.0,
+      "all_valid": true
+    },
+    "validation": {
+      "source_hindi_valid_ratio": 1.0,
+      "target_ol_chiki_valid_ratio": 1.0,
+      "all_valid": true
+    },
+    "test": {
+      "source_hindi_valid_ratio": 1.0,
+      "target_ol_chiki_valid_ratio": 1.0,
+      "all_valid": true
+    }
+  },
+  "leakage_checks": {
+    "train_val_source_leakage": 0,
+    "train_test_source_leakage": 0,
+    "val_test_source_leakage": 0,
+    "train_val_target_leakage": 0,
+    "train_test_target_leakage": 0,
+    "val_test_target_leakage": 0,
+    "zero_leakage_pass": true
+  },
+  "tokenizer_checks": {
+    "all_splits_tokenizable": true,
+    "errors": []
+  }
+}

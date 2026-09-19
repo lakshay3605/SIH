@@ -1,0 +1,18 @@
+{
+  "peft_type": "LORA",
+  "r": 16,
+  "lora_alpha": 32,
+  "lora_dropout": 0.05,
+  "target_modules": [
+    "q_proj",
+    "v_proj",
+    "k_proj",
+    "out_proj"
+  ],
+  "base_model_name_or_path": "ai4bharat/indictrans2-indic-indic-1B",
+  "best_epoch": 5,
+  "best_val_loss": 1.3513,
+  "best_val_chrf": 75.22,
+  "source_lang": "hin_Deva",
+  "target_lang": "sat_Olck"
+}

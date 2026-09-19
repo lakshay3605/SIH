@@ -1,0 +1,10 @@
+{
+  "total_vocab_size": 122706,
+  "ol_chiki_token_count": 5448,
+  "pure_ol_chiki_count": 1643,
+  "mixed_script_count": 3805,
+  "special_tokens_count": 4,
+  "is_constrained_decoding_safe": false,
+  "feasibility_verdict": "UNSAFE_WITHOUT_INTERNAL_REPRESENTATION_ADAPTATION",
+  "reason": "IndicTrans2 utilizes a unified 256k shared multilingual vocabulary with internal Devanagari/transliterated pivot representations in its encoder-decoder layers. Forcing an Ol-Chiki-only token logit mask during raw sequence generation cuts off valid shared subword units and special language tags (e.g. 'sat_Olck'), resulting in immediate generation collapse (early EOS or <unk> spam). Safe script filtering must occur at post-generation candidate validation."
+}

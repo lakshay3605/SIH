@@ -1,0 +1,11 @@
+{
+  "raw_candidate_pairs": 2012,
+  "valid_canonical_pairs": 2007,
+  "rejected_pairs": 5,
+  "train_pairs": 1605,
+  "validation_pairs": 200,
+  "test_pairs": 202,
+  "locked_eval_pairs": 100,
+  "ol_chiki_validity_ratio": 1.0,
+  "split_seed": 42
+}

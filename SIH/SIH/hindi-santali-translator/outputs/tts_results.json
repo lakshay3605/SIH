@@ -1,0 +1,54 @@
+{
+  "model_name": "ai4bharat/indic-parler-tts",
+  "model_disk_size_mb": 3589.06,
+  "model_load_time_sec": 26.39,
+  "device": "cpu",
+  "gpu_available": false,
+  "peak_ram_mb": 3758.2,
+  "peak_vram_mb": 0.0,
+  "sentences_tested": 3,
+  "results": [
+    {
+      "id": "tts_01",
+      "category": "Casual Greeting",
+      "santali_text": "ᱡᱚᱦᱟᱨ, ᱟᱢ ᱪᱮᱫ ᱞᱮᱠᱟ ᱢᱮᱱᱟᱜ ᱢᱮᱭᱟ?",
+      "speaker": "Sumitra",
+      "output_path": "D:\\Desktop\\SIH\\hindi-santali-translator\\outputs\\tts_test_01.wav",
+      "sample_rate": 44100,
+      "audio_duration_seconds": 2.41,
+      "inference_latency_seconds": 33.23,
+      "real_time_factor": 13.76,
+      "device": "cpu",
+      "ram_mb": 3758.2,
+      "status": "SUCCESS"
+    },
+    {
+      "id": "tts_02",
+      "category": "Question",
+      "santali_text": "ᱟᱢᱟᱜ ᱟᱹᱛᱩ ᱨᱮᱱᱟᱜ ᱧᱩᱛᱩᱢ ᱫᱚ ᱪᱮᱫ?",
+      "speaker": "Sumitra",
+      "output_path": "D:\\Desktop\\SIH\\hindi-santali-translator\\outputs\\tts_test_02.wav",
+      "sample_rate": 44100,
+      "audio_duration_seconds": 3.54,
+      "inference_latency_seconds": 46.23,
+      "real_time_factor": 13.06,
+      "device": "cpu",
+      "ram_mb": 3539.3,
+      "status": "SUCCESS"
+    },
+    {
+      "id": "tts_03",
+      "category": "Rural / Agriculture",
+      "santali_text": "ᱱᱚᱶᱟ ᱥᱮᱨᱢᱟ ᱦᱳᱲᱳ ᱟᱨ ᱡᱚᱱᱰᱨᱟ ᱪᱟᱥ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱦᱩᱭ ᱟᱠᱟᱱᱟ ᱾",
+      "speaker": "Raju",
+      "output_path": "D:\\Desktop\\SIH\\hindi-santali-translator\\outputs\\tts_test_03.wav",
+      "sample_rate": 44100,
+      "audio_duration_seconds": 4.16,
+      "inference_latency_seconds": 54.36,
+      "real_time_factor": 13.08,
+      "device": "cpu",
+      "ram_mb": 3569.8,
+      "status": "SUCCESS"
+    }
+  ]
+}
