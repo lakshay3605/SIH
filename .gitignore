@@ -43,3 +43,8 @@ Frontend/dist/
 Thumbs.db
 
 HindiSantaliApp/pulled_models/
+HindiSantaliApp/local.properties
+HindiSantaliApp/**/build/
+HindiSantaliApp/.gradle/
+*.apk
+*.aab

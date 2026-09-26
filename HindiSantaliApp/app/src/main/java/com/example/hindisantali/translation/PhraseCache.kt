@@ -112,18 +112,23 @@ class PhraseCache(private val context: Context) {
             }
         }
 
-        // 3. Word-by-word vocab substitution
-        val words = working.split(" ")
-        val translated = words.map { w -> vocabMap[w] ?: w }
-        val hasAtLeastOneTranslation = translated.zip(words).any { (t, w) -> t != w }
+        // 3. Word-by-word vocab substitution: ONLY if ALL non-punctuation words are translated
+        val words = working.split(" ").filter { it.isNotBlank() }
+        if (words.isNotEmpty()) {
+            val translated = words.map { w -> vocabMap[w] }
+            val allTranslated = translated.all { it != null }
+            if (allTranslated) {
+                var result = translated.filterNotNull().joinToString(" ")
+                if (hindiText.trimEnd().endsWith("?")) result += "?"
+                else if (hindiText.trimEnd().endsWith("।") || hindiText.trimEnd().endsWith(".")) result += "।"
+                return result
+            }
+        }
 
-        return if (hasAtLeastOneTranslation || wasModified) {
-            var result = translated.joinToString(" ")
-            if (hindiText.trimEnd().endsWith("?")) result += "?"
-            else if (hindiText.trimEnd().endsWith("।") || hindiText.trimEnd().endsWith(".")) result += "।"
-            result
+        return if (wasModified && working.isNotEmpty() && !working.any { it in '\u0900'..'\u097F' }) {
+            working
         } else {
-            null  // No match — caller should use ONNX model
+            null  // Avoid mixed-script corruptions — fallback to proper translation
         }
     }
 

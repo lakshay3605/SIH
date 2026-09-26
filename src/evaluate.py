@@ -17,6 +17,10 @@ if sys.stdout and hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
 import torch
+try:
+    import torch.distributed.tensor  # Ensures torch.distributed.tensor is populated for PEFT on Windows/Python 3.13
+except Exception:
+    pass
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 from peft import PeftModel
 

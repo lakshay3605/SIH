@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ScreenId, BottomTab, LanguageCode, HistoryItem, DictionaryItem, FlashcardItem, WorksheetRow } from '../types';
+import { speakSantali, translateHindiToSantaliClient } from '../utils/speechTranslation';
 
 interface AppContextType {
   currentScreen: ScreenId;
@@ -9,6 +10,8 @@ interface AppContextType {
   appLanguage: LanguageCode;
   toastMessage: string | null;
   inputText: string;
+  translatedText: string;
+  phoneticText: string;
   sourceLang: LanguageCode;
   targetLang: LanguageCode;
   quizSelected: number;
@@ -29,11 +32,14 @@ interface AppContextType {
   navigateTo: (screen: ScreenId, tabHint?: BottomTab) => void;
   goBack: () => void;
   showToast: (msg: string) => void;
-  playSpeech: (text: string) => void;
+  playSpeech: (text: string, phoneticOverride?: string, onStart?: () => void, onEnd?: () => void) => void;
+  translateInput: (textToTranslate?: string) => { olChiki: string; phonetic: string };
   setIsDarkMode: (val: boolean) => void;
   setTextSize: (val: 'Small' | 'Medium' | 'Large' | 'Extra Large') => void;
   setAppLanguage: (val: LanguageCode) => void;
   setInputText: (val: string) => void;
+  setTranslatedText: (val: string) => void;
+  setPhoneticText: (val: string) => void;
   setQuizSelected: (val: number) => void;
   setFlashcardIdx: (updater: (prev: number) => number) => void;
   setLearningClass: (val: 'Class 1' | 'Class 2' | 'Class 3') => void;
@@ -55,6 +61,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const [inputText, setInputText] = useState('आज हम संख्या सीखेंगे।');
+  const [translatedText, setTranslatedText] = useState('ᱛᱮᱦᱮᱧ ᱟᱵᱚ ᱮᱞ ᱵᱚᱱ ᱪᱮᱫᱚᱜᱼᱟ᱾');
+  const [phoneticText, setPhoneticText] = useState('Tehenj abo el bon chedog-aa.');
   const [sourceLang] = useState<LanguageCode>('Hindi');
   const [targetLang] = useState<LanguageCode>('Santali');
   const [quizSelected, setQuizSelected] = useState<number>(1);
@@ -143,14 +151,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setTimeout(() => setToastMessage(null), 2500);
   };
 
-  const playSpeech = (text: string) => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.rate = 0.85;
-      u.lang = 'hi-IN';
-      window.speechSynthesis.speak(u);
-    }
+  const translateInput = (textToTranslate?: string) => {
+    const text = textToTranslate !== undefined ? textToTranslate : inputText;
+    const res = translateHindiToSantaliClient(text);
+    const newOlChiki = res.olChiki || 'ᱛᱮᱦᱮᱧ ᱟᱵᱚ ᱮᱞ ᱵᱚᱱ ᱪᱮᱫᱚᱜᱼᱟ᱾';
+    const newPhonetic = res.phonetic || 'Tehenj abo el bon chedog-aa.';
+    setTranslatedText(newOlChiki);
+    setPhoneticText(newPhonetic);
+    return { olChiki: newOlChiki, phonetic: newPhonetic };
+  };
+
+  const playSpeech = (text: string, phoneticOverride?: string, onStart?: () => void, onEnd?: () => void) => {
+    speakSantali(text, phoneticOverride, onStart, onEnd);
   };
 
   const navigateTo = (s: ScreenId, tabHint?: BottomTab) => {
@@ -201,6 +213,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         appLanguage,
         toastMessage,
         inputText,
+        translatedText,
+        phoneticText,
         sourceLang,
         targetLang,
         quizSelected,
@@ -222,10 +236,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         goBack,
         showToast,
         playSpeech,
+        translateInput,
         setIsDarkMode,
         setTextSize,
         setAppLanguage,
         setInputText,
+        setTranslatedText,
+        setPhoneticText,
         setQuizSelected,
         setFlashcardIdx,
         setLearningClass,

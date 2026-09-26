@@ -36,6 +36,10 @@ from transformers import (
     get_linear_schedule_with_warmup,
     PreTrainedTokenizer
 )
+try:
+    import torch.distributed.tensor
+except Exception:
+    pass
 from peft import LoraConfig, get_peft_model, TaskType, PeftModel
 
 from src.script_validator import normalize_text
@@ -44,6 +48,7 @@ from src.script_validator import normalize_text
 class ParallelTranslationDataset(Dataset):
     """
     Pure PyTorch Dataset for parallel translation.
+    Supports multilingual pairs (hin_Deva, sat_Olck, mun_Deva).
     Avoids third-party C-extension dependencies to guarantee Windows/Linux portability.
     """
     def __init__(self, jsonl_path: str, max_samples: Optional[int] = None):
@@ -55,10 +60,19 @@ class ParallelTranslationDataset(Dataset):
             for line in f:
                 if line.strip():
                     item = json.loads(line)
-                    h = normalize_text(item.get("hindi", ""))
-                    s = normalize_text(item.get("santali", ""))
-                    if h and s:
-                        self.samples.append({"hindi": h, "santali": s})
+                    src_l = item.get("source_lang", "hin_Deva")
+                    tgt_l = item.get("target_lang", "sat_Olck")
+                    src_t = normalize_text(item.get("source_text") or item.get("hindi", ""))
+                    tgt_t = normalize_text(item.get("target_text") or item.get("santali", ""))
+                    if src_t and tgt_t:
+                        self.samples.append({
+                            "source_lang": src_l,
+                            "target_lang": tgt_l,
+                            "source_text": src_t,
+                            "target_text": tgt_t,
+                            "hindi": item.get("hindi", src_t),
+                            "santali": item.get("santali", tgt_t)
+                        })
                     if max_samples and len(self.samples) >= max_samples:
                         break
 
@@ -78,9 +92,9 @@ def build_collate_fn(
 ):
     """
     Constructs dynamic padding collation function formatted specifically for IndicTrans2.
-    Ensures every Hindi source sentence is prefixed as:
-        hin_Deva sat_Olck <Hindi sentence>
-    Uses the correct IndicTrans2 tokenizer behavior for target Santali text (text_target=...).
+    Ensures every source sentence is prefixed as:
+        <source_lang> <target_lang> <source sentence>
+    Uses the correct IndicTrans2 tokenizer behavior for target text (text_target=...).
     Masks padding tokens with -100 for proper cross-entropy loss computation.
     """
     def collate_fn(batch: List[Dict[str, str]]) -> Dict[str, torch.Tensor]:
@@ -94,17 +108,25 @@ def build_collate_fn(
         )
 
         for item in batch:
-            h = item["hindi"].strip()
-            s = item["santali"].strip()
+            s_lang = item.get("source_lang", src_lang)
+            t_lang = item.get("target_lang", tgt_lang)
+            # Map Mundari tag to native IndicTrans2 tag unr_Deva
+            if s_lang == "mun_Deva":
+                s_lang = "unr_Deva"
+            if t_lang == "mun_Deva":
+                t_lang = "unr_Deva"
 
-            # Format source: hin_Deva sat_Olck <Hindi sentence>
-            if is_indictrans or not h.startswith(src_lang):
-                src_formatted = f"{src_lang} {tgt_lang} {h}"
+            s_text = (item.get("source_text") or item.get("hindi", "")).strip()
+            t_text = (item.get("target_text") or item.get("santali", "")).strip()
+
+            # Format source: <src_lang> <tgt_lang> <source text>
+            if is_indictrans or not s_text.startswith(s_lang):
+                src_formatted = f"{s_lang} {t_lang} {s_text}"
             else:
-                src_formatted = h
+                src_formatted = s_text
 
             src_texts.append(src_formatted)
-            tgt_texts.append(s)
+            tgt_texts.append(t_text)
 
         # Source input tokenization
         inputs = tokenizer(
@@ -174,9 +196,9 @@ def perform_preflight_check(model_id: str, batch_size: int) -> Dict:
 
 def train_lora(
     model_id: str = "ai4bharat/indictrans2-indic-indic-dist-320M",
-    train_path: str = "data/processed/train.jsonl",
-    val_path: str = "data/processed/validation.jsonl",
-    output_dir: str = "models/checkpoints/best_lora",
+    train_path: str = "data/processed/train_multilingual.jsonl",
+    val_path: str = "data/processed/val_multilingual.jsonl",
+    output_dir: str = "models/checkpoints/best_multilingual_lora",
     epochs: int = 3,
     batch_size: int = 4,
     grad_accum_steps: int = 4,
@@ -419,9 +441,9 @@ def train_lora(
 def parse_args():
     parser = argparse.ArgumentParser(description="Aadivaani IndicTrans2 LoRA Training Pipeline")
     parser.add_argument("--model_id", type=str, default="ai4bharat/indictrans2-indic-indic-dist-320M", help="Hugging Face Model ID or local model path")
-    parser.add_argument("--train_path", type=str, default="data/processed/train.jsonl")
-    parser.add_argument("--val_path", type=str, default="data/processed/validation.jsonl")
-    parser.add_argument("--output_dir", type=str, default="models/checkpoints/best_lora")
+    parser.add_argument("--train_path", type=str, default="data/processed/train_multilingual.jsonl")
+    parser.add_argument("--val_path", type=str, default="data/processed/val_multilingual.jsonl")
+    parser.add_argument("--output_dir", type=str, default="models/checkpoints/best_multilingual_lora")
     parser.add_argument("--epochs", type=int, default=3)
     parser.add_argument("--batch_size", type=int, default=4)
     parser.add_argument("--grad_accum", type=int, default=4)

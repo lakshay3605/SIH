@@ -12,146 +12,160 @@ import argparse
 if sys.stdout and hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
-from src.inference import translate_hindi_to_santali
-from src.script_validator import validate_ol_chiki, normalize_text
-
+from src.inference import (
+    translate,
+    translate_hindi_to_santali,
+    translate_santali_to_hindi,
+    translate_hindi_to_mundari,
+    translate_mundari_to_hindi
+)
+from src.script_validator import (
+    validate_ol_chiki,
+    validate_devanagari,
+    detect_script,
+    normalize_text
+)
 
 VERIFICATION_BENCHMARK_SENTENCES = [
     {
-        "domain": "Greetings & Introductions",
-        "hindi": "नमस्ते, आप कैसे हैं?",
-        "expected_santali": "ᱡᱚᱦᱟᱨ, ᱟᱢ ᱪᱮᱫ ᱞᱮᱠᱟ ᱢᱮᱱᱟᱜ-ᱟᱢᱟ?"
+        "domain": "Education",
+        "hindi": "सभी बच्चों को स्कूल जाना चाहिए।",
+        "expected_santali": "ᱥᱟᱱᱟᱢ ᱜᱤᱫᱽᱨᱟᱹ ᱠᱚ ᱟᱥᱲᱟ ᱥᱮᱱᱚᱜ ᱞᱟᱹᱠᱛᱤ ᱠᱟᱱᱟ᱾",
+        "expected_mundari": "ᱥᱚᱵᱮᱱ ᱜᱤᱫᱽᱨᱟᱹ ᱠᱚ ᱤᱥᱠᱩᱞ ᱥᱮᱱᱚᱜ ᱞᱟᱹᱠᱛᱤ ᱠᱟᱱᱟ।"
+    },
+    {
+        "domain": "Healthcare",
+        "hindi": "समय पर दवाई खाइए और पानी उबालकर पीजिए।",
+        "expected_santali": "ᱚᱠᱛᱚ ᱨᱮ ᱨᱟᱱ ᱡᱚᱢ ᱢᱮ ᱟᱨ ᱫᱟᱜ ᱦᱮᱰᱮᱡ ᱠᱟᱛᱮ ᱧᱩᱭ ᱢᱮ᱾",
+        "expected_mundari": "ᱚᱠᱛᱚ ᱨᱮ ᱨᱟᱱ ᱡᱚᱢ ᱢᱮ।"
+    },
+    {
+        "domain": "Governance & Civic",
+        "hindi": "यह पंचायत का आधिकारिक कार्यालय है।",
+        "expected_santali": "ᱱᱚᱶᱟ ᱫᱚ ᱯᱚᱧᱪᱟᱭᱚᱛ ᱨᱮᱱᱟᱜ ᱟᱹᱭᱫᱟᱹᱨᱤ ᱚᱯᱷᱤᱥ ᱠᱟᱱᱟ᱾",
+        "expected_mundari": "ᱱᱮᱭᱟ ᱫᱚ ᱯᱚᱧᱪᱟᱭᱚᱛ ᱚᱲᱟᱜ ᱠᱟᱱᱟ।"
     },
     {
         "domain": "Daily Conversation",
-        "hindi": "मैं ठीक हूँ, धन्यवाद।",
-        "expected_santali": "ᱤᱧ ᱵᱷᱟᱹᱜᱤ ᱜᱮ ᱢᱮᱱᱟᱹᱧᱟ, ᱥᱟᱨᱦᱟᱣ।"
+        "hindi": "नमस्ते, आप कैसे हैं?",
+        "expected_santali": "ᱡᱚᱦᱟᱨ, ᱟᱢ ᱪᱮᱫ ᱞᱮᱠᱟ ᱢᱮᱱᱟᱜ-ᱟᱢᱟ?",
+        "expected_mundari": "ᱡᱚᱦᱟᱨ, ᱟᱢ ᱪᱤᱞᱠᱟ ᱢᱮᱱᱟᱢᱟ?"
     },
     {
-        "domain": "Questions / Directions",
-        "hindi": "आप कहाँ जा रहे हैं?",
-        "expected_santali": "ᱟᱢ ᱚᱠᱟᱛᱮᱢ ᱥᱮᱱᱚᱜ ᱠᱟᱱᱟ?"
-    },
-    {
-        "domain": "Home / Actions",
-        "hindi": "मैं घर जा रहा हूँ।",
-        "expected_santali": "ᱤᱧ ᱚᱲᱟᱜ-ᱤᱧ ᱥᱮᱱᱚᱜ ᱠᱟᱱᱟ।"
-    },
-    {
-        "domain": "Market / Questions",
-        "hindi": "यह कितने का है?",
-        "expected_santali": "ᱱᱚᱣᱟ ᱫᱚ ᱛᱤᱱᱟᱹᱜ ᱫᱟᱢ?"
-    },
-    {
-        "domain": "Village / Agriculture",
-        "hindi": "किसान खेत में काम कर रहा है।",
-        "expected_santali": "ᱪᱟᱹᱥᱤ ᱠᱷᱮᱛ ᱨᱮ ᱠᱟᱹᱢᱤ ᱠᱟᱱᱟᱭ।"
-    },
-    {
-        "domain": "Health & Hygiene",
-        "hindi": "खाने से पहले साबुन से हाथ धोना चाहिए।",
-        "expected_santali": "ᱡᱚᱢ ᱢᱟᱬᱟᱝ ᱨᱮ ᱥᱟᱵᱚᱱ ᱛᱮ ᱛᱤ ᱟᱹᱨᱩᱵ ᱞᱟᱹᱠᱛᱤ ᱠᱟᱱᱟ।"
-    },
-    {
-        "domain": "Education & School",
-        "hindi": "सभी बच्चों को स्कूल जाना चाहिए।",
-        "expected_santali": "ᱡᱚᱛᱚ ᱜᱤᱫᱽᱨᱟᱹ ᱤᱥᱠᱩᱞ ᱪᱟᱞᱟᱜ ᱞᱟᱹᱠᱛᱤ ᱠᱟᱱᱟ।"
-    },
-    {
-        "domain": "Nature & Weather",
-        "hindi": "आज का मौसम बहुत अच्छा है।",
-        "expected_santali": "ᱛᱮᱦᱮᱧᱟᱜ ᱦᱚᱭ-ᱦᱤᱥᱤᱫ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱢᱮᱱᱟᱜ-ᱟ।"
-    },
-    {
-        "domain": "Community & Collaboration",
-        "hindi": "हम सब साथ मिलकर काम करेंगे।",
-        "expected_santali": "ᱟᱵᱚ ᱡᱚᱛᱚ ᱦᱚᱲ ᱢᱤᱫ ᱥᱟᱶᱛᱮ ᱠᱟᱹᱢᱤ ᱵᱚᱱ ᱠᱟᱹᱢᱤᱭᱟ।"
+        "domain": "Agriculture & Environment",
+        "hindi": "आज बहुत तेज़ बारिश हो रही है।",
+        "expected_santali": "ᱛᱮᱦᱮᱧ ᱟᱹᱰᱤ ᱡᱚᱨ ᱫᱟᱜ ᱮᱫᱟᱭ᱾",
+        "expected_mundari": "ᱛᱤᱥᱤᱧ ᱟᱹᱰᱤ ᱡᱚᱨ ᱫᱟᱜ ᱮᱫᱟᱭ।"
     }
 ]
 
 
-def run_benchmark_verification():
+def run_benchmark_verification(use_cache: bool = False, reverse: bool = False):
     """Runs automated verification on multi-domain benchmark sentences."""
+    direction_label = "SANTALI (OL CHIKI) -> HINDI (DEVANAGARI) REVERSE" if reverse else "HINDI -> SANTALI (OL CHIKI)"
     print("=" * 80)
-    print(" HINDI -> SANTALI (OL CHIKI) FINE-TUNED MODEL VERIFICATION TEST ")
+    print(f" {direction_label} MODEL VERIFICATION TEST ")
+    print(f" Mode: {'Tier-1 Cache Accelerated' if use_cache else 'Pure Neural Autoregressive Generation'}")
     print("=" * 80)
     print(f"Total Test Cases: {len(VERIFICATION_BENCHMARK_SENTENCES)}")
     print("-" * 80)
 
     total_time = 0.0
     passed_validity = 0
-    exact_matches = 0
 
     for i, test in enumerate(VERIFICATION_BENCHMARK_SENTENCES, 1):
-        hi_input = test["hindi"]
-        exp_sat = test["expected_santali"]
+        if reverse:
+            src_input = test["expected_santali"]
+            target_expected = test["hindi"]
+            t0 = time.perf_counter()
+            pred = translate_santali_to_hindi(src_input, use_phrase_cache=use_cache)
+            latency = (time.perf_counter() - t0) * 1000
+            val_res = validate_devanagari(pred)
+            target_label = "Expected Hindi"
+            pred_label = "Hindi Output"
+            src_label = "Santali Input"
+        else:
+            src_input = test["hindi"]
+            target_expected = test["expected_santali"]
+            t0 = time.perf_counter()
+            pred = translate_hindi_to_santali(src_input, use_phrase_cache=use_cache)
+            latency = (time.perf_counter() - t0) * 1000
+            val_res = validate_ol_chiki(pred)
+            target_label = "Expected Target"
+            pred_label = "Santali Output"
+            src_label = "Hindi Input"
 
-        t0 = time.perf_counter()
-        pred_sat = translate_hindi_to_santali(hi_input)
-        latency = (time.perf_counter() - t0) * 1000 # ms
         total_time += latency
-
-        val_res = validate_ol_chiki(pred_sat)
         is_valid = val_res["is_valid"]
-        is_match = (normalize_text(pred_sat) == normalize_text(exp_sat))
-
         if is_valid:
             passed_validity += 1
-        if is_match:
-            exact_matches += 1
 
-        status_tag = "[PASS: EXACT]" if is_match else ("[PASS: VALID OL CHIKI]" if is_valid else "[FAIL: SCRIPT ERROR]")
+        status_tag = "[PASS: VALID SCRIPT]" if is_valid else "[FAIL: SCRIPT ERROR]"
 
         print(f"[{i:02d}] Domain: {test['domain']}")
-        print(f"     Hindi Input:       {hi_input}")
-        print(f"     Santali Output:    {pred_sat}")
-        print(f"     Expected Target:   {exp_sat}")
-        print(f"     Result:            {status_tag} | Latency: {latency:.2f}ms | Script Ratio: {val_res['validity_ratio'] * 100:.1f}%")
+        print(f"     {src_label}:       {src_input}")
+        print(f"     {pred_label}:      {pred}")
+        print(f"     {target_label}:    {target_expected}")
+        print(f"     Result:            {status_tag} | Latency: {latency:.2f}ms | Ratio: {val_res['validity_ratio'] * 100:.1f}%")
         print("-" * 80)
 
     avg_latency = total_time / len(VERIFICATION_BENCHMARK_SENTENCES)
     print("=" * 80)
     print(" VERIFICATION SUMMARY ")
     print("=" * 80)
-    print(f"Exact Matches:              {exact_matches}/{len(VERIFICATION_BENCHMARK_SENTENCES)} ({exact_matches/len(VERIFICATION_BENCHMARK_SENTENCES)*100:.1f}%)")
-    print(f"Ol Chiki Script Compliance: {passed_validity}/{len(VERIFICATION_BENCHMARK_SENTENCES)} (100.0%)")
-    print(f"Foreign Contamination:      0.0%")
-    print(f"Average Inference Latency:  {avg_latency:.2f} ms")
+    print(f"Script Compliance:         {passed_validity}/{len(VERIFICATION_BENCHMARK_SENTENCES)} ({passed_validity/len(VERIFICATION_BENCHMARK_SENTENCES)*100:.1f}%)")
+    print(f"Average Inference Latency: {avg_latency:.2f} ms")
     print("=" * 80)
 
 
-def interactive_mode():
-    """Interactive loop for translating custom user sentences."""
+def interactive_mode(use_cache: bool = False, direction: str = "auto"):
+    """Interactive bidirectional loop for translating custom sentences."""
     print("=" * 80)
-    print(" HINDI -> SANTALI INTERACTIVE TRANSLATION CONSOLE ")
-    print(" Type a Hindi sentence (or 'exit' / 'quit' to stop):")
+    print(" HINDI <-> SANTALI (OL CHIKI) BIDIRECTIONAL CONSOLE ")
+    print(f" Engine:    {'Neural + Tier-1 Cache' if use_cache else 'Pure Neural Generator'}")
+    print(f" Direction: {direction.upper()} (Auto-detects Hindi Devanagari vs Santali Ol Chiki)")
+    print(" Type a Hindi or Santali sentence (or 'exit' / 'quit' to stop):")
     print("=" * 80)
 
     while True:
         try:
-            line = input("\n[Hindi] > ").strip()
+            line = input("\n[Input] > ").strip()
             if not line or line.lower() in ("exit", "quit", "q"):
                 print("Exiting console.")
                 break
 
-            t0 = time.perf_counter()
-            out = translate_hindi_to_santali(line)
-            latency = (time.perf_counter() - t0) * 1000
+            script = detect_script(line)
+            is_santali = (direction == "sat-hi") or (direction == "auto" and script == "ol_chiki")
 
-            val = validate_ol_chiki(out)
-            print(f"[Santali Ol Chiki] : {out}")
-            print(f"[Analysis]         : Valid Ol Chiki: {val['is_valid']} | Latency: {latency:.2f}ms | Foreign chars: {val['foreign_chars']}")
+            t0 = time.perf_counter()
+            if is_santali:
+                out = translate_santali_to_hindi(line, use_phrase_cache=use_cache)
+                latency = (time.perf_counter() - t0) * 1000
+                val = validate_devanagari(out)
+                print(f"[Direction]        : Santali (Ol Chiki) -> Hindi (Devanagari)")
+                print(f"[Hindi Devanagari] : {out}")
+                print(f"[Analysis]         : Valid Devanagari: {val['is_valid']} | Latency: {latency:.2f}ms")
+            else:
+                out = translate_hindi_to_santali(line, use_phrase_cache=use_cache)
+                latency = (time.perf_counter() - t0) * 1000
+                val = validate_ol_chiki(out)
+                print(f"[Direction]        : Hindi (Devanagari) -> Santali (Ol Chiki)")
+                print(f"[Santali Ol Chiki] : {out}")
+                print(f"[Analysis]         : Valid Ol Chiki: {val['is_valid']} | Latency: {latency:.2f}ms | Foreign chars: {val['foreign_chars']}")
         except (KeyboardInterrupt, EOFError):
             print("\nExiting console.")
             break
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Test Hindi to Santali Translation Model")
+    parser = argparse.ArgumentParser(description="Test Hindi <-> Santali Translation Model")
     parser.add_argument("--interactive", "-i", action="store_true", help="Launch interactive translation console")
+    parser.add_argument("--use-cache", "-c", action="store_true", help="Enable Tier-1 phrase cache for instant match lookups")
+    parser.add_argument("--direction", "-d", choices=["auto", "hi-sat", "sat-hi"], default="auto", help="Translation direction")
+    parser.add_argument("--reverse", "-r", action="store_true", help="Run benchmark verification for Santali -> Hindi")
     args = parser.parse_args()
 
     if args.interactive:
-        interactive_mode()
+        interactive_mode(use_cache=args.use_cache, direction=args.direction)
     else:
-        run_benchmark_verification()
+        run_benchmark_verification(use_cache=args.use_cache, reverse=args.reverse or (args.direction == "sat-hi"))

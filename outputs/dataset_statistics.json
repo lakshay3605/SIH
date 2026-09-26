@@ -1,30 +1,47 @@
 {
-  "total_valid_pairs": 4046,
-  "total_rejected_pairs": 2001,
+  "total_valid_pairs": 14700,
+  "total_rejected_pairs": 2045,
   "split_counts": {
-    "train": 3236,
-    "validation": 404,
-    "test": 406
+    "train": 11760,
+    "validation": 1470,
+    "test": 1470
   },
   "split_percentages": {
-    "train": 79.98,
-    "validation": 9.99,
-    "test": 10.03
+    "train": 80.0,
+    "validation": 10.0,
+    "test": 10.0
   },
   "token_statistics": {
-    "avg_hindi_words": 16.13,
-    "max_hindi_words": 67,
-    "min_hindi_words": 3,
-    "avg_santali_words": 14.69,
-    "max_santali_words": 68,
-    "min_santali_words": 3
+    "avg_source_words": 12.7,
+    "max_source_words": 71,
+    "min_source_words": 2,
+    "avg_target_words": 12.7,
+    "max_target_words": 71,
+    "min_target_words": 2
+  },
+  "language_pairs": {
+    "sat_Olck->hin_Deva": 4350,
+    "hin_Deva->sat_Olck": 4350,
+    "hin_Deva->mun_Deva": 3023,
+    "mun_Deva->hin_Deva": 2977
   },
   "provenance_distribution": {
-    "human_translation": 2001,
-    "verified_corpus": 2045
+    "verified_corpus": 4090,
+    "research_corpus": 6608,
+    "human_translation": 4002
   },
   "source_distribution": {
+    "master_dataset_csv_inverse": 2045,
+    "master_dataset_csv": 2045,
+    "Karya-Mundari": 3023,
     "FLORES-200": 2001,
-    "master_dataset_csv": 2045
+    "Karya-Mundari_inverse": 2977,
+    "FLORES-200_inverse": 2001,
+    "CrossSum-IN-dev": 46,
+    "CrossSum-IN-test": 225,
+    "CrossSum-IN-train": 33,
+    "CrossSum-IN-dev_inverse": 46,
+    "CrossSum-IN-train_inverse": 33,
+    "CrossSum-IN-test_inverse": 225
   }
 }

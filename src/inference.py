@@ -16,16 +16,27 @@ if sys.stdout and hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
 import torch
+try:
+    import torch.distributed.tensor  # Ensures torch.distributed.tensor is populated for PEFT on Windows/Python 3.13
+except Exception:
+    pass
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 from peft import PeftModel
 
-from src.script_validator import normalize_text, validate_ol_chiki, validate_devanagari
+from src.script_validator import (
+    normalize_text,
+    validate_ol_chiki,
+    validate_devanagari,
+    detect_script
+)
 
 
 class NeuralHindiSantaliTranslator:
     """
-    Offline Neural Translation Engine for Hindi -> Santali.
-    Performs true autoregressive token generation.
+    Offline Neural Translation Engine for Hindi <-> Santali.
+    Performs true autoregressive token generation in both directions:
+      - hin_Deva -> sat_Olck
+      - sat_Olck -> hin_Deva
     """
     def __init__(
         self,
@@ -35,12 +46,14 @@ class NeuralHindiSantaliTranslator:
         use_phrase_cache: bool = False
     ):
         self.use_phrase_cache = use_phrase_cache
-        self.phrase_cache = {}
+        self.phrase_cache: Dict[str, str] = {}
+        self.reverse_phrase_cache: Dict[str, str] = {}
         self.device = torch.device(device if device else ("cuda" if torch.cuda.is_available() else "cpu"))
 
         # Default model search locations
         candidate_paths = [
             model_path,
+            "models/checkpoints/best_multilingual_lora",
             "models/checkpoints/best_lora",
             "checkpoints/best_lora_checkpoint",
             "ai4bharat/indictrans2-indic-indic-dist-320M"
@@ -51,7 +64,7 @@ class NeuralHindiSantaliTranslator:
                 resolved_path = p
                 break
 
-        self.model_path = resolved_path or "models/checkpoints/best_lora"
+        self.model_path = resolved_path or "models/checkpoints/best_multilingual_lora"
         self.base_model_id = base_model_id
 
         # 1. Load optional phrase cache for Tier-1 acceleration
@@ -74,7 +87,10 @@ class NeuralHindiSantaliTranslator:
                     with open(cp, "r", encoding="utf-8") as f:
                         data = json.load(f)
                         for k, v in data.items():
-                            self.phrase_cache[normalize_text(k)] = normalize_text(v)
+                            norm_k = normalize_text(k)
+                            norm_v = normalize_text(v)
+                            self.phrase_cache[norm_k] = norm_v
+                            self.reverse_phrase_cache[norm_v] = norm_k
                     print(f"Loaded phrase cache: {len(self.phrase_cache)} phrases from {cp}")
                     break
                 except Exception as e:
@@ -127,21 +143,45 @@ class NeuralHindiSantaliTranslator:
 
     def translate(
         self,
-        hindi_text: str,
+        text: str,
+        source_lang: Optional[str] = None,
+        target_lang: Optional[str] = None,
         max_length: int = 128,
         num_beams: int = 1,
         temperature: float = 1.0
     ) -> str:
         """
-        Translates Hindi input text to Santali (Ol Chiki) using genuine model generation.
+        Translates input text between Hindi (hin_Deva) and Santali (sat_Olck).
+        Automatically detects source script if source_lang is omitted.
         """
-        norm_hi = normalize_text(hindi_text)
-        if not norm_hi:
+        norm_text = normalize_text(text)
+        if not norm_text:
             return ""
 
-        # Tier-1: Optional exact phrase cache lookup (if explicitly enabled)
-        if self.use_phrase_cache and norm_hi in self.phrase_cache:
-            return self.phrase_cache[norm_hi]
+        # Auto-detect script if not specified
+        if not source_lang:
+            detected = detect_script(norm_text)
+            if detected == "ol_chiki":
+                source_lang = "sat_Olck"
+                target_lang = "hin_Deva"
+            else:
+                source_lang = "hin_Deva"
+                target_lang = "sat_Olck"
+        elif not target_lang:
+            target_lang = "hin_Deva" if source_lang == "sat_Olck" else "sat_Olck"
+
+        # Map Mundari language tag to IndicTrans2 unr_Deva
+        if source_lang in ("mun_Deva", "mundari", "mun"):
+            source_lang = "unr_Deva"
+        if target_lang in ("mun_Deva", "mundari", "mun"):
+            target_lang = "unr_Deva"
+
+        # Tier-1: Optional exact phrase cache lookup
+        if self.use_phrase_cache:
+            if source_lang == "sat_Olck" and norm_text in self.reverse_phrase_cache:
+                return self.reverse_phrase_cache[norm_text]
+            elif source_lang == "hin_Deva" and norm_text in self.phrase_cache:
+                return self.phrase_cache[norm_text]
 
         # Tier-2: Neural Model Generation
         if self.model is None or self.tokenizer is None:
@@ -151,14 +191,11 @@ class NeuralHindiSantaliTranslator:
             )
 
         if hasattr(self.tokenizer, "src_lang"):
-            self.tokenizer.src_lang = "hin_Deva"
+            self.tokenizer.src_lang = source_lang
 
-        # Format with language tag prefix if using IndicTransTokenizer
-        formatted_src = norm_hi
-        if not formatted_src.startswith("hin_Deva"):
-            # Check if tokenizer expects language tag format
-            if type(self.tokenizer).__name__ == "IndicTransTokenizer" or hasattr(self.tokenizer, "add_new_language_tags"):
-                formatted_src = f"hin_Deva sat_Olck {norm_hi}"
+        formatted_src = norm_text
+        if not formatted_src.startswith(source_lang):
+            formatted_src = f"{source_lang} {target_lang} {norm_text}"
 
         inputs = self.tokenizer(
             formatted_src,
@@ -208,24 +245,62 @@ def translate_hindi_to_santali(
     model_path: Optional[str] = None,
     use_phrase_cache: bool = False
 ) -> str:
-    """
-    Standard Public Interface for Aadivaani Hindi -> Santali translation.
-    Args:
-        hindi_text: Source Hindi text in Devanagari script.
-        model_path: Path to trained model or PEFT checkpoint.
-        use_phrase_cache: If True, allows instant Tier-1 cache lookup for exact phrase matches.
-    Returns:
-        Translated Santali text in Ol Chiki script.
-    """
+    """Translates Hindi (Devanagari) to Santali (Ol Chiki)."""
     translator = get_translator(model_path=model_path, use_phrase_cache=use_phrase_cache)
-    return translator.translate(hindi_text)
+    return translator.translate(hindi_text, source_lang="hin_Deva", target_lang="sat_Olck")
+
+
+def translate_santali_to_hindi(
+    santali_text: str,
+    model_path: Optional[str] = None,
+    use_phrase_cache: bool = False
+) -> str:
+    """Translates Santali (Ol Chiki) to Hindi (Devanagari)."""
+    translator = get_translator(model_path=model_path, use_phrase_cache=use_phrase_cache)
+    return translator.translate(santali_text, source_lang="sat_Olck", target_lang="hin_Deva")
+
+
+def translate_hindi_to_mundari(
+    hindi_text: str,
+    model_path: Optional[str] = None,
+    use_phrase_cache: bool = False
+) -> str:
+    """Translates Hindi (Devanagari) to Mundari (Devanagari / unr_Deva)."""
+    translator = get_translator(model_path=model_path, use_phrase_cache=use_phrase_cache)
+    return translator.translate(hindi_text, source_lang="hin_Deva", target_lang="unr_Deva")
+
+
+def translate_mundari_to_hindi(
+    mundari_text: str,
+    model_path: Optional[str] = None,
+    use_phrase_cache: bool = False
+) -> str:
+    """Translates Mundari (Devanagari / unr_Deva) to Hindi (Devanagari)."""
+    translator = get_translator(model_path=model_path, use_phrase_cache=use_phrase_cache)
+    return translator.translate(mundari_text, source_lang="unr_Deva", target_lang="hin_Deva")
+
+
+def translate(
+    text: str,
+    source_lang: Optional[str] = None,
+    target_lang: Optional[str] = None,
+    model_path: Optional[str] = None,
+    use_phrase_cache: bool = False
+) -> str:
+    """Auto-detecting multilingual translator for Hindi, Santali, and Mundari."""
+    translator = get_translator(model_path=model_path, use_phrase_cache=use_phrase_cache)
+    return translator.translate(text, source_lang=source_lang, target_lang=target_lang)
 
 
 if __name__ == "__main__":
-    test_input = "नमस्ते, आप कैसे हैं?"
-    print(f"Testing real inference module with: '{test_input}'")
-    try:
-        res = translate_hindi_to_santali(test_input, use_phrase_cache=True)
-        print(f"Result (Cache Enabled): {res}")
-    except Exception as e:
-        print(f"Caught expected behavior when model weights not yet trained: {e}")
+    hi_test = "नमस्ते, आप कैसे हैं?"
+    sat_test = "ᱥᱟᱱᱟᱢ ᱜᱤᱫᱽᱨᱟᱹ ᱜᱮ ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱨᱮ ᱪᱟᱞᱟᱣᱚᱜ ᱠᱟᱱᱟ ᱾"
+
+    print("=== Testing Hindi -> Santali ===")
+    print(f"Hi:  {hi_test}")
+    print(f"Sat: {translate_hindi_to_santali(hi_test, use_phrase_cache=True)}")
+
+    print("\n=== Testing Santali -> Hindi (Reverse) ===")
+    print(f"Sat: {sat_test}")
+    print(f"Hi:  {translate_santali_to_hindi(sat_test, use_phrase_cache=False)}")
+

@@ -1,0 +1,37 @@
+{
+  "engine": "AI4Bharat-Rasa",
+  "description": "Speech-to-Text (ASR) recognition manifest for Hindi, Santali, and Mundari",
+  "audio_specs": {
+    "format": "wav",
+    "channels": 1,
+    "sample_rate_hz": 16000,
+    "bit_depth": 16
+  },
+  "model_architecture": "Conformer-CTC / Whisper-Indic-LoRA",
+  "languages": [
+    "hin_Deva",
+    "sat_Olck",
+    "unr_Deva"
+  ],
+  "transcription_benchmarks": [
+    {
+      "audio_path": "data/raw/speech/hi_speech_01.wav",
+      "transcription": "नमस्ते, आप कैसे हैं?",
+      "language": "hin_Deva",
+      "duration_sec": 2.1
+    },
+    {
+      "audio_path": "data/raw/speech/sat_speech_01.wav",
+      "transcription": "ᱡᱚᱦᱟᱨ, ᱟᱢ ᱪᱮᱫ ᱞᱮᱠᱟ ᱢᱮᱱᱟᱜ-ᱟᱢᱟ?",
+      "language": "sat_Olck",
+      "phonetic_ipa": "ज्अह्आर्, आम् च्एद् ल्एक्आ म्एन्आग्-आम्आ?",
+      "duration_sec": 2.8
+    },
+    {
+      "audio_path": "data/raw/speech/unr_speech_01.wav",
+      "transcription": "इनकु कमजोरोःतानाको",
+      "language": "unr_Deva",
+      "duration_sec": 2.3
+    }
+  ]
+}

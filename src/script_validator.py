@@ -40,6 +40,21 @@ def is_devanagari_char(char: str) -> bool:
     return DEVANAGARI_START <= code <= DEVANAGARI_END
 
 
+def detect_script(text: str) -> str:
+    """
+    Detects whether text is primarily Ol Chiki, Devanagari, or other.
+    Returns: 'ol_chiki', 'devanagari', or 'unknown'
+    """
+    cleaned = normalize_text(text)
+    ol_chiki_count = sum(1 for c in cleaned if is_ol_chiki_char(c))
+    deva_count = sum(1 for c in cleaned if is_devanagari_char(c))
+    if ol_chiki_count > deva_count:
+        return "ol_chiki"
+    elif deva_count > ol_chiki_count:
+        return "devanagari"
+    return "unknown"
+
+
 def validate_ol_chiki(text: str) -> dict:
     """
     Validate Santali Ol Chiki text.
@@ -125,6 +140,22 @@ def validate_devanagari(text: str) -> dict:
         "foreign_chars": list(set(foreign_chars)),
         "has_foreign_contamination": len(foreign_chars) > 0
     }
+
+
+def validate_mundari(text: str) -> dict:
+    """Validate Mundari (Devanagari script) text, allowing glottal punctuation like : and ः."""
+    return validate_devanagari(text)
+
+
+def validate_by_lang_code(text: str, lang_code: str) -> dict:
+    """Validates text according to NMT language script code (hin_Deva, sat_Olck, mun_Deva/unr_Deva)."""
+    if lang_code == "sat_Olck":
+        return validate_ol_chiki(text)
+    elif lang_code in ("hin_Deva", "mun_Deva", "unr_Deva"):
+        return validate_devanagari(text)
+    else:
+        # Default lenient check
+        return {"is_valid": len(normalize_text(text)) > 0, "validity_ratio": 1.0, "foreign_chars": []}
 
 
 # Phonetic Devanagari to Ol Chiki mapping table

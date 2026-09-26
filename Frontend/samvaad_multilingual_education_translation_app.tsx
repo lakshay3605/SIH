@@ -1,10 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
-  Home, History, Settings, Volume2, Copy, Share2, Star, Mic,
+  Home, History, Settings, Volume2, Copy, Share2, Star, Mic, MicOff,
   ArrowLeftRight, Download, BookOpen, Layers, FileText, Search, Moon,
   Type, Info, HelpCircle, ChevronRight, CheckCircle2,
-  Printer, GraduationCap, ChevronLeft, MoreVertical
+  Printer, GraduationCap, ChevronLeft, MoreVertical, Sparkles, User
 } from 'lucide-react';
+import {
+  speakSantali,
+  speakHindi,
+  translateHindiToSantaliClient,
+  translateSantaliToHindiClient,
+  createHindiSpeechRecognition,
+  createSantaliSpeechRecognition
+} from './src/utils/speechTranslation';
 
 // ==========================================
 // Screen Definitions & Data
@@ -148,19 +156,25 @@ export default function App() {
     }
   }, [currentScreen]);
 
+  // Voice Recognition & Santali Speech State
+  const [voiceIsListening, setVoiceIsListening] = useState(false);
+  const [voiceIsSpeaking, setVoiceIsSpeaking] = useState(false);
+  const [voiceSpokenHindi, setVoiceSpokenHindi] = useState("नमस्ते, आप कैसे हैं?");
+  const [voiceSantaliTranslation, setVoiceSantaliTranslation] = useState("ᱡᱚᱦᱟᱨ, ᱟᱢ ᱪᱮᱫ ᱞᱮᱠᱟ ᱢᱮᱱᱟᱜ-ᱟᱢᱟ?");
+  const [voiceSantaliPhonetic, setVoiceSantaliPhonetic] = useState("Johar, aam ched leka menag-ama?");
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 2500);
   };
 
-  const playSpeech = (text: string) => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.rate = 0.85;
-      u.lang = 'hi-IN';
-      window.speechSynthesis.speak(u);
-    }
+  const playSpeech = (text: string, phoneticOverride?: string) => {
+    speakSantali(
+      text,
+      phoneticOverride,
+      () => setVoiceIsSpeaking(true),
+      () => setVoiceIsSpeaking(false)
+    );
   };
 
   const navigateTo = (s: ScreenId, tabHint?: BottomTab) => {
@@ -651,61 +665,294 @@ export default function App() {
     </div>
   );
 
-  // SCREEN 6: Voice Conversation
-  const renderScreen6 = () => (
-    <div className="flex-1 flex flex-col bg-[#FAF7EE] dark:bg-[#0E1513]">
-      <HeaderBar title="Voice Conversation" onBack={goBack} />
+  // SCREEN 6: Two-Way Voice Conversation (Teacher & Student)
+  const renderScreen6 = () => {
+    const [voiceDirection, setVoiceDirection] = useState<'hindi-to-santali' | 'santali-to-hindi'>('hindi-to-santali');
+    const [speakerMode, setSpeakerMode] = useState<'teacher' | 'student'>('teacher');
+    const [recentTurns, setRecentTurns] = useState<Array<{
+      speaker: 'teacher' | 'student';
+      original: string;
+      translated: string;
+      phonetic?: string;
+    }>>([
+      {
+        speaker: 'teacher',
+        original: 'नमस्ते, आप कैसे हैं?',
+        translated: 'ᱡᱚᱦᱟᱨ, ᱟᱢ ᱪᱮᱫ ᱞᱮᱠᱟ ᱢᱮᱱᱟᱜ-ᱟᱢᱟ?',
+        phonetic: 'Johar, aam ched leka menag-ama?'
+      },
+      {
+        speaker: 'student',
+        original: 'ᱡᱚᱦᱟᱨ, ᱢᱟᱪᱮᱛ! ᱤᱧ ᱵᱷᱟᱹᱜᱤ ᱜᱮ ᱢᱮᱱᱟᱹᱧᱟ᱾',
+        translated: 'नमस्ते, शिक्षक जी! मैं ठीक हूँ।',
+        phonetic: 'Johar, machet! Inj bhagi ge menanja.'
+      }
+    ]);
 
-      <div className="p-4 space-y-4 flex-1 flex flex-col justify-between">
-        <div className="p-3 rounded-xl bg-white dark:bg-[#15231E] border border-[#ECE7DA] dark:border-[#20372E] flex items-center justify-between text-xs shadow-xs">
-          <div className="text-left">
-            <span className="font-bold text-gray-800 dark:text-gray-200 block">Hindi</span>
-            <span className="text-[10px] text-gray-400">हिंदी ▾</span>
-          </div>
-          <ArrowLeftRight className="w-4 h-4 text-[#0C5A3E]" />
-          <div className="text-right">
-            <span className="font-bold text-[#0C5A3E] dark:text-[#34D399] block">Mundari</span>
-            <span className="text-[10px] text-gray-400">मुंडारी ▾</span>
-          </div>
-        </div>
+    const handleTeacherMic = () => {
+      if (voiceIsListening) {
+        setVoiceIsListening(false);
+        return;
+      }
+      setSpeakerMode('teacher');
+      setVoiceDirection('hindi-to-santali');
+      const handler = createHindiSpeechRecognition(
+        (transcript) => {
+          setVoiceSpokenHindi(transcript);
+          const res = translateHindiToSantaliClient(transcript);
+          setVoiceSantaliTranslation(res.olChiki);
+          setVoiceSantaliPhonetic(res.phonetic);
+          setRecentTurns(prev => [...prev.slice(-3), {
+            speaker: 'teacher',
+            original: transcript,
+            translated: res.olChiki,
+            phonetic: res.phonetic
+          }]);
+          speakSantali(
+            res.olChiki,
+            res.phonetic,
+            () => setVoiceIsSpeaking(true),
+            () => setVoiceIsSpeaking(false)
+          );
+        },
+        () => setVoiceIsListening(true),
+        () => setVoiceIsListening(false),
+        () => {
+          setVoiceIsListening(false);
+          showToast("माइक्रोफोन शुरू नहीं हो सका — कृपया अनुमति दें");
+        }
+      );
 
-        {/* Concentric Voice Waves & Green Mic */}
-        <div className="py-8 flex flex-col items-center justify-center my-auto">
-          <div className="relative w-48 h-48 flex items-center justify-center">
-            <div className="absolute inset-0 rounded-full bg-[#E5F2EB] dark:bg-[#142C21] opacity-70 animate-pulse"></div>
-            <div className="absolute inset-6 rounded-full bg-[#C7E9D7] dark:bg-[#1A382B] opacity-80"></div>
+      if (handler.isSupported) {
+        handler.start();
+        showToast("सुन रहे हैं... हिंदी में बोलें");
+      } else {
+        showToast("ब्राउज़र स्पीच रिकग्निशन समर्थित नहीं है");
+      }
+    };
+
+    const handleStudentMic = () => {
+      if (voiceIsListening) {
+        setVoiceIsListening(false);
+        return;
+      }
+      setSpeakerMode('student');
+      setVoiceDirection('santali-to-hindi');
+      const handler = createSantaliSpeechRecognition(
+        (transcript) => {
+          const res = translateSantaliToHindiClient(transcript);
+          setVoiceSantaliTranslation(transcript);
+          setVoiceSpokenHindi(res.hindi);
+          setRecentTurns(prev => [...prev.slice(-3), {
+            speaker: 'student',
+            original: transcript,
+            translated: res.hindi
+          }]);
+          speakHindi(
+            res.hindi,
+            () => setVoiceIsSpeaking(true),
+            () => setVoiceIsSpeaking(false)
+          );
+        },
+        () => setVoiceIsListening(true),
+        () => setVoiceIsListening(false),
+        () => {
+          setVoiceIsListening(false);
+          showToast("माइक्रोफोन शुरू नहीं हो सका — कृपया अनुमति दें");
+        }
+      );
+
+      if (handler.isSupported) {
+        handler.start();
+        showToast("ᱟᱸᱡᱚᱢᱮᱫᱟᱞᱮ... संताली में बोलें");
+      } else {
+        showToast("ब्राउज़र स्पीच रिकग्निशन समर्थित नहीं है");
+      }
+    };
+
+    const handlePrompt = (text: string, speaker: 'teacher' | 'student') => {
+      if (speaker === 'teacher') {
+        setVoiceDirection('hindi-to-santali');
+        setVoiceSpokenHindi(text);
+        const res = translateHindiToSantaliClient(text);
+        setVoiceSantaliTranslation(res.olChiki);
+        setVoiceSantaliPhonetic(res.phonetic);
+        setRecentTurns(prev => [...prev.slice(-3), {
+          speaker: 'teacher',
+          original: text,
+          translated: res.olChiki,
+          phonetic: res.phonetic
+        }]);
+        speakSantali(
+          res.olChiki,
+          res.phonetic,
+          () => setVoiceIsSpeaking(true),
+          () => setVoiceIsSpeaking(false)
+        );
+      } else {
+        setVoiceDirection('santali-to-hindi');
+        const res = translateSantaliToHindiClient(text);
+        setVoiceSantaliTranslation(text);
+        setVoiceSpokenHindi(res.hindi);
+        setRecentTurns(prev => [...prev.slice(-3), {
+          speaker: 'student',
+          original: text,
+          translated: res.hindi
+        }]);
+        speakHindi(
+          res.hindi,
+          () => setVoiceIsSpeaking(true),
+          () => setVoiceIsSpeaking(false)
+        );
+      }
+    };
+
+    return (
+      <div className="flex-1 flex flex-col bg-[#FAF7EE] dark:bg-[#0E1513]">
+        <HeaderBar title="Two-Way Voice (द्विभाषी संवाद)" onBack={goBack} />
+
+        <div className="p-3.5 space-y-3 flex-1 flex flex-col justify-between overflow-y-auto">
+          {/* Top Speaker Direction Pill */}
+          <div className="flex bg-[#EFEAD9] dark:bg-[#14231E] p-1 rounded-2xl border border-[#E0D7C4] dark:border-[#1E382E] shadow-2xs">
             <button
-              onClick={() => {
-                showToast("आवाज रिकॉर्ड हो रही है...");
-                playSpeech("नमस्ते, आप कैसे हैं?");
-              }}
-              className="relative w-24 h-24 rounded-full bg-[#0C5A3E] text-white flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition"
+              onClick={() => setVoiceDirection('hindi-to-santali')}
+              className={`flex-1 py-1.5 px-2 rounded-xl font-bold text-xs flex items-center justify-center gap-1 transition ${
+                voiceDirection === 'hindi-to-santali'
+                  ? 'bg-[#0C5A3E] text-white shadow-xs'
+                  : 'text-gray-700 dark:text-gray-300'
+              }`}
             >
-              <Mic className="w-10 h-10" />
+              <GraduationCap className="w-3.5 h-3.5" />
+              <span>शिक्षक (हिंदी → संताली)</span>
+            </button>
+            <button
+              onClick={() => setVoiceDirection('santali-to-hindi')}
+              className={`flex-1 py-1.5 px-2 rounded-xl font-bold text-xs flex items-center justify-center gap-1 transition ${
+                voiceDirection === 'santali-to-hindi'
+                  ? 'bg-[#0C5A3E] text-white shadow-xs'
+                  : 'text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              <User className="w-3.5 h-3.5" />
+              <span>छात्र (संताली → हिंदी)</span>
             </button>
           </div>
 
-          <div className="text-center mt-4 space-y-1">
-            <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Tap and speak</h3>
-            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">(हिंदी में बोलें)</p>
-            <p className="text-[11px] text-gray-500 pt-1">
-              Translation will play automatically<br />in Mundari
-            </p>
+          {/* Conversation Bubbles */}
+          <div className="space-y-2 flex-1 overflow-y-auto max-h-[260px] pr-1">
+            {recentTurns.map((turn, idx) => (
+              <div
+                key={idx}
+                className={`p-2.5 rounded-2xl border shadow-2xs space-y-1 ${
+                  turn.speaker === 'teacher'
+                    ? 'bg-white dark:bg-[#15231E] border-[#ECE7DA] dark:border-[#20372E] ml-1'
+                    : 'bg-[#F2F8F4] dark:bg-[#11291E] border-[#C2E3D0] dark:border-[#1E4D37] mr-1'
+                }`}
+              >
+                <div className="flex items-center justify-between text-[10px] font-bold text-gray-500">
+                  <span className="flex items-center gap-1 text-[#0C5A3E] dark:text-[#34D399]">
+                    {turn.speaker === 'teacher' ? <GraduationCap className="w-3 h-3" /> : <User className="w-3 h-3" />}
+                    {turn.speaker === 'teacher' ? 'शिक्षक (Hindi):' : 'छात्र (Santali):'}
+                  </span>
+                  <button
+                    onClick={() => {
+                      if (turn.speaker === 'teacher') speakSantali(turn.translated, turn.phonetic);
+                      else speakHindi(turn.translated);
+                    }}
+                    className="p-1 rounded-full hover:bg-black/5"
+                  >
+                    <Volume2 className="w-3.5 h-3.5 text-[#0C5A3E] dark:text-[#34D399]" />
+                  </button>
+                </div>
+                <p className="text-xs font-semibold text-gray-800 dark:text-gray-200">{turn.original}</p>
+                <div className="pt-1 border-t border-gray-100 dark:border-gray-800">
+                  <span className="text-[9px] uppercase font-bold text-gray-400 block">
+                    {turn.speaker === 'teacher' ? 'Santali Audio Output:' : 'Hindi Audio Output:'}
+                  </span>
+                  <p className={`text-sm font-bold ${
+                    turn.speaker === 'teacher'
+                      ? "text-[#0C5A3E] dark:text-[#34D399] font-['Noto_Sans_Ol_Chiki']"
+                      : "text-gray-900 dark:text-white"
+                  }`}>
+                    {turn.translated}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
 
-          <button
-            onClick={() => showToast("दिशा बदली गई: Mundari → Hindi")}
-            className="mt-6 px-5 py-2 rounded-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#15231E] text-xs font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2 shadow-xs hover:bg-gray-50"
-          >
-            <ArrowLeftRight className="w-3.5 h-3.5 text-[#0C5A3E]" />
-            <span>Switch Direction</span>
-          </button>
-        </div>
+          {/* Dual Microphone Control Center */}
+          <div className="bg-white dark:bg-[#15231E] p-3 rounded-2xl border border-[#ECE7DA] dark:border-[#20372E] shadow-sm">
+            <div className="text-center pb-1.5 text-xs font-bold text-gray-700 dark:text-gray-300">
+              {voiceIsListening ? (
+                <span className="text-rose-500 animate-pulse">● आवाज़ सुन रहे हैं... बोलिए</span>
+              ) : voiceIsSpeaking ? (
+                <span className="text-emerald-500 animate-pulse">🔊 आवाज़ सुनाई जा रही है...</span>
+              ) : (
+                "दोनों में से किसी एक माइक को दबाकर बोलें:"
+              )}
+            </div>
 
-        <div></div>
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <button
+                onClick={handleTeacherMic}
+                className="py-2.5 px-2 rounded-xl bg-[#0C5A3E] text-white flex flex-col items-center justify-center gap-1 hover:bg-[#094731] active:scale-95 transition"
+              >
+                <Mic className="w-5 h-5" />
+                <span className="text-xs font-extrabold">बोलें हिंदी</span>
+                <span className="text-[9px] text-emerald-200">शिक्षक (Teacher)</span>
+              </button>
+
+              <button
+                onClick={handleStudentMic}
+                className="py-2.5 px-2 rounded-xl bg-[#1E3A8A] text-white flex flex-col items-center justify-center gap-1 hover:bg-[#172554] active:scale-95 transition"
+              >
+                <Mic className="w-5 h-5" />
+                <span className="text-xs font-extrabold">ᱨᱚᱲ ᱢᱮ (Santali)</span>
+                <span className="text-[9px] text-blue-200">छात्र (Student)</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Prompts */}
+          <div className="pt-1 border-t border-gray-200 dark:border-gray-800 space-y-1">
+            <span className="text-[10px] font-bold text-gray-400 block text-center">
+              {voiceDirection === 'hindi-to-santali' ? 'शिक्षक के त्वरित वाक्य:' : 'छात्र के त्वरित वाक्य:'}
+            </span>
+            <div className="flex flex-wrap gap-1 justify-center">
+              {voiceDirection === 'hindi-to-santali'
+                ? [
+                    "नमस्ते, आप कैसे हैं?",
+                    "सभी बच्चे किताब निकालो।",
+                    "डरो मत, फिर से कोशिश करो।"
+                  ].map((p, i) => (
+                    <button
+                      key={i}
+                      onClick={() => handlePrompt(p, 'teacher')}
+                      className="text-[10px] py-1 px-2.5 rounded-full bg-white dark:bg-[#15231E] border border-[#ECE7DA] text-gray-700 dark:text-gray-200 hover:border-emerald-500"
+                    >
+                      {p}
+                    </button>
+                  ))
+                : [
+                    { t: "ᱡᱚᱦᱟᱨ, ᱢᱟᱪᱮᱛ!", l: "Johar, Machet! (नमस्ते, शिक्षक जी!)" },
+                    { t: "ᱤᱧ ᱵᱷᱟᱹᱜᱤ ᱜᱮ ᱢᱮᱱᱟᱹᱧᱟ", l: "Inj bhagi ge menanja (मैं ठीक हूँ)" },
+                    { t: "ᱫᱟᱜ ᱧᱩ ᱥᱟᱱᱟᱹᱧ ᱠᱟᱱᱟ", l: "Daag nyu sananj kana (मुझे पानी पीना है)" }
+                  ].map((it, i) => (
+                    <button
+                      key={i}
+                      onClick={() => handlePrompt(it.t, 'student')}
+                      className="text-[10px] py-1 px-2.5 rounded-full bg-white dark:bg-[#15231E] border border-[#ECE7DA] text-gray-700 dark:text-gray-200 hover:border-blue-500"
+                    >
+                      {it.l}
+                    </button>
+                  ))}
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // SCREEN 7: Choose Language
   const renderScreen7 = () => (

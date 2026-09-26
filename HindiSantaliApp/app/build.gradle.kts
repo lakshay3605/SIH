@@ -108,5 +108,8 @@ dependencies {
   // SentencePiece tokenization - pure Java, no native libs needed
   implementation("io.github.eix128:sentencepiece4j:1.0.2")
 
+  // AndroidX WebKit for WebViewAssetLoader
+  implementation(libs.androidx.webkit)
+
   // TensorFlow Lite Support
 }

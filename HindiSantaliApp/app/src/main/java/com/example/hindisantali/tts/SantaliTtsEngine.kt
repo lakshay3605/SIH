@@ -141,6 +141,22 @@ class SantaliTtsEngine(private val context: Context) {
         latch.await(30, TimeUnit.SECONDS)
     }
 
+    /**
+     * Non-blocking speech synthesis. Speaks immediately on device without blocking UI thread.
+     */
+    fun speakAsync(text: String, isOlChiki: Boolean = true) {
+        if (!isReady) {
+            initialize()
+        }
+        val engine = tts ?: return
+        val speechText = if (isOlChiki) transliterate(text) else text
+        val utteranceId = "utterance_${System.currentTimeMillis()}"
+        val params = Bundle().apply {
+            putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId)
+        }
+        engine.speak(speechText, TextToSpeech.QUEUE_FLUSH, params, utteranceId)
+    }
+
     fun release() {
         tts?.stop()
         tts?.shutdown()
