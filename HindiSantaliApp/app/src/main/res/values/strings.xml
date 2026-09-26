@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Hindi → Santali</string>
+    <string name="app_name">Samvaad 2.0</string>
     <string name="hold_to_speak">Hold to Speak Hindi</string>
     <string name="recording">Recording… release when done</string>
     <string name="transcribing">Recognising Hindi speech…</string>

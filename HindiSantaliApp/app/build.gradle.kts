@@ -8,7 +8,7 @@ android {
     namespace = "com.example.hindisantali"
     compileSdk = 36
     defaultConfig {
-        applicationId = "com.example.hindisantali"
+        applicationId = "com.example.samvaad2"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
