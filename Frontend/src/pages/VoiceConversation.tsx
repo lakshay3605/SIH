@@ -123,7 +123,18 @@ export const VoiceConversation: React.FC = () => {
     }
   };
 
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+    setIsListening(false);
+    setActiveSpeaker(null);
+    showToast("माइक बंद किया गया");
+  };
+
   const handleProcessSpeech = (transcript: string, speaker: 'teacher' | 'student') => {
+    setIsListening(false);
+    setActiveSpeaker(null);
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     if (speaker === 'teacher') {
@@ -179,14 +190,6 @@ export const VoiceConversation: React.FC = () => {
         );
       }
     }
-  };
-
-  const stopListening = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-    }
-    setIsListening(false);
-    setActiveSpeaker(null);
   };
 
   const handleReplayTurn = (turn: ConversationTurn) => {

@@ -686,7 +686,7 @@ export interface SpeechRecognitionHandler {
 
 /**
  * Initializes Speech Recognition for Hindi voice input.
- * Supports both Android Native SpeechRecognizer and Web Speech API.
+ * Supports both Android Native SpeechRecognizer and Web Speech API with built-in watchdog timer.
  */
 export function createHindiSpeechRecognition(
   onResult: (transcript: string) => void,
@@ -698,18 +698,29 @@ export function createHindiSpeechRecognition(
     return { start: () => {}, stop: () => {}, isSupported: false };
   }
 
+  let watchdogTimer: any = null;
+  const clearTimer = () => {
+    if (watchdogTimer) {
+      clearTimeout(watchdogTimer);
+      watchdogTimer = null;
+    }
+  };
+
   const bridge = (window as any).AndroidBridge;
   if (bridge && typeof bridge.startNativeSpeechRecognition === "function") {
     (window as any).onNativeSpeechResult = (text: string, speaker: string) => {
+      clearTimer();
       if (speaker === "teacher" || !speaker) {
         onResult(text);
       }
       if (onEnd) onEnd();
     };
     (window as any).onNativeSpeechEnd = () => {
+      clearTimer();
       if (onEnd) onEnd();
     };
     (window as any).onNativeSpeechError = (err: any) => {
+      clearTimer();
       if (onError) onError(err);
       if (onEnd) onEnd();
     };
@@ -717,14 +728,24 @@ export function createHindiSpeechRecognition(
     return {
       start: () => {
         try {
+          clearTimer();
           if (onStart) onStart();
           bridge.startNativeSpeechRecognition("teacher");
+          // Watchdog: auto-stop after 5 seconds to ensure mic never hangs
+          watchdogTimer = setTimeout(() => {
+            console.log("Watchdog auto-stopping Hindi mic");
+            try { bridge.stopNativeSpeechRecognition?.(); } catch (_e) {}
+            if (onEnd) onEnd();
+          }, 5000);
         } catch (e) {
+          clearTimer();
           if (onError) onError(e);
           if (onEnd) onEnd();
         }
       },
       stop: () => {
+        clearTimer();
+        try { bridge.stopNativeSpeechRecognition?.(); } catch (_e) {}
         if (onEnd) onEnd();
       },
       isSupported: true
@@ -745,8 +766,16 @@ export function createHindiSpeechRecognition(
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
 
-    recognition.onstart = () => { if (onStart) onStart(); };
+    recognition.onstart = () => {
+      if (onStart) onStart();
+      clearTimer();
+      watchdogTimer = setTimeout(() => {
+        try { recognition.stop(); } catch (_e) {}
+        if (onEnd) onEnd();
+      }, 5000);
+    };
     recognition.onresult = (event: any) => {
+      clearTimer();
       let finalTranscript = "";
       for (let i = event.resultIndex; i < event.results.length; ++i) {
         finalTranscript += event.results[i][0].transcript;
@@ -755,8 +784,12 @@ export function createHindiSpeechRecognition(
         onResult(finalTranscript);
       }
     };
-    recognition.onend = () => { if (onEnd) onEnd(); };
+    recognition.onend = () => {
+      clearTimer();
+      if (onEnd) onEnd();
+    };
     recognition.onerror = (event: any) => {
+      clearTimer();
       if (onError) onError(event);
       if (onEnd) onEnd();
     };
@@ -764,17 +797,22 @@ export function createHindiSpeechRecognition(
     return {
       start: () => {
         try {
+          clearTimer();
           recognition.start();
         } catch (e) {
           console.warn("Speech recognition error:", e);
+          if (onEnd) onEnd();
         }
       },
       stop: () => {
+        clearTimer();
         try {
           recognition.stop();
+          recognition.abort?.();
         } catch (e) {
           console.warn("Speech stop error:", e);
         }
+        if (onEnd) onEnd();
       },
       isSupported: true
     };
@@ -796,18 +834,29 @@ export function createSantaliSpeechRecognition(
     return { start: () => {}, stop: () => {}, isSupported: false };
   }
 
+  let watchdogTimer: any = null;
+  const clearTimer = () => {
+    if (watchdogTimer) {
+      clearTimeout(watchdogTimer);
+      watchdogTimer = null;
+    }
+  };
+
   const bridge = (window as any).AndroidBridge;
   if (bridge && typeof bridge.startNativeSpeechRecognition === "function") {
     (window as any).onNativeSpeechResult = (text: string, speaker: string) => {
+      clearTimer();
       if (speaker === "student") {
         onResult(text);
       }
       if (onEnd) onEnd();
     };
     (window as any).onNativeSpeechEnd = () => {
+      clearTimer();
       if (onEnd) onEnd();
     };
     (window as any).onNativeSpeechError = (err: any) => {
+      clearTimer();
       if (onError) onError(err);
       if (onEnd) onEnd();
     };
@@ -815,14 +864,23 @@ export function createSantaliSpeechRecognition(
     return {
       start: () => {
         try {
+          clearTimer();
           if (onStart) onStart();
           bridge.startNativeSpeechRecognition("student");
+          watchdogTimer = setTimeout(() => {
+            console.log("Watchdog auto-stopping Santali mic");
+            try { bridge.stopNativeSpeechRecognition?.(); } catch (_e) {}
+            if (onEnd) onEnd();
+          }, 5000);
         } catch (e) {
+          clearTimer();
           if (onError) onError(e);
           if (onEnd) onEnd();
         }
       },
       stop: () => {
+        clearTimer();
+        try { bridge.stopNativeSpeechRecognition?.(); } catch (_e) {}
         if (onEnd) onEnd();
       },
       isSupported: true
@@ -843,8 +901,16 @@ export function createSantaliSpeechRecognition(
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
 
-    recognition.onstart = () => { if (onStart) onStart(); };
+    recognition.onstart = () => {
+      if (onStart) onStart();
+      clearTimer();
+      watchdogTimer = setTimeout(() => {
+        try { recognition.stop(); } catch (_e) {}
+        if (onEnd) onEnd();
+      }, 5000);
+    };
     recognition.onresult = (event: any) => {
+      clearTimer();
       let finalTranscript = "";
       for (let i = event.resultIndex; i < event.results.length; ++i) {
         finalTranscript += event.results[i][0].transcript;
@@ -853,8 +919,12 @@ export function createSantaliSpeechRecognition(
         onResult(finalTranscript);
       }
     };
-    recognition.onend = () => { if (onEnd) onEnd(); };
+    recognition.onend = () => {
+      clearTimer();
+      if (onEnd) onEnd();
+    };
     recognition.onerror = (event: any) => {
+      clearTimer();
       if (onError) onError(event);
       if (onEnd) onEnd();
     };
@@ -862,17 +932,22 @@ export function createSantaliSpeechRecognition(
     return {
       start: () => {
         try {
+          clearTimer();
           recognition.start();
         } catch (e) {
           console.warn("Speech recognition error:", e);
+          if (onEnd) onEnd();
         }
       },
       stop: () => {
+        clearTimer();
         try {
           recognition.stop();
+          recognition.abort?.();
         } catch (e) {
           console.warn("Speech stop error:", e);
         }
+        if (onEnd) onEnd();
       },
       isSupported: true
     };
@@ -880,3 +955,4 @@ export function createSantaliSpeechRecognition(
     return { start: () => {}, stop: () => {}, isSupported: false };
   }
 }
+

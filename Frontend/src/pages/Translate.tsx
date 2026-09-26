@@ -18,12 +18,21 @@ export const Translate: React.FC = () => {
 
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const recognitionRef = React.useRef<any>(null);
 
   const handleMicClick = () => {
-    if (isListening) return;
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      setIsListening(false);
+      showToast("माइक बंद किया गया");
+      return;
+    }
 
     const handler = createHindiSpeechRecognition(
       (transcript) => {
+        setIsListening(false);
         setInputText(transcript);
         const res = translateInput(transcript);
         speakSantali(
@@ -42,10 +51,11 @@ export const Translate: React.FC = () => {
       },
       () => {
         setIsListening(false);
-        showToast("माइक्रोफोन शुरू नहीं हो सका");
+        showToast("माइक्रोफोन पूरा हुआ");
       }
     );
 
+    recognitionRef.current = handler;
     if (handler.isSupported) {
       handler.start();
     } else {

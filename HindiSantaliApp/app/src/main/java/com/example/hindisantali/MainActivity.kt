@@ -161,7 +161,7 @@ class SamvaadAndroidBridge(
             }
             act.lifecycleScope.launch {
                 try {
-                    val result = asr.recognize(timeoutMs = 5000)
+                    val result = asr.recognize(timeoutMs = 4500)
                     if (result.isNotBlank()) {
                         val clean = result.replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").trim()
                         wv?.evaluateJavascript("window.onNativeSpeechResult && window.onNativeSpeechResult('$clean', '$speaker');", null)
@@ -174,6 +174,18 @@ class SamvaadAndroidBridge(
                     wv?.evaluateJavascript("window.onNativeSpeechError && window.onNativeSpeechError('$msg');", null)
                 }
             }
+        }
+    }
+
+    @android.webkit.JavascriptInterface
+    fun stopNativeSpeechRecognition() {
+        activity?.runOnUiThread {
+            try {
+                asrEngine?.stopListening()
+                asrEngine?.destroy()
+                val wv = webViewRef?.get()
+                wv?.evaluateJavascript("window.onNativeSpeechEnd && window.onNativeSpeechEnd('');", null)
+            } catch (_: Exception) {}
         }
     }
 }
