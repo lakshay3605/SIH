@@ -100,39 +100,34 @@ export const Translate: React.FC = () => {
 
         {/* Source Text Input Card */}
         <div className={`p-4 rounded-2xl bg-white dark:bg-[#15231E] border ${
-          isListening ? "border-rose-400 ring-2 ring-rose-200" : "border-[#ECE7DA] dark:border-[#20372E]"
-        } min-h-[130px] flex flex-col justify-between shadow-xs transition`}>
+          isListening ? "border-emerald-400 ring-2 ring-emerald-200" : "border-[#ECE7DA] dark:border-[#20372E]"
+        } min-h-[130px] flex flex-col shadow-xs transition relative`}>
           <textarea
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             placeholder="Type in Hindi or tap the microphone..."
-            className="w-full text-sm sm:text-base font-medium text-gray-800 dark:text-gray-100 bg-transparent resize-none outline-none placeholder:text-gray-400"
+            className="w-full text-sm sm:text-base font-medium text-gray-800 dark:text-gray-100 bg-transparent resize-none outline-none placeholder:text-gray-400 flex-1"
             rows={3}
           />
-          <div className="flex items-center justify-between text-xs text-gray-400 pt-2.5 border-t border-gray-100 dark:border-gray-800">
-            <span>
-              {isListening ? (
-                <span className="text-rose-500 font-semibold animate-pulse">● आवाज़ सुन रहे हैं...</span>
-              ) : (
-                "हिंदी (India)"
-              )}
-            </span>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleMicClick}
-                className={`p-1.5 rounded-full transition ${
-                  isListening
-                    ? "bg-rose-500 text-white animate-pulse"
-                    : "text-gray-500 hover:text-[#0C5A3E] hover:bg-emerald-50 dark:hover:bg-emerald-950"
-                }`}
-                aria-label="Voice Input"
-                title="बोलकर इनपुट दें"
-              >
-                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-              </button>
-              <span>{inputText.length}/500</span>
-            </div>
+          <div className="absolute bottom-3 right-4 text-xs text-gray-400">
+            {inputText.length}/500
           </div>
+        </div>
+
+        {/* Large Mic Button */}
+        <div className="flex justify-center py-2">
+          <button
+            onClick={handleMicClick}
+            className={`w-16 h-16 rounded-full flex items-center justify-center transition shadow-lg ${
+              isListening
+                ? "bg-rose-500 text-white animate-pulse"
+                : "bg-[#0C5A3E] hover:bg-[#094731] text-white"
+            }`}
+            aria-label="Voice Input"
+            title="बोलकर इनपुट दें"
+          >
+            {isListening ? <MicOff className="w-8 h-8" /> : <Mic className="w-8 h-8" />}
+          </button>
         </div>
 
         {/* Quick Suggestion Chips */}
@@ -164,7 +159,7 @@ export const Translate: React.FC = () => {
           onClick={handleTranslateClick}
           className="w-full py-3.5 rounded-xl bg-[#0C5A3E] text-white text-sm font-bold shadow-md hover:bg-[#094731] transition active:scale-98"
         >
-          Translate
+          Translate to Santhali
         </button>
 
         {/* Translation Output Card */}

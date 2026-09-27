@@ -182,9 +182,7 @@ class SamvaadAndroidBridge(
         activity?.runOnUiThread {
             try {
                 asrEngine?.stopListening()
-                asrEngine?.destroy()
-                val wv = webViewRef?.get()
-                wv?.evaluateJavascript("window.onNativeSpeechEnd && window.onNativeSpeechEnd('');", null)
+                // Do not destroy here, let the SpeechRecognizer finish processing and call onResults
             } catch (_: Exception) {}
         }
     }

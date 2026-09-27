@@ -1,0 +1,23 @@
+﻿# Android build outputs
+.gradle/
+build/
+app/build/
+*.apk
+*.aab
+
+# Large model files (ONNX, sentencepiece) — too big for GitHub (100MB limit)
+app/src/main/assets/models/
+app/src/main/assets/*.onnx
+app/src/main/assets/*.model
+app/src/main/assets/*.bin
+
+# Local config
+local.properties
+*.iml
+.idea/
+.DS_Store
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo

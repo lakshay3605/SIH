@@ -736,7 +736,7 @@ export function createHindiSpeechRecognition(
             console.log("Watchdog auto-stopping Hindi mic");
             try { bridge.stopNativeSpeechRecognition?.(); } catch (_e) {}
             if (onEnd) onEnd();
-          }, 5000);
+          }, 15000);
         } catch (e) {
           clearTimer();
           if (onError) onError(e);
