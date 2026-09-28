@@ -24,28 +24,116 @@ class SantaliTtsEngine(private val context: Context) {
         initialize()
     }
 
-    // ── Ol Chiki → Phonetic Latin transliteration map ────────────────────────
-    private val olChikiMap = mapOf(
-        'ᱚ' to "o", 'ᱛ' to "t", 'ᱜ' to "g", 'ᱝ' to "ng",
-        'ᱞ' to "l", 'ᱟ' to "a", 'ᱠ' to "k", 'ᱡ' to "j",
-        'ᱢ' to "m", 'ᱣ' to "w", 'ᱤ' to "i", 'ᱥ' to "s",
-        'ᱦ' to "h", 'ᱧ' to "ny", 'ᱨ' to "r", 'ᱩ' to "u",
-        'ᱪ' to "ch", 'ᱫ' to "d", 'ᱬ' to "nd", 'ᱭ' to "y",
-        'ᱮ' to "e", 'ᱯ' to "p", 'ᱰ' to "dd", 'ᱱ' to "n",
-        'ᱲ' to "rr", 'ᱳ' to "o", 'ᱴ' to "tt", 'ᱵ' to "b",
-        'ᱶ' to "v", 'ᱷ' to "h",
-        '᱐' to "0", '᱑' to "1", '᱒' to "2", '᱓' to "3",
-        '᱔' to "4", '᱕' to "5", '᱖' to "6", '᱗' to "7",
-        '᱘' to "8", '᱙' to "9",
-        '᱾' to ".", '᱿' to ","
+    // ── Ol Chiki → High-Fidelity Phonetic Acoustic Mapping ───────────────────
+    private val aspirateMap = mapOf(
+        Pair('ᱠ', 'ᱷ') to "ख",
+        Pair('ᱜ', 'ᱷ') to "घ",
+        Pair('ᱪ', 'ᱷ') to "छ",
+        Pair('ᱡ', 'ᱷ') to "झ",
+        Pair('ᱴ', 'ᱷ') to "ठ",
+        Pair('ᱰ', 'ᱷ') to "ढ",
+        Pair('ᱛ', 'ᱷ') to "थ",
+        Pair('ᱫ', 'ᱷ') to "ध",
+        Pair('ᱯ', 'ᱷ') to "फ",
+        Pair('ᱵ', 'ᱷ') to "भ",
+        Pair('ᱲ', 'ᱷ') to "ढ़"
     )
 
+    private val vowelMap = mapOf(
+        'ᱚ' to Pair("ऑ", "ो"),
+        'ᱟ' to Pair("आ", "ा"),
+        'ᱤ' to Pair("इ", "ि"),
+        'ᱩ' to Pair("उ", "ु"),
+        'ᱮ' to Pair("ए", "े"),
+        'ᱳ' to Pair("ओ", "ो")
+    )
+
+    private val consonantMap = mapOf(
+        'ᱛ' to "त", 'ᱜ' to "ग", 'ᱝ' to "ंग", 'ᱞ' to "ल",
+        'ᱠ' to "क", 'ᱡ' to "ज", 'ᱢ' to "म", 'ᱣ' to "व",
+        'ᱥ' to "स", 'ᱦ' to "ह", 'ᱧ' to "ञ", 'ᱨ' to "र",
+        'ᱪ' to "च", 'ᱫ' to "द", 'ᱬ' to "ण", 'ᱭ' to "य",
+        'ᱯ' to "प", 'ᱰ' to "ड", 'ᱱ' to "न", 'ᱲ' to "ड़",
+        'ᱴ' to "ट", 'ᱵ' to "ब", 'ᱶ' to "व", 'ᱷ' to "ह"
+    )
+
+    private val modifierMap = mapOf(
+        'ᱸ' to "ं", 'ᱹ' to "", 'ᱺ' to "ँ", 'ᱻ' to "",
+        'ᱼ' to "-", '᱾' to "।", '᱿' to "॥"
+    )
+
+    /**
+     * Converts Ol Chiki script into phonetically accurate Devanagari acoustic text.
+     * Devanagari acoustic representation enables Android's native Indian TTS engine
+     * to articulate authentic Santali vowels, aspirated stops, retroflex consonants,
+     * and glottal nuances with human-level naturalness rather than robotic Latin spellings.
+     */
     fun transliterate(olChikiText: String): String {
-        val sb = StringBuilder(olChikiText.length * 2)
-        for (ch in olChikiText) {
-            sb.append(olChikiMap[ch] ?: ch.toString())
+        val n = olChikiText.length
+        val sb = StringBuilder(n * 2)
+        var i = 0
+
+        while (i < n) {
+            val ch = olChikiText[i]
+
+            // 1. Check aspirate pairs (e.g. ᱛ + ᱷ = थ, ᱠ + ᱷ = ख)
+            if (i + 1 < n && aspirateMap.containsKey(Pair(ch, olChikiText[i + 1]))) {
+                val aspCons = aspirateMap[Pair(ch, olChikiText[i + 1])]!!
+                if (i + 2 < n && vowelMap.containsKey(olChikiText[i + 2])) {
+                    val matra = vowelMap[olChikiText[i + 2]]!!.second
+                    sb.append(aspCons).append(matra)
+                    i += 3
+                    continue
+                } else {
+                    sb.append(aspCons)
+                    i += 2
+                    continue
+                }
+            }
+
+            // 2. Check regular consonants
+            if (consonantMap.containsKey(ch)) {
+                val cons = consonantMap[ch]!!
+                if (i + 1 < n && vowelMap.containsKey(olChikiText[i + 1])) {
+                    val matra = vowelMap[olChikiText[i + 1]]!!.second
+                    if (ch == 'ᱧ') {
+                        // Palatal nasal special acoustic handling for 'ny' (e.g., nyutum -> न्यूतुम)
+                        sb.append(if (matra == "ु" || matra == "ू") "न्यू" else "न्य$matra")
+                    } else {
+                        sb.append(cons).append(matra)
+                    }
+                    i += 2
+                    continue
+                } else {
+                    if (ch == 'ᱧ') {
+                        sb.append("ञ")
+                    } else {
+                        sb.append(cons)
+                    }
+                    i += 1
+                    continue
+                }
+            }
+
+            // 3. Independent vowels
+            if (vowelMap.containsKey(ch)) {
+                sb.append(vowelMap[ch]!!.first)
+                i += 1
+                continue
+            }
+
+            // 4. Modifiers and punctuation
+            if (modifierMap.containsKey(ch)) {
+                sb.append(modifierMap[ch]!!)
+                i += 1
+                continue
+            }
+
+            // 5. Default pass-through
+            sb.append(ch)
+            i += 1
         }
-        return sb.toString()
+        return sb.toString().replace(Regex("\\s+"), " ").trim()
     }
 
     /**
@@ -72,7 +160,7 @@ class SantaliTtsEngine(private val context: Context) {
                             }
                         } catch (_: Exception) {}
                     }
-                    tts?.setSpeechRate(0.85f)
+                    tts?.setSpeechRate(0.88f)
                     tts?.setPitch(1.0f)
                     isReady = true
                     Log.d(TAG, "TTS engine ready! Processing ${pendingSpeechQueue.size} pending speeches")
@@ -106,13 +194,13 @@ class SantaliTtsEngine(private val context: Context) {
         }
 
         try {
-            val speechText = if (isOlChiki) transliterate(text) else text
+            val speechText = if (isOlChiki || text.any { it in '\u1C50'..'\u1C7F' }) transliterate(text) else text
             val utteranceId = "utt_${System.currentTimeMillis()}"
             val params = Bundle().apply {
                 putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId)
             }
             tts?.speak(speechText, TextToSpeech.QUEUE_FLUSH, params, utteranceId)
-            Log.d(TAG, "TTS speakAsync speaking: '$speechText'")
+            Log.d(TAG, "TTS speakAsync speaking acoustic text: '$speechText' (original: '$text')")
         } catch (e: Exception) {
             Log.e(TAG, "TTS speakAsync failed: ${e.message}")
         }

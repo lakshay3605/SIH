@@ -13,10 +13,6 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-        ndk {
-            abiFilters.add("arm64-v8a")
-            abiFilters.add("armeabi-v7a")
-        }
     }
 
     buildTypes {
