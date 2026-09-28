@@ -20,15 +20,18 @@ export const Translate: React.FC = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const recognitionRef = React.useRef<any>(null);
 
-  const handleMicClick = () => {
-    if (isListening) {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
+  const handleMicClick = (start?: boolean | any) => {
+    const shouldStart = typeof start === 'boolean' ? start : !isListening;
+    if (!shouldStart) {
+      if (isListening) {
+        if (recognitionRef.current) {
+          recognitionRef.current.stop();
+        }
+        setIsListening(false);
       }
-      setIsListening(false);
-      showToast("माइक बंद किया गया");
       return;
     }
+    if (isListening) return;
 
     const handler = createHindiSpeechRecognition(
       (transcript) => {
@@ -115,9 +118,12 @@ export const Translate: React.FC = () => {
         </div>
 
         {/* Large Mic Button */}
-        <div className="flex justify-center py-2">
+        <div className="flex flex-col items-center justify-center py-2">
           <button
-            onClick={handleMicClick}
+            onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); handleMicClick(true); }}
+            onPointerUp={(e) => { e.currentTarget.releasePointerCapture(e.pointerId); handleMicClick(false); }}
+            onPointerCancel={(e) => { handleMicClick(false); }}
+            style={{ touchAction: 'none' }}
             className={`w-16 h-16 rounded-full flex items-center justify-center transition shadow-lg ${
               isListening
                 ? "bg-rose-500 text-white animate-pulse"
@@ -128,6 +134,9 @@ export const Translate: React.FC = () => {
           >
             {isListening ? <MicOff className="w-8 h-8" /> : <Mic className="w-8 h-8" />}
           </button>
+          <div className="text-[11px] font-bold text-rose-600 dark:text-rose-400 mt-2">
+            👇 Hold to Talk / बोलने के लिए दबाए रखें
+          </div>
         </div>
 
         {/* Quick Suggestion Chips */}

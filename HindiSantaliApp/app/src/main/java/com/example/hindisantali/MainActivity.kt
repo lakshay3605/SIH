@@ -32,7 +32,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.webkit.WebViewAssetLoader
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-import com.example.hindisantali.asr.HindiSpeechRecognizerEngine
+import com.example.hindisantali.asr.HindiAsrEngine
+import com.example.hindisantali.asr.ModelDownloader
+import com.example.hindisantali.asr.OfflineAsrRecorder
 import com.example.hindisantali.tts.SantaliTtsEngine
 import com.example.hindisantali.theme.HindiSantaliTheme
 
@@ -106,8 +108,13 @@ class SamvaadAndroidBridge(
     private val ttsEngine by lazy {
         activity?.let { SantaliTtsEngine(it).apply { initialize() } }
     }
-    private val asrEngine by lazy {
-        activity?.let { HindiSpeechRecognizerEngine(it) }
+    private val offlineAsrEngine by lazy {
+        activity?.let { HindiAsrEngine(it).also { e ->
+            try { if (ModelDownloader.isModelDownloaded(it)) e.initialize() } catch (_: Exception) {}
+        }}
+    }
+    private val offlineRecorder by lazy {
+        activity?.let { OfflineAsrRecorder(it) }
     }
 
     fun setWebView(webView: WebView) {
@@ -152,40 +159,60 @@ class SamvaadAndroidBridge(
     @android.webkit.JavascriptInterface
     fun startNativeSpeechRecognition(speaker: String) {
         val act = activity ?: return
-        act.runOnUiThread {
-            val wv = webViewRef?.get()
-            val asr = asrEngine
-            if (asr == null || !asr.isAvailable()) {
-                wv?.evaluateJavascript("window.onNativeSpeechError && window.onNativeSpeechError('recognition_unavailable');", null)
-                return@runOnUiThread
-            }
-            act.lifecycleScope.launch {
-                try {
-                    val result = asr.recognize(timeoutMs = 4500)
-                    if (result.isNotBlank()) {
-                        val clean = result.replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").trim()
-                        wv?.evaluateJavascript("window.onNativeSpeechResult && window.onNativeSpeechResult('$clean', '$speaker');", null)
-                    } else {
-                        wv?.evaluateJavascript("window.onNativeSpeechEnd && window.onNativeSpeechEnd('$speaker');", null)
-                    }
-                } catch (e: Exception) {
-                    Log.w("SamvaadBridge", "ASR error: ${e.message}")
-                    val msg = e.message?.replace("'", "") ?: "error"
-                    wv?.evaluateJavascript("window.onNativeSpeechError && window.onNativeSpeechError('$msg');", null)
+        val recorder = offlineRecorder ?: return
+        act.lifecycleScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            if (!com.example.hindisantali.asr.ModelDownloader.isModelDownloaded(act)) {
+                act.runOnUiThread { android.widget.Toast.makeText(act, "Preparing offline Voice Model... Please wait.", android.widget.Toast.LENGTH_LONG).show() }
+                val result = com.example.hindisantali.asr.ModelDownloader.downloadIfNeeded(
+                    act,
+                    com.example.hindisantali.asr.ModelDownloader.BASE_URL,
+                    com.example.hindisantali.asr.ModelDownloader.REQUIRED_FILES
+                )
+                if (result.isSuccess) {
+                    offlineAsrEngine?.initialize()
+                    act.runOnUiThread { android.widget.Toast.makeText(act, "Voice model is ready! You can now use voice typing.", android.widget.Toast.LENGTH_LONG).show() }
+                } else {
+                    act.runOnUiThread { android.widget.Toast.makeText(act, "Initialization failed: ${result.exceptionOrNull()?.message}", android.widget.Toast.LENGTH_LONG).show() }
                 }
+                return@launch
+            }
+            
+            // Model is downloaded, initialize if needed, then record
+            try { 
+                offlineAsrEngine?.initialize()
+                recorder.startRecording() 
+            } catch (e: Exception) { 
+                android.util.Log.e("SamvaadBridge", "Start failed: ${e.message}") 
             }
         }
     }
 
     @android.webkit.JavascriptInterface
     fun stopNativeSpeechRecognition() {
-        activity?.runOnUiThread {
+        val act = activity ?: return
+        val recorder = offlineRecorder ?: return
+        val engine = offlineAsrEngine ?: return
+        act.lifecycleScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            val wv = webViewRef?.get()
             try {
-                asrEngine?.stopListening()
-                // Do not destroy here, let the SpeechRecognizer finish processing and call onResults
-            } catch (_: Exception) {}
+                val result = recorder.stopAndTranscribe(engine)
+                val clean = result.replace("\n", " ").trim()
+                act.runOnUiThread {
+                    if (clean.isNotBlank()) {
+                        val safe = clean.replace("'", "").replace("\n", " ")
+                        wv?.evaluateJavascript("window.onNativeSpeechResult ? window.onNativeSpeechResult('" + safe + "', 'teacher') : null;", null)
+                    } else {
+                        wv?.evaluateJavascript("window.onNativeSpeechEnd ? window.onNativeSpeechEnd('teacher') : null;", null)
+                    }
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("SamvaadBridge", "Transcribe error: ${e.message}")
+                val msg = (e.message ?: "error").replace("'", "")
+                act.runOnUiThread { wv?.evaluateJavascript("window.onNativeSpeechError ? window.onNativeSpeechError('" + msg + "') : null;", null) }
+            }
         }
     }
+
 }
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -270,3 +297,5 @@ fun SamvaadAppView() {
         }
     )
 }
+
+

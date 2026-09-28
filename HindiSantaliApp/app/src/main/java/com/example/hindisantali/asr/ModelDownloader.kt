@@ -49,60 +49,46 @@ object ModelDownloader {
      */
     suspend fun downloadIfNeeded(
         context: Context,
-        baseUrl: String,
-        fileNames: List<String>,
+        baseUrl: String = "",
+        fileNames: List<String> = REQUIRED_FILES,
         onProgress: (String, Float, Float) -> Unit = { _, _, _ -> }
     ): Result<Unit> = withContext(Dispatchers.IO) {
         val modelDir = getModelDir(context)
         modelDir.mkdirs()
 
-        for (fileName in fileNames) {
-            val destFile = File(modelDir, fileName)
-            val tmpDest = File(modelDir, "$fileName.tmp")
-            
-            if (destFile.exists()) {
-                Log.d(TAG, "Skipping $fileName — already exists")
-                continue
-            }
-
-            val url = "$baseUrl$fileName"
-            Log.d(TAG, "Downloading $fileName from $url")
-
-            try {
-                val connection = URL(url).openConnection() as HttpURLConnection
-                connection.connectTimeout = 30_000
-                connection.readTimeout = 60_000
-                connection.connect()
+        try {
+            for (fileName in fileNames) {
+                val destFile = File(modelDir, fileName)
                 
-                val totalBytes = connection.contentLengthLong
-                var downloadedBytes = 0L
+                if (destFile.exists()) {
+                    Log.d(TAG, "Skipping $fileName - already exists")
+                    continue
+                }
 
-                connection.inputStream.use { input ->
-                    tmpDest.outputStream().use { output ->
+                Log.d(TAG, "Extracting $fileName from assets")
+                
+                context.assets.open("asr_model/$fileName").use { input ->
+                    val totalBytes = input.available().toLong()
+                    var extractedBytes = 0L
+                    
+                    destFile.outputStream().use { output ->
                         val buffer = ByteArray(32768)
                         var bytesRead: Int
                         while (input.read(buffer).also { bytesRead = it } != -1) {
                             output.write(buffer, 0, bytesRead)
-                            downloadedBytes += bytesRead
-                            onProgress(fileName, downloadedBytes / 1_048_576f, totalBytes / 1_048_576f)
+                            extractedBytes += bytesRead
+                            if (totalBytes > 0) {
+                                onProgress(fileName, extractedBytes / 1_048_576f, totalBytes / 1_048_576f)
+                            }
                         }
                     }
                 }
-
-                // Rename tmp to final only if fully successful
-                if (tmpDest.renameTo(destFile)) {
-                    Log.d(TAG, "Downloaded $fileName (${destFile.length()} bytes)")
-                } else {
-                    throw IOException("Failed to rename temporary file to $fileName")
-                }
-            } catch (e: Exception) {
-                tmpDest.delete()
-                destFile.delete()
-                Log.e(TAG, "Failed to download $fileName: ${e.message}")
-                return@withContext Result.failure(e)
+                Log.d(TAG, "Extracted $fileName (${destFile.length()} bytes)")
             }
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to extract models: ${e.message}")
+            Result.failure(e)
         }
-
-        Result.success(Unit)
     }
 }

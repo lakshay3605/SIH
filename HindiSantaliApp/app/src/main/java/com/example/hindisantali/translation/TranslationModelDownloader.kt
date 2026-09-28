@@ -42,59 +42,46 @@ object TranslationModelDownloader {
 
     suspend fun downloadIfNeeded(
         context: Context,
-        onProgress: (fileName: String, downloadedMb: Float, totalMb: Float) -> Unit = { _, _, _ -> }
+        baseUrl: String = "",
+        fileNames: List<String> = REQUIRED_FILES,
+        onProgress: (String, Float, Float) -> Unit = { _, _, _ -> }
     ): Result<Unit> = withContext(Dispatchers.IO) {
-        val dir = getModelDir(context)
-        dir.mkdirs()
+        val modelDir = getModelDir(context)
+        modelDir.mkdirs()
 
-        for (fileName in REQUIRED_FILES) {
-            val dest = File(dir, fileName)
-            if (dest.exists()) {
-                Log.d(TAG, "Skipping $fileName — already exists")
-                continue
-            }
+        try {
+            for (fileName in fileNames) {
+                val destFile = File(modelDir, fileName)
+                
+                if (destFile.exists()) {
+                    Log.d(TAG, "Skipping $fileName - already exists")
+                    continue
+                }
 
-            val tmpDest = File(dir, "$fileName.tmp")
-            val url = "$TRANSLATION_BASE_URL$fileName"
-            Log.d(TAG, "Downloading $fileName")
-
-            try {
-                val conn = URL(url).openConnection() as HttpURLConnection
-                conn.connectTimeout = 30_000
-                conn.readTimeout   = 60_000
-                conn.connect()
-
-                val total = conn.contentLengthLong
-                var downloaded = 0L
-
-                conn.inputStream.use { input ->
-                    tmpDest.outputStream().use { output ->
-                        val buf = ByteArray(32768)
-                        var read: Int
-                        while (input.read(buf).also { read = it } != -1) {
-                            output.write(buf, 0, read)
-                            downloaded += read
-                            onProgress(
-                                fileName,
-                                downloaded / 1_048_576f,
-                                total / 1_048_576f
-                            )
+                Log.d(TAG, "Extracting $fileName from assets")
+                
+                context.assets.open("translation_model/$fileName").use { input ->
+                    val totalBytes = input.available().toLong()
+                    var extractedBytes = 0L
+                    
+                    destFile.outputStream().use { output ->
+                        val buffer = ByteArray(32768)
+                        var bytesRead: Int
+                        while (input.read(buffer).also { bytesRead = it } != -1) {
+                            output.write(buffer, 0, bytesRead)
+                            extractedBytes += bytesRead
+                            if (totalBytes > 0) {
+                                onProgress(fileName, extractedBytes / 1_048_576f, totalBytes / 1_048_576f)
+                            }
                         }
                     }
                 }
-                
-                if (tmpDest.renameTo(dest)) {
-                    Log.d(TAG, "Downloaded $fileName (${dest.length()} bytes)")
-                } else {
-                    throw IOException("Failed to rename temporary file to $fileName")
-                }
-            } catch (e: Exception) {
-                tmpDest.delete()
-                dest.delete()
-                Log.e(TAG, "Failed to download $fileName: ${e.message}")
-                return@withContext Result.failure(e)
+                Log.d(TAG, "Extracted $fileName (${destFile.length()} bytes)")
             }
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to extract models: ${e.message}")
+            Result.failure(e)
         }
-        Result.success(Unit)
     }
 }

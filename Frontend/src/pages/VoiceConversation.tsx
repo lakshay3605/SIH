@@ -348,16 +348,15 @@ export const VoiceConversation: React.FC = () => {
             </span>
           </div>
 
+          
+          
           <div className="grid grid-cols-2 gap-3 pt-1">
             {/* Teacher Button (Speak Hindi -> Speaks Santali) */}
             <button
-              onClick={() => {
-                if (isListening && activeSpeaker === 'teacher') {
-                  stopListening();
-                } else {
-                  startRecognitionFor('teacher');
-                }
-              }}
+              onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); startRecognitionFor('teacher'); }}
+              onPointerUp={(e) => { e.currentTarget.releasePointerCapture(e.pointerId); stopListening(); }}
+              onPointerCancel={(e) => { stopListening(); }}
+              style={{ touchAction: 'none' }}
               className={`p-3 rounded-2xl flex flex-col items-center justify-center gap-1.5 transition active:scale-95 ${
                 isListening && activeSpeaker === 'teacher'
                   ? 'bg-rose-600 text-white shadow-md ring-2 ring-rose-300 animate-pulse'
@@ -379,13 +378,10 @@ export const VoiceConversation: React.FC = () => {
 
             {/* Student Button (Speak Santali -> Speaks Hindi) */}
             <button
-              onClick={() => {
-                if (isListening && activeSpeaker === 'student') {
-                  stopListening();
-                } else {
-                  startRecognitionFor('student');
-                }
-              }}
+              onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); startRecognitionFor('student'); }}
+              onPointerUp={(e) => { e.currentTarget.releasePointerCapture(e.pointerId); stopListening(); }}
+              onPointerCancel={(e) => { stopListening(); }}
+              style={{ touchAction: 'none' }}
               className={`p-3 rounded-2xl flex flex-col items-center justify-center gap-1.5 transition active:scale-95 ${
                 isListening && activeSpeaker === 'student'
                   ? 'bg-rose-600 text-white shadow-md ring-2 ring-rose-300 animate-pulse'
@@ -405,6 +401,10 @@ export const VoiceConversation: React.FC = () => {
               </div>
             </button>
           </div>
+            <div className="text-center mt-2 text-[11px] font-bold text-rose-600 dark:text-rose-400">
+              👇 Hold to Talk / बोलने के लिए दबाए रखें
+            </div>
+
 
           {/* Auto-Speak Checkbox */}
           <div className="flex items-center justify-between pt-3 mt-2 border-t border-gray-100 dark:border-gray-800 text-[11px] text-gray-500">

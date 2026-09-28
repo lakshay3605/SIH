@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.hindisantali.asr.HindiAsrEngine
-import com.example.hindisantali.asr.HindiSpeechRecognizerEngine
+import com.example.hindisantali.asr.OfflineAsrRecorder
 import com.example.hindisantali.asr.ModelDownloader
 import com.example.hindisantali.translation.HindiSantaliTranslator
 import com.example.hindisantali.translation.TranslationModelDownloader
@@ -64,7 +64,7 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
-    private val speechRecognizer = HindiSpeechRecognizerEngine(application)
+    private val offlineRecorder = OfflineAsrRecorder(application)
     
     private val asrEngine = HindiAsrEngine(application)
     private val translator = HindiSantaliTranslator(application)
@@ -78,7 +78,7 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
         // to avoid holding 196MB ASR + 200MB translation in RAM simultaneously.
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                asrEngine.initialize()
+                if (com.example.hindisantali.asr.ModelDownloader.isModelDownloaded(application)) asrEngine.initialize()
                 android.util.Log.d("ViewModel", "ASR engine pre-warmed and ready")
             } catch (e: Exception) {
                 android.util.Log.e("ViewModel", "ASR pre-warm failed: ${e.message}")
@@ -192,9 +192,8 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
     // ── Recording lifecycle ──────────────────────────────────────────────────
 
     /**
-     * Starts the Android SpeechRecognizer for Hindi.
-     * Must be called from the Main thread (ViewModel launches with Main dispatcher).
-     * The recognizer listens until it detects end-of-speech automatically.
+     * Push-to-talk: called when mic button is PRESSED.
+     * Just starts recording - no blocking wait.
      */
     fun startListening() {
         if (_uiState.value.stage == PipelineStage.RECORDING) return
@@ -203,10 +202,7 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
         if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.RECORD_AUDIO)
             != PackageManager.PERMISSION_GRANTED
         ) {
-            _uiState.update { it.copy(
-                stage = PipelineStage.ERROR,
-                errorMessage = "Microphone permission not granted."
-            )}
+            _uiState.update { it.copy(stage = PipelineStage.ERROR, errorMessage = "Microphone permission not granted.") }
             return
         }
 
@@ -219,13 +215,20 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
             latency = LatencyBreakdown()
         )}
 
-        // IMPORTANT: SpeechRecognizer requires Main thread
-        viewModelScope.launch(Dispatchers.Main) {
+        offlineRecorder.startRecording()
+    }
+
+    /**
+     * Push-to-talk: called when mic button is RELEASED.
+     * Stops recording, transcribes, then runs full translation pipeline.
+     */
+    fun stopListening() {
+        if (_uiState.value.stage != PipelineStage.RECORDING) return
+
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 val asrStart = System.currentTimeMillis()
-
-                // Stage changes to TRANSCRIBING automatically when user stops speaking
-                val hindiText = speechRecognizer.recognize(timeoutMs = 4000)
+                val hindiText = offlineRecorder.stopAndTranscribe(asrEngine)
                 val asrMs = System.currentTimeMillis() - asrStart
 
                 _uiState.update { it.copy(
@@ -235,29 +238,15 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
                 )}
 
                 if (hindiText.isBlank()) {
-                    _uiState.update { it.copy(
-                        stage = PipelineStage.IDLE,
-                        errorMessage = "Could not recognise Hindi speech. Please speak clearly."
-                    )}
+                    _uiState.update { it.copy(stage = PipelineStage.IDLE, errorMessage = "Could not recognise speech. Try speaking more clearly.") }
                     return@launch
                 }
 
-                // Switch to IO for translation
-                withContext(Dispatchers.IO) {
-                    runPipelineFromText(hindiText)
-                }
-
+                runPipelineFromText(hindiText)
             } catch (e: Exception) {
-                _uiState.update { it.copy(
-                    stage = PipelineStage.ERROR,
-                    errorMessage = "ASR error: ${e.message}"
-                )}
+                _uiState.update { it.copy(stage = PipelineStage.ERROR, errorMessage = "ASR error: ${e.message}") }
             }
         }
-    }
-
-    fun stopListening() {
-        speechRecognizer.stopListening()
     }
 
     // ── Full pipeline ────────────────────────────────────────────────────────
@@ -365,9 +354,10 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
 
     override fun onCleared() {
         super.onCleared()
-        speechRecognizer.destroy()
         asrEngine.release()
         translator.release()
         ttsEngine.release()
     }
 }
+
+
