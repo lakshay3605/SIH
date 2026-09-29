@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">Samvaad</string>
-    <string name="title_activity_main">Samvaad</string>
-    <string name="package_name">com.samvaad.app</string>
-    <string name="custom_url_scheme">com.samvaad.app</string>
-</resources>
