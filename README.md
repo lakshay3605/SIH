@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="ReadMe/WhatsApp Image 2026-09-29 at 01.22.22 (1).jpeg" alt="SANKALP SAMVAAD Logo" width="800"/>
+  <img src="ReadMe/logo.jpeg" alt="SANKALP SAMVAAD Logo" width="800"/>
 
   # SANKALP SAMVAAD
   ### Offline AI Voice Bridge for Tribal Classrooms
@@ -35,7 +35,7 @@ Jharkhand's PALASH Mother Tongue-Based Multilingual Education (MTB-MLE) programm
 ## 🏗️ Architecture & Pipeline
 
 <div align="center">
-  <img src="ReadMe/WhatsApp Image 2026-09-29 at 01.22.21 (1).jpeg" alt="Architecture" width="800"/>
+  <img src="ReadMe/architecture.jpeg" alt="Architecture" width="800"/>
 </div>
 
 ### 1. App Architecture
@@ -68,7 +68,7 @@ Testing SAMVAAD is incredibly simple. You do not need to compile code, set up en
 ## 🗺️ Roadmap & Future Priorities
 
 <div align="center">
-  <img src="ReadMe/WhatsApp Image 2026-09-29 at 01.22.22.jpeg" alt="Roadmap" width="800"/>
+  <img src="ReadMe/roadmap.jpeg" alt="Roadmap" width="800"/>
 </div>
 
 From a translation prototype to a complete teaching and learning platform:
