@@ -1467,31 +1467,79 @@ export const HINDI_MUNDARI_PHRASE_BOOK: Record<string, { devanagari: string; pho
   "नमस्ते": { devanagari: "जोहार", phonetic: "Johar" },
   "जोहार": { devanagari: "जोहार", phonetic: "Johar" },
   "आप कैसे हैं?": { devanagari: "आम चिलका मेना मा?", phonetic: "Aam chilka mena ma?" },
+  "आप कैसे हैं": { devanagari: "आम चिलका मेना मा?", phonetic: "Aam chilka mena ma?" },
   "मैं ठीक हूँ": { devanagari: "ऐं नापाए गे मेनाइञा", phonetic: "Ain napae ge menainja" },
-  "धन्यवाद": { devanagari: "सराब", phonetic: "Sarab" }
+  "मुझे पानी पीना है": { devanagari: "अिंग दाअ नू सानांग", phonetic: "Aing daa nu sanang" },
+  "मुझे भूख लगी है": { devanagari: "अिंग रेंगेज सानांग", phonetic: "Aing rengej sanang" },
+  "यह किताब मेरी है": { devanagari: "नेवा पुथी अिंगाः", phonetic: "Newa puthi ainga:" },
+  "धन्यवाद": { devanagari: "सरहाव", phonetic: "Sarhaw" },
+  "धन्यवाद शिक्षक जी": { devanagari: "सरहाव माचेत", phonetic: "Sarhaw machet" },
+  "तुम्हारा नाम क्या है": { devanagari: "आमाः नुतुम चेद", phonetic: "Ama: nutum ched" },
+  "मेरा नाम लक्ष्य है": { devanagari: "अिंगाः नुतुम लक्ष्य", phonetic: "Ainga: nutum Lakshya" },
+  "तुम्हारा नाम क्या है?": { devanagari: "आमाः नुतुम चेद?", phonetic: "Ama: nutum ched?" }
 };
 
-export const HINDI_TO_MUNDARI_WORDS: Record<string, string> = {
-  "पिता": "अपुते",
-  "पेड़": "दरू",
-  "पानी": "दअः",
-  "नदी": "गड़ा",
-  "बहन": "मिसि",
-  "चिड़िया": "चेंड़े",
-  "घर": "ओड़अः",
-  "किताब": "पुथि",
-  "विद्यालय": "इतुसइ",
-  "माँ": "एंंगाते",
-  "भाई": "हगा",
-  "कलम": "कलम",
-  "आम": "उलि",
-  "गाय": "गइ",
-  "गेंद": "गेंदा",
-  "खेल": "इनुङ",
-  "दोस्त": "गतिङ",
-  "फल": "जो",
-  "फूल": "बा",
-  "जंगल": "बिर"
+export const HINDI_MUNDARI_VOCAB: Record<string, { devanagari: string; phonetic: string }> = {
+  "मैं": { devanagari: "अिंग", phonetic: "aing" },
+  "तुम": { devanagari: "आम", phonetic: "am" },
+  "तुम्हारा": { devanagari: "आमाः", phonetic: "ama:" },
+  "मेरा": { devanagari: "अिंगाः", phonetic: "ainga:" },
+  "वह": { devanagari: "आए", phonetic: "ae" },
+  "हम": { devanagari: "अबू", phonetic: "abu" },
+  "क्या": { devanagari: "चेद", phonetic: "ched" },
+  "कौन": { devanagari: "ओकोए", phonetic: "okoe" },
+  "कहाँ": { devanagari: "ओकोरे", phonetic: "okore" },
+  "क्यों": { devanagari: "चियाअ", phonetic: "chiya" },
+  "हाँ": { devanagari: "हे", phonetic: "he" },
+  "नहीं": { devanagari: "का", phonetic: "ka" },
+  "पानी": { devanagari: "दअः", phonetic: "daa" },
+  "खाना": { devanagari: "जोम", phonetic: "jom" },
+  "जाना": { devanagari: "सेन", phonetic: "sen" },
+  "आना": { devanagari: "हिजू", phonetic: "hiju" },
+  "सोना": { devanagari: "गितीज", phonetic: "gitij" },
+  "देखना": { devanagari: "नेल", phonetic: "nel" },
+  "बोलना": { devanagari: "काजी", phonetic: "kaji" },
+  "करना": { devanagari: "कामी", phonetic: "kami" },
+  "देना": { devanagari: "ओमा", phonetic: "oma" },
+  "लेना": { devanagari: "हाता", phonetic: "hata" },
+  "पेड़": { devanagari: "दरू", phonetic: "daru" },
+  "कुत्ता": { devanagari: "सेता", phonetic: "seta" },
+  "बिल्ली": { devanagari: "पूसी", phonetic: "pusi" },
+  "गाय": { devanagari: "गइ", phonetic: "gai" },
+  "घर": { devanagari: "ओड़अः", phonetic: "ora:" },
+  "पिता": { devanagari: "अपुते", phonetic: "apute" },
+  "माँ": { devanagari: "एंंगाते", phonetic: "engate" },
+  "भाई": { devanagari: "हगा", phonetic: "haga" },
+  "बहन": { devanagari: "मिसि", phonetic: "misi" },
+  "लड़का": { devanagari: "कोड़ा", phonetic: "kora" },
+  "लड़की": { devanagari: "कुड़ी", phonetic: "kuri" },
+  "बच्चा": { devanagari: "होन", phonetic: "hon" },
+  "किताब": { devanagari: "पुथि", phonetic: "puthi" },
+  "कलम": { devanagari: "कलम", phonetic: "kolom" },
+  "विद्यालय": { devanagari: "इतुसइ", phonetic: "iskul" },
+  "स्कूल": { devanagari: "इतुसइ", phonetic: "iskul" },
+  "नाम": { devanagari: "नुतुम", phonetic: "nutum" },
+  "आम": { devanagari: "उलि", phonetic: "uli" },
+  "गेंद": { devanagari: "गेंदा", phonetic: "genda" },
+  "खेल": { devanagari: "इनुङ", phonetic: "inung" },
+  "दोस्त": { devanagari: "गतिङ", phonetic: "gating" },
+  "फल": { devanagari: "जो", phonetic: "jo" },
+  "फूल": { devanagari: "बा", phonetic: "ba" },
+  "जंगल": { devanagari: "बिर", phonetic: "bir" },
+  "चिड़िया": { devanagari: "चेंड़े", phonetic: "chenre" },
+  "नदी": { devanagari: "गड़ा", phonetic: "gara" }
+};
+
+export const MUNDARI_VERB_STEMS: Record<string, { devanagari: string; phonetic: string }> = {
+  "जा": { devanagari: "सेन", phonetic: "sen" },
+  "आ": { devanagari: "हिजू", phonetic: "hiju" },
+  "खा": { devanagari: "जोम", phonetic: "jom" },
+  "पी": { devanagari: "नू", phonetic: "nu" },
+  "सो": { devanagari: "गितीज", phonetic: "gitij" },
+  "देख": { devanagari: "नेल", phonetic: "nel" },
+  "सुन": { devanagari: "अयुम", phonetic: "ayum" },
+  "कर": { devanagari: "कामी", phonetic: "kami" },
+  "दे": { devanagari: "ओमा", phonetic: "oma" }
 };
 
 /**
@@ -1502,27 +1550,48 @@ export function translateHindiToMundariClient(hindiText: string): { devanagari: 
 
   const cleanHindi = hindiText.trim().replace(/[।!?.,]/g, '').toLowerCase();
 
+  // 1. Direct Exact Match
   if (HINDI_MUNDARI_PHRASE_BOOK[cleanHindi]) {
     const res = HINDI_MUNDARI_PHRASE_BOOK[cleanHindi];
     return { devanagari: res.devanagari, phonetic: res.phonetic, olChiki: res.devanagari };
   }
 
+  // 2. Tokenized Translation
   const words = cleanHindi.split(/\s+/);
-  let translatedWords = [];
+  const devaWords = [];
+  const phoneticWords = [];
 
   for (let i = 0; i < words.length; i++) {
-    const word = words[i];
-    if (HINDI_TO_MUNDARI_WORDS[word]) {
-      translatedWords.push(HINDI_TO_MUNDARI_WORDS[word]);
+    const w = words[i];
+    if (!w) continue;
+
+    if (HINDI_MUNDARI_VOCAB[w]) {
+      devaWords.push(HINDI_MUNDARI_VOCAB[w].devanagari);
+      phoneticWords.push(HINDI_MUNDARI_VOCAB[w].phonetic);
     } else {
-      translatedWords.push(word);
+      let stemFound = false;
+      for (const [stem, sObj] of Object.entries(MUNDARI_VERB_STEMS)) {
+        if (w.startsWith(stem)) {
+          devaWords.push(sObj.devanagari);
+          phoneticWords.push(sObj.phonetic);
+          stemFound = true;
+          break;
+        }
+      }
+
+      if (!stemFound) {
+        devaWords.push(w);
+        phoneticWords.push(w);
+      }
     }
   }
 
-  const translatedText = translatedWords.join(' ');
+  const translatedText = devaWords.join(' ');
+  const phoneticText = phoneticWords.join(' ');
+  
   return {
     devanagari: translatedText,
-    phonetic: translatedText,
+    phonetic: phoneticText,
     olChiki: translatedText
   };
 }
