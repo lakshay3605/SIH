@@ -46,13 +46,12 @@ Jharkhand's **PALASH Mother Tongue-Based Multilingual Education (MTB-MLE)** prog
 
 **SAMVAAD** is a fully offline, AI-powered application designed to bridge the language gap in tribal classrooms. It allows Hindi-speaking teachers to communicate interactively with students in their mother tongues, ensuring the pedagogical intent of the MTB-MLE programme is realized at scale.
 
-### 🌟 Our Competitive Edge (USPs)
-Why SAMVAAD is the most viable and realistic solution for rural deployment:
-*   🎯 **Honest & Highly Scalable Pipeline:** No exaggerated AI claims. We built exactly what we promised using a highly generalized pipeline. Scaling to the remaining tribal languages is now simply a matter of data input—feed the parallel data in, get a furnished model out.
-*   🗣️ **Ground-Truth Research & Native Validation:** We didn't just assume classroom conditions from afar. We conducted validation meetings with native Santhali speakers to uncover the *real* on-ground truth about these rural schools and their unique challenges. This ensures our app is not just linguistically accurate, but practically viable for real teachers (recordings included in our demo video).
-*   ⚡ **Blazing Fast (Sub-2s Latency):** We comfortably beat the 3-second target. Our translations process 100% offline in under 2 seconds, ensuring natural, uninterrupted classroom dialogue.
-*   📱 **Frictionless Native App:** No websites, no web pages, no online logins, and no cloud databases. We delivered a lightweight, dead-simple Android application perfectly suited for both teachers and students.
-*   🗺️ **Pragmatic, Focused Roadmap:** Our future scope is strictly aligned with the PALASH and NIPUN Bharat frameworks. No unnecessary add-ons or bloat—just planned, structured steps to scale into a complete educational platform.
+### 🌟 What Makes SAMVAAD Best?
+*   🎯 **Simple & Scalable:** We made exactly what was asked. Our system is ready. To add more languages, we just need more data. Data in = working model out.
+*   🗣️ **Native Speaker Tested:** We actually met with native Santhali speakers to understand real classroom problems. They tested our app, and we included the meeting videos in our demo.
+*   ⚡ **Super Fast (Under 2 seconds):** The target was 3 seconds. We beat it. Our app works completely offline and translates in less than 2 seconds.
+*   📱 **Easy to Use App:** No website, no logins, no internet needed. It is a simple Android app that teachers and students can use instantly.
+*   🗺️ **Clear Future Plan:** No useless features. We only focus on what schools actually need, following the strict guidelines of PALASH and NIPUN Bharat.
 
 ### ✨ Where SAMVAAD Stands Today
 | Language | Status | Capabilities |
