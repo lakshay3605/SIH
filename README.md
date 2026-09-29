@@ -14,6 +14,9 @@
 
 ## 📑 Table of Contents
 
+- [💡 One Thing You Shouldn't Miss About Us](#-one-thing-you-shouldnt-miss-about-us)
+<br>
+
 - [🎯 The Problem](#-the-problem)
 <br>
 
@@ -31,6 +34,16 @@
 <br>
 
 - [🗺️ Roadmap & Future Priorities](#️-roadmap--future-priorities)
+
+---
+
+## 💡 One Thing You Shouldn't Miss About Us
+
+We are not just here to win a competition; we are here with a genuine mission. We took every step with a single goal: **making education accessible, because language should never be a barrier to learning.** 
+
+While we are deeply capable of building "heavy tech", we actively chose to do only what was utterly necessary. We stripped away the fluff, the extra hooks, and the unnecessary flings to ensure this app is as lightweight, sufficient, and impactful as possible for the children and teachers who actually need it in rural classrooms.
+
+**Thought. Planned. Executed.**
 
 ---
 
