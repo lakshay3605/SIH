@@ -46,7 +46,7 @@ Jharkhand's **PALASH Mother Tongue-Based Multilingual Education (MTB-MLE)** prog
 
 **SAMVAAD** is a fully offline, AI-powered application designed to bridge the language gap in tribal classrooms. It allows Hindi-speaking teachers to communicate interactively with students in their mother tongues, ensuring the pedagogical intent of the MTB-MLE programme is realized at scale.
 
-### 🌟 What Makes SAMVAAD Best?
+### 🌟 Our Competitive Edge (USPs)
 *   🎯 **Simple & Scalable:** We made exactly what was asked. Our system is ready. To add more languages, we just need more data. Data in = working model out.
 *   🗣️ **Native Speaker Tested:** We actually met with native Santhali speakers to understand real classroom problems. They tested our app, and we included the meeting videos in our demo.
 *   ⚡ **Super Fast (Under 2 seconds):** The target was 3 seconds. We beat it. Our app works completely offline and translates in less than 2 seconds.
