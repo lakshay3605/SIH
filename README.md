@@ -77,14 +77,11 @@ flowchart LR
 
 ---
 
-## 🚀 How to Run
+## 🚀 How to Run (100% Offline)
 
-Testing SAMVAAD is incredibly simple. You do not need to compile code, set up environments, or require an internet connection.
-
-1. Locate the **`Samvaad.apk`** file inside the `Samvaad_APK` folder.
-2. Transfer it to any Android Tablet or Smartphone (Android 9+, minimum 2GB RAM).
-3. **Install** the APK.
-4. **Open the app** and start speaking in Hindi! The app works 100% offline right out of the box.
+1. Get **`Samvaad.apk`** from the `Samvaad_APK` folder.
+2. Install on any Android device (9+, min 2GB RAM).
+3. Open and start speaking! No internet required.
 
 ---
 
