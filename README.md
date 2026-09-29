@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌿 SANKALP SAMVAAD
+# 🌿 SAMVAAD
 ### Offline AI Voice Bridge for Tribal Classrooms
   
 **Smart India Hackathon 2026** | **Problem Statement ID: 26042**
