@@ -1223,9 +1223,7 @@ export function createHindiSpeechRecognition(
   if (bridge && typeof bridge.startNativeSpeechRecognition === "function") {
     (window as any).onNativeSpeechResult = (text: string, speaker: string) => {
       clearTimer();
-      if (speaker === "teacher" || !speaker) {
-        onResult(text);
-      }
+      onResult(text);
       if (onEnd) onEnd();
     };
     (window as any).onNativeSpeechEnd = () => {
@@ -1258,8 +1256,7 @@ export function createHindiSpeechRecognition(
       stop: () => {
         clearTimer();
         try { bridge.stopNativeSpeechRecognition?.(); } catch (_e) {}
-        if (onEnd) onEnd();
-      },
+        },
       isSupported: true
     };
   }
@@ -1358,9 +1355,7 @@ export function createSantaliSpeechRecognition(
   if (bridge && typeof bridge.startNativeSpeechRecognition === "function") {
     (window as any).onNativeSpeechResult = (text: string, speaker: string) => {
       clearTimer();
-      if (speaker === "student") {
-        onResult(text);
-      }
+      onResult(text);
       if (onEnd) onEnd();
     };
     (window as any).onNativeSpeechEnd = () => {
@@ -1383,7 +1378,7 @@ export function createSantaliSpeechRecognition(
             console.log("Watchdog auto-stopping Santali mic");
             try { bridge.stopNativeSpeechRecognition?.(); } catch (_e) {}
             if (onEnd) onEnd();
-          }, 5000);
+          }, 15000);
         } catch (e) {
           clearTimer();
           if (onError) onError(e);
@@ -1393,8 +1388,7 @@ export function createSantaliSpeechRecognition(
       stop: () => {
         clearTimer();
         try { bridge.stopNativeSpeechRecognition?.(); } catch (_e) {}
-        if (onEnd) onEnd();
-      },
+        },
       isSupported: true
     };
   }
@@ -1466,4 +1460,69 @@ export function createSantaliSpeechRecognition(
   } catch (_e) {
     return { start: () => {}, stop: () => {}, isSupported: false };
   }
+}
+
+// ── COMPREHENSIVE MUNDARI PHRASEBOOK & DICTIONARY ───────
+export const HINDI_MUNDARI_PHRASE_BOOK: Record<string, { devanagari: string; phonetic: string }> = {
+  "नमस्ते": { devanagari: "जोहार", phonetic: "Johar" },
+  "जोहार": { devanagari: "जोहार", phonetic: "Johar" },
+  "आप कैसे हैं?": { devanagari: "आम चिलका मेना मा?", phonetic: "Aam chilka mena ma?" },
+  "मैं ठीक हूँ": { devanagari: "ऐं नापाए गे मेनाइञा", phonetic: "Ain napae ge menainja" },
+  "धन्यवाद": { devanagari: "सराब", phonetic: "Sarab" }
+};
+
+export const HINDI_TO_MUNDARI_WORDS: Record<string, string> = {
+  "पिता": "अपुते",
+  "पेड़": "दरू",
+  "पानी": "दअः",
+  "नदी": "गड़ा",
+  "बहन": "मिसि",
+  "चिड़िया": "चेंड़े",
+  "घर": "ओड़अः",
+  "किताब": "पुथि",
+  "विद्यालय": "इतुसइ",
+  "माँ": "एंंगाते",
+  "भाई": "हगा",
+  "कलम": "कलम",
+  "आम": "उलि",
+  "गाय": "गइ",
+  "गेंद": "गेंदा",
+  "खेल": "इनुङ",
+  "दोस्त": "गतिङ",
+  "फल": "जो",
+  "फूल": "बा",
+  "जंगल": "बिर"
+};
+
+/**
+ * Translates Hindi to Mundari (Devanagari) on the client side.
+ */
+export function translateHindiToMundariClient(hindiText: string): { devanagari: string; phonetic: string; olChiki?: string } {
+  if (!hindiText || hindiText.trim() === '') return { devanagari: '', phonetic: '', olChiki: '' };
+
+  const cleanHindi = hindiText.trim().replace(/[।!?.,]/g, '').toLowerCase();
+
+  if (HINDI_MUNDARI_PHRASE_BOOK[cleanHindi]) {
+    const res = HINDI_MUNDARI_PHRASE_BOOK[cleanHindi];
+    return { devanagari: res.devanagari, phonetic: res.phonetic, olChiki: res.devanagari };
+  }
+
+  const words = cleanHindi.split(/\s+/);
+  let translatedWords = [];
+
+  for (let i = 0; i < words.length; i++) {
+    const word = words[i];
+    if (HINDI_TO_MUNDARI_WORDS[word]) {
+      translatedWords.push(HINDI_TO_MUNDARI_WORDS[word]);
+    } else {
+      translatedWords.push(word);
+    }
+  }
+
+  const translatedText = translatedWords.join(' ');
+  return {
+    devanagari: translatedText,
+    phonetic: translatedText,
+    olChiki: translatedText
+  };
 }

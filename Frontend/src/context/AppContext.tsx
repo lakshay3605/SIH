@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { App as CapacitorApp } from '@capacitor/app';
-import { speakSantali, translateHindiToSantaliClient } from '../utils/speechTranslation';
+import { speakSantali, translateHindiToSantaliClient, translateHindiToMundariClient } from '../utils/speechTranslation';
 import { ScreenId, BottomTab, LanguageCode, HistoryItem, DictionaryItem, FlashcardItem, WorksheetRow, WorksheetType } from '../types';
 
 interface AppContextType {
@@ -226,12 +226,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const translateInput = (textToTranslate?: string) => {
     const text = textToTranslate !== undefined ? textToTranslate : inputText;
-    const res = translateHindiToSantaliClient(text);
-    const newOlChiki = res.olChiki || 'ᱛᱮᱦᱮᱧ ᱟᱵᱚ ᱮᱞ ᱵᱚᱱ ᱪᱮᱫᱚᱜᱼᱟ᱾';
-    const newPhonetic = res.phonetic || 'Tehenj abo el bon chedog-aa.';
-    setTranslatedText(newOlChiki);
-    setPhoneticText(newPhonetic);
-    return { olChiki: newOlChiki, phonetic: newPhonetic };
+    if (appLanguage === 'Mundari') {
+      const res = translateHindiToMundariClient(text);
+      const newDeva = res.devanagari || 'मुंडारी अनुवाद';
+      const newPhonetic = res.phonetic || 'Mundari translation';
+      setTranslatedText(newDeva);
+      setPhoneticText(newPhonetic);
+      return { olChiki: newDeva, phonetic: newPhonetic };
+    } else {
+      const res = translateHindiToSantaliClient(text);
+      const newOlChiki = res.olChiki || 'ᱛᱮᱦᱮᱧ ᱟᱵᱚ ᱮᱞ ᱵᱚᱱ ᱪᱮᱫᱚᱜᱼᱟ᱾';
+      const newPhonetic = res.phonetic || 'Tehenj abo el bon chedog-aa.';
+      setTranslatedText(newOlChiki);
+      setPhoneticText(newPhonetic);
+      return { olChiki: newOlChiki, phonetic: newPhonetic };
+    }
   };
 
   const playSpeech = (text: string, phoneticOverride?: string, onStart?: () => void, onEnd?: () => void) => {

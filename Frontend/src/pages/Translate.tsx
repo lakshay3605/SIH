@@ -6,6 +6,7 @@ import { createHindiSpeechRecognition, speakSantali } from '../utils/speechTrans
 
 export const Translate: React.FC = () => {
   const {
+    appLanguage,
     inputText,
     setInputText,
     translatedText,
@@ -96,8 +97,8 @@ export const Translate: React.FC = () => {
           </div>
           <ArrowLeftRight className="w-4 h-4 text-[#0C5A3E]" />
           <div className="text-right">
-            <span className="font-bold text-[#0C5A3E] dark:text-[#34D399] block">Santali</span>
-            <span className="text-xs text-gray-400">संताली ▾</span>
+            <span className="font-bold text-[#0C5A3E] dark:text-[#34D399] block">{appLanguage === 'Mundari' ? 'Mundari' : 'Santali'}</span>
+            <span className="text-xs text-gray-400">{appLanguage === 'Mundari' ? 'मुंडारी ▾' : 'संताली ▾'}</span>
           </div>
         </div>
 
@@ -168,12 +169,14 @@ export const Translate: React.FC = () => {
           onClick={handleTranslateClick}
           className="w-full py-3.5 rounded-xl bg-[#0C5A3E] text-white text-sm font-bold shadow-md hover:bg-[#094731] transition active:scale-98"
         >
-          Translate to Santhali
+          Translate to {appLanguage === 'Mundari' ? 'Mundari' : 'Santhali'}
         </button>
 
         {/* Translation Output Card */}
         <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#15231E] border border-[#ECE7DA] dark:border-[#20372E] space-y-2 shadow-xs">
-          <span className="text-xs font-bold text-gray-400 block">Translation (Santali - संताली)</span>
+          <span className="text-xs font-bold text-gray-400 block">
+            Translation ({appLanguage === 'Mundari' ? 'Mundari - मुंडारी' : 'Santali - संताली'})
+          </span>
           <p className="text-xl font-bold text-gray-900 dark:text-gray-100 tracking-wide font-['Noto_Sans_Ol_Chiki']">
             {translatedText}
           </p>
