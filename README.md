@@ -39,7 +39,7 @@
 
 ## 💡 One Thing You Shouldn't Miss About Us
 
-We are not just here to win a competition; we are here with a genuine mission. We took every step with a single goal: **making education accessible, because language should never be a barrier to learning.** 
+We are not just here to win a competition; we are here with a genuine mission—and this isn't our first time doing this. SAMVAAD is a natural progression of our previous social-impact initiatives, such as **[jagrukmahila.in](https://jagrukmahila.in/)** (supported by ICSSR), which has already helped thousands of women across India. We took every step with a single goal: **making education accessible, because language should never be a barrier to learning.** 
 
 While we are deeply capable of building "heavy tech", we actively chose to do only what was utterly necessary. We stripped away the fluff, the extra hooks, and the unnecessary flings to ensure this app is as lightweight, sufficient, and impactful as possible for the children and teachers who actually need it in rural classrooms.
 
