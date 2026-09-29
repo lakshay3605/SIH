@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { App as CapacitorApp } from '@capacitor/app';
 import { speakSantali, translateHindiToSantaliClient, translateHindiToMundariClient } from '../utils/speechTranslation';
+import { dictionaryData } from '../data/dictionaryData';
 import { ScreenId, BottomTab, LanguageCode, HistoryItem, DictionaryItem, FlashcardItem, WorksheetRow, WorksheetType } from '../types';
 
 interface AppContextType {
@@ -244,6 +245,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const playSpeech = (text: string, phoneticOverride?: string, onStart?: () => void, onEnd?: () => void) => {
+    // Try to play exact MP3 if it exists in the dictionary
+    const cleanText = text.replace(/[।!?.,]/g, '').trim();
+    const entry = dictionaryData.find(d => 
+      d.santhali.replace(/[।!?.,]/g, '').trim() === cleanText || 
+      d.mundari.replace(/[।!?.,]/g, '').trim() === cleanText || 
+      d.hindi === cleanText
+    );
+    
+    if (entry) {
+      const audioPath = appLanguage === 'Mundari' ? entry.mundariAudio : entry.santhaliAudio;
+      if (audioPath) {
+        if (onStart) onStart();
+        const audio = new Audio(audioPath);
+        audio.onended = () => { if (onEnd) onEnd(); };
+        audio.play().catch(e => {
+          console.warn("Audio play failed:", e);
+          if (onEnd) onEnd();
+        });
+        return;
+      }
+    }
+
+    // Fallback to TTS engine
     speakSantali(text, phoneticOverride, onStart, onEnd);
   };
 

@@ -7,6 +7,7 @@ import {
   createSantaliSpeechRecognition,
   SpeechRecognitionHandler,
   translateHindiToSantaliClient,
+  translateHindiToMundariClient,
   translateSantaliToHindiClient,
   speakSantali,
   speakHindi,
@@ -42,7 +43,7 @@ const STUDENT_QUICK_PROMPTS = [
 ];
 
 export const VoiceConversation: React.FC = () => {
-  const { showToast, goBack } = useApp();
+  const { showToast, goBack, appLanguage, playSpeech } = useApp();
 
   // Active speaking direction: 'hindi-to-santali' (Teacher) or 'santali-to-hindi' (Student)
   const [direction, setDirection] = useState<'hindi-to-santali' | 'santali-to-hindi'>('hindi-to-santali');
@@ -138,30 +139,56 @@ export const VoiceConversation: React.FC = () => {
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     if (speaker === 'teacher') {
-      // Hindi -> Santali
-      const res = translateHindiToSantaliClient(transcript);
-      setCurrentInput(transcript);
-      setCurrentTranslation(res.olChiki);
-      setCurrentPhonetic(res.phonetic);
-      setDirection('hindi-to-santali');
+      if (appLanguage === 'Mundari') {
+        const res = translateHindiToMundariClient(transcript);
+        setCurrentInput(transcript);
+        setCurrentTranslation(res.devanagari);
+        setCurrentPhonetic(res.phonetic);
+        setDirection('hindi-to-santali');
 
-      const newTurn: ConversationTurn = {
-        id: `turn-${Date.now()}`,
-        speaker: 'teacher',
-        originalText: transcript,
-        translatedText: res.olChiki,
-        phoneticText: res.phonetic,
-        timestamp: timeStr
-      };
-      setTurns(prev => [...prev.slice(-5), newTurn]);
+        const newTurn: ConversationTurn = {
+          id: `turn-${Date.now()}`,
+          speaker: 'teacher',
+          originalText: transcript,
+          translatedText: res.devanagari,
+          phoneticText: res.phonetic,
+          timestamp: timeStr
+        };
+        setTurns(prev => [...prev.slice(-5), newTurn]);
 
-      if (autoSpeak) {
-        speakSantali(
-          res.olChiki,
-          res.phonetic,
-          () => setIsSpeaking(true),
-          () => setIsSpeaking(false)
-        );
+        if (autoSpeak) {
+          playSpeech(
+            res.devanagari,
+            res.phonetic,
+            () => setIsSpeaking(true),
+            () => setIsSpeaking(false)
+          );
+        }
+      } else {
+        const res = translateHindiToSantaliClient(transcript);
+        setCurrentInput(transcript);
+        setCurrentTranslation(res.olChiki);
+        setCurrentPhonetic(res.phonetic);
+        setDirection('hindi-to-santali');
+
+        const newTurn: ConversationTurn = {
+          id: `turn-${Date.now()}`,
+          speaker: 'teacher',
+          originalText: transcript,
+          translatedText: res.olChiki,
+          phoneticText: res.phonetic,
+          timestamp: timeStr
+        };
+        setTurns(prev => [...prev.slice(-5), newTurn]);
+
+        if (autoSpeak) {
+          playSpeech(
+            res.olChiki,
+            res.phonetic,
+            () => setIsSpeaking(true),
+            () => setIsSpeaking(false)
+          );
+        }
       }
     } else {
       // Santali -> Hindi
