@@ -147,12 +147,9 @@ Running massive Transformer models locally on a 2GB tablet is computationally im
 ---
 
 ## 🚀 How to Run (100% Offline)
-
-1. Get **`Samvaad.apk`** from the `Samvaad_APK` folder.
-2. Install on any Android device (9+, min 2GB RAM).
-3. Open and start speaking! No internet required.
-
----
+1.  **Download:** Go to the **[Releases](https://github.com/lakshay3605/SIH/releases)** section on the right side of this GitHub page and download the latest `Samvaad.apk`.
+2.  **Install:** Install it directly on your Android tablet or phone (ensure "Install from Unknown Sources" is enabled in your settings).
+3.  **Use:** Open the app and start talking! No internet, no login, and no cloud required. Everything processes completely offline on your device!
 
 ## 🗺️ Roadmap & Future Priorities
 
