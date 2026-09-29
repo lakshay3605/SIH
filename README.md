@@ -12,6 +12,19 @@
 
 ---
 
+## 📑 Table of Contents
+- [🎯 The Problem](#-the-problem)
+- [💡 Our Solution: SAMVAAD](#-our-solution-samvaad)
+  - [🌟 Our Competitive Edge (USPs)](#-our-competitive-edge-usps)
+  - [✨ Where SAMVAAD Stands Today](#-where-samvaad-stands-today)
+- [🏗️ App Architecture & Processing Pipeline](#️-app-architecture--processing-pipeline)
+  - [1. Translation Flow Architecture](#1-translation-flow-architecture)
+  - [2. Dataset & Fine-Tuning Pipeline](#2-dataset--fine-tuning-pipeline)
+- [🚀 How to Run (100% Offline)](#-how-to-run-100-offline)
+- [🗺️ Roadmap & Future Priorities](#️-roadmap--future-priorities)
+
+---
+
 ## 🎯 The Problem
 
 Jharkhand's **PALASH Mother Tongue-Based Multilingual Education (MTB-MLE)** programme is bottlenecked by a severe shortage of teachers proficient in tribal languages (Ho, Mundari, Santhali). Most primary school teachers in tribal areas are Hindi-medium trained and lack the linguistic tools to deliver mother-tongue-based instruction. 
