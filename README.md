@@ -13,14 +13,23 @@
 ---
 
 ## 📑 Table of Contents
+
 - [🎯 The Problem](#-the-problem)
+<br>
+
 - [💡 Our Solution: SAMVAAD](#-our-solution-samvaad)
   - [🌟 Our Competitive Edge (USPs)](#-our-competitive-edge-usps)
   - [✨ Where SAMVAAD Stands Today](#-where-samvaad-stands-today)
+<br>
+
 - [🏗️ App Architecture & Processing Pipeline](#️-app-architecture--processing-pipeline)
   - [1. Translation Flow Architecture](#1-translation-flow-architecture)
   - [2. Dataset & Fine-Tuning Pipeline](#2-dataset--fine-tuning-pipeline)
+<br>
+
 - [🚀 How to Run (100% Offline)](#-how-to-run-100-offline)
+<br>
+
 - [🗺️ Roadmap & Future Priorities](#️-roadmap--future-priorities)
 
 ---
