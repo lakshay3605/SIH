@@ -53,34 +53,45 @@ Why SAMVAAD is the most viable and realistic solution for rural deployment:
 SAMVAAD is designed for seamless classroom interactions directly on an Android Tablet. 
 
 ```mermaid
-flowchart TD
-    subgraph Input Phase
-        A[🎙️ Hindi Speech / ⌨️ Text] --> B(Input Processing)
-        B --> C[Audio Activity Detection & ASR]
-    end
+graph LR
+    %% Custom Styles
+    classDef input fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef process fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#e65100
+    classDef output fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20
     
-    subgraph Offline Translation Engine
-        C --> D{Offline Seq2Seq Model}
-        D --> |Subword Tokenization| E(IndicTrans2 Encoder)
-        E --> F(Decoder: Santhali / Mundari)
-    end
+    %% Nodes
+    In["🎙️ Hindi Input<br/>(Speech / Text)"]:::input
+    ASR["⚙️ Processing & ASR<br/>(Audio Activity Detection)"]:::process
+    Trans["🧠 Offline NLP Engine<br/>(Tokenization & Rule-matching)"]:::process
+    OutText["📄 Translated Text<br/>(Ol Chiki / Devanagari)"]:::output
+    TTS["🔊 Speech Synthesis<br/>(Phonetic TTS)"]:::output
     
-    subgraph Output Generation
-        F --> G[Text Output: Native Scripts]
-        G --> H[IndicParler TTS Engine]
-        H --> I((🔊 Natural Tribal Audio))
-    end
+    %% Flow
+    In ==> ASR
+    ASR ==> Trans
+    Trans ==> OutText
+    Trans ==> TTS
 ```
 
 ### 2. Dataset & Fine-Tuning Pipeline
 Our translation models continuously improve through a robust pipeline:
 
 ```mermaid
-flowchart LR
-    A[Parallel Datasets<br/>Hindi ↔ Tribal] --> B[Pre-Processing<br/>Script Standardization]
-    B --> C[Transformer Training<br/>IndicTrans2]
-    C --> D[Evaluation<br/>BLEU Metrics]
-    D --> E((Improved Model<br/>Push to Device))
+graph LR
+    %% Custom Styles
+    classDef data fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
+    classDef train fill:#e0f7fa,stroke:#0097a7,stroke-width:2px,color:#006064
+    classDef deploy fill:#fbe9e7,stroke:#d84315,stroke-width:2px,color:#bf360c
+
+    %% Nodes
+    A[("📚 Parallel Datasets<br/>(Hindi ↔ Tribal)")]:::data
+    B["🛠️ Pre-Processing<br/>(Cleaning & Tokenization)"]:::train
+    C["⚙️ Offline Optimization<br/>(Rule-based integration)"]:::train
+    D["✅ Evaluation<br/>(Native Validation)"]:::train
+    E{"🚀 Deployed Engine<br/>(Ready for Classrooms)"}:::deploy
+
+    %% Flow
+    A ==> B ==> C ==> D ==> E
 ```
 
 ---
