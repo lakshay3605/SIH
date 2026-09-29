@@ -21,6 +21,10 @@
 - [🏗️ App Architecture & Processing Pipeline](#️-app-architecture--processing-pipeline)
   - [1. Translation Flow Architecture](#1-translation-flow-architecture)
   - [2. Dataset & Fine-Tuning Pipeline](#2-dataset--fine-tuning-pipeline)
+- [🛠️ Technical Stack & Implementation Details](#️-technical-stack--implementation-details)
+  - [1. The Core Stack](#1-the-core-stack)
+  - [2. The Offline NLP Engine (Zero-Model Approach)](#2-the-offline-nlp-engine-zero-model-approach)
+  - [3. Hardware Integration Workarounds](#3-hardware-integration-workarounds)
 - [🚀 How to Run (100% Offline)](#-how-to-run-100-offline)
 - [🗺️ Roadmap & Future Priorities](#️-roadmap--future-priorities)
 
@@ -118,6 +122,27 @@ graph LR
     %% Flow
     A ==> B ==> C ==> D ==> E
 ```
+
+---
+
+## 🛠️ Technical Stack & Implementation Details
+
+To achieve our strict constraints (2GB RAM, 100% Offline, Sub-3s Latency), we engineered a highly optimized hybrid architecture rather than relying on standard, heavy cloud computing.
+
+### 1. The Core Stack
+*   **Frontend UI:** Built with **React, Vite, and TypeScript** for a type-safe, ultra-responsive interface that compiles down into highly compressed static assets.
+*   **Native Android Wrapper:** Written in **Kotlin**, utilizing Android's `WebView` to host the React application completely offline directly from the device's `assets/` folder.
+*   **JS-to-Native Bridge:** A custom `@JavascriptInterface` that allows the web frontend to communicate directly with native Android hardware APIs with near-zero latency.
+
+### 2. The Offline NLP Engine (Zero-Model Approach)
+Running massive Transformer models locally on a 2GB tablet is computationally impossible. Instead, we built a **Custom Tokenized NLP Engine** entirely in client-side TypeScript (`speechTranslation.ts`):
+*   **N-gram Phrase Matching:** Instantly matches common classroom conversational phrases to reduce compute overhead.
+*   **Verb-Stem Lemmatization:** Uses Regex to extract root verbs (e.g., mapping the root "जा" in "जाऊंगा" to the Santali equivalent "सेन").
+*   **Script Transliteration:** Dynamically transliterates Hindi Devanagari phonetics into the native **Ol Chiki** (Santhali) script natively in the browser engine.
+
+### 3. Hardware Integration Workarounds
+*   **Speech-to-Text (ASR):** The React frontend triggers the native Android `SpeechRecognizer` via the JS Bridge, capturing low-latency offline speech directly from the tablet mic.
+*   **Text-to-Speech (TTS) Hack:** Since Android lacks native acoustic models for tribal languages, our NLP engine generates a **Devanagari Phonetic String** alongside the translation. This is sent across the bridge to Android's native TTS engine (configured with a highly optimized `hi-IN` voice profile), forcing it to vocalize perfect tribal phonetics with zero cloud latency.
 
 ---
 
